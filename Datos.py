@@ -38,16 +38,30 @@ df=df.rename(columns={0:'ISC/DII'})
 #Representamos el aoi y el airmass en función del tiempo en un día
 df=df.set_index(Fecha)
 df=df.drop(['Date Time'],axis=1)
+
+#Guardamos los días 
+dias=np.array([1.00])
+for i in range(0,len(df.index[:])):
+    if(i==0):
+        dias[0]=df.index[0].day
+    elif(df.index[i-1].day!=df.index[i].day):
+        dias=np.append(dias,df.index[i].day)
+
+
+        
+        
+        
 segundos=np.arange(0,10586)
 aoi=np.arange(0,10586)
 am=np.arange(0,10586)
-j=0
-for i in df.index[:]:
-    if(i.day==10):
-        segundos[j]=i.hour*3600+i.minute*60+i.second
-        aoi[j]=df.loc[i]['aoi']
-        am[j]=df.loc[i]['airmass_relative']
-        j=j+1
+j=0 
+for p in dias:      
+    for i in df.index[:]:
+        if(i.day==p):
+            segundos[j]=i.hour*3600+i.minute*60+i.second
+            aoi[j]=df.loc[i]['aoi']
+            am[j]=df.loc[i]['airmass_relative']
+            j=j+1
         
 plt.figure(figsize=(10,7))
 plt.plot(segundos,aoi,'o',markersize=2,label='aoi en un día')
