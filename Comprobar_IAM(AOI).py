@@ -15,7 +15,7 @@ df=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados.xlsx')
 df=df.drop(['Unnamed: 0'], axis=1)
 
 #para verificar los parametros calculados.
-P_nor=df['PMP_estimated_IIIV (W)']/27
+P_nor=df['PMP_estimated_IIIV (W)']/df['PMP_estimated_IIIV (W)'].max()
 AOI=np.array(df['aoi'])
 COS=np.cos(AOI/180*math.pi)
 
