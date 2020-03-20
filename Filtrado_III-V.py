@@ -18,7 +18,8 @@ df=df.drop(['Date Time'],axis=1)
 ###Potencia estimada <0.001 ( un valor tan bajo no aporta información, de hecho puede empeorar el estudio)
 ###criterios de Marcos, SMR, DNI,AM,viento
 
-filt_df=df[(df['PMP_estimated_IIIV (W)']>0.001)]
+filt_df=df[(df['PMP_estimated_IIIV (W)']>0.1)]
+filt_df2=filt_df[(df['DII (W/m2)']>100)]
 ##filt_df=filt_df[(filt_df['aoi']<60.00)]
 ###En la base de datos estaba con dos espacios"
 #filt_df=filt_df[(filt_df['SMR_Top_Mid (n.d.)']!='   NaN')]
