@@ -14,12 +14,12 @@ df_CPV_AOI_response=pd.DataFrame(data=np.array(df.iloc[2:10,:],dtype='float32'),
 def f1(x):
     return (-0.0003*(x**2) + 0.0027*(x) + 0.9893)
 #Definimos las variables a usar
-LON=5
+LON=100
 IAM_Martin=np.arange(LON*8,dtype='float32').reshape(LON,8)
 ar_val=float(1.1)
 ar=np.arange(LON,dtype='float32')
 R=np.arange(LON,dtype='float32')
-
+Er=np.arange(LON,dtype='float32')
 #dibujamos las gráficas
 plt.close('all')
 x=df_CPV_AOI_response['Angle']
@@ -31,14 +31,22 @@ for i in range(LON):
     ar[i]=ar_val
     IAM_Martin[i]=np.array(pvlib.iam.martin_ruiz(aoi=df_CPV_AOI_response['Angle'],a_r=ar[i]))
     plt.plot(x,IAM_Martin[i],'--',markersize=2,label='IAM_Martin '+str(round(ar_val,2)))
-    Error[i]=E.ECM(y1,IAM_Martin[i])
-    ar_val=ar_val+100
-plt.legend()
+    R[i]=E.Determination_coefficient(y1,IAM_Martin[i])
+    Er[i]=E.SS_res(y1,IAM_Martin[i])
+    ar_val=ar_val+10000
+#plt.legend()
 plt.show()
 
-Pos_ar=np.where(Error==Error.min())
+print('El valor de ar ha ido desde: '+str(ar[0])+ ' al ' + str(ar[i]))
+Pos_ar=np.where(R==R.max())[0][0]
 ar_val=float(ar[Pos_ar])
-print('El error es de: ',Error[Pos_ar])
+print('El Coeficiente de determinacion es de: ',R[Pos_ar])
 print('El valor de la ar es: ',ar[Pos_ar])
-#con este cógido vemos que hay un valor de ar al cual satura, y no se consigue que 
-#aproxime más a la curva
+
+Pos_ar=np.where(Er==Er.min())[0][0]
+ar_val=float(ar[Pos_ar])
+print('El error cuadrático medio es de: ',Er[Pos_ar])
+print('El valor de la ar es: ',ar[Pos_ar])
+
+
+
