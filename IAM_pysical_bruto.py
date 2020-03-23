@@ -32,7 +32,7 @@ p=0
 for i in range(LON):#se ocupará de las centenas, en la base que se ponga de LON
     for j in range(LON):#se ocupará de las decenas
         for p in range(LON):#se ocupará de las unidades
-            Combinaciones.iloc[p+LON*j+LON**2*i][3]=E.ECM(y1,np.array(pvlib.iam.physical(aoi=x, n=Combinaciones.iloc[p+LON*j+LON**2*i][0],K=Combinaciones.iloc[p+LON*j+LON**2*i][1], L=Combinaciones.iloc[p+LON*j+LON**2*i][2])))
+            Combinaciones.iloc[p+LON*j+LON**2*i][3]=E.Determination_coefficient(y1,np.array(pvlib.iam.physical(aoi=x, n=Combinaciones.iloc[p+LON*j+LON**2*i][0],K=Combinaciones.iloc[p+LON*j+LON**2*i][1], L=Combinaciones.iloc[p+LON*j+LON**2*i][2])))
             Combinaciones.iloc[p+LON*j+LON**2*i+1]=Combinaciones.iloc[p+LON*j+LON**2*i]
             Combinaciones.iloc[p+LON*j+LON**2*i+1][0]=Combinaciones.iloc[p+LON*j+LON**2*i][0]+incremento
         Combinaciones.iloc[p+LON*j+LON**2*i+1][0]=n_val
@@ -42,20 +42,17 @@ for i in range(LON):#se ocupará de las centenas, en la base que se ponga de LON
     Combinaciones.iloc[p+LON*j+LON**2*i+1][2]=Combinaciones.iloc[p+LON*j+LON**2*i][2]+incremento
 Combinaciones_sin_Nan=Combinaciones.dropna(how='any')
 
-Valores=Combinaciones[Combinaciones['E']==Combinaciones[:]['E'].min()]
+Valores=Combinaciones[Combinaciones['E']==Combinaciones[:]['E'].max()]
 print('El valor de la n: ', float(Valores['n']))
 print('El valor de la k: ', float(Valores['k']))
 print('El valor de la l: ', float(Valores['l']))
-print('El valor del error es: ', float(Valores['E']))
-print('El error de la funcion aproximación es: ', E.ECM(y1,y2))
+print('El valor del coeficiente de determinación es: ', float(Valores['E']))
+print('El valor del coeficiente de determinación de la función regresión del excel es: ', E.Determination_coefficient(y1,y2))
 #Este es el rsultado de la ejecución con LON a 10
 #El valor de la n:  0.9000000357627869
 #El valor de la k:  5.399999618530273
 #El valor de la l:  0.20000000298023224
 #El valor del error es:  8.786098624113947e-05
-
-
-
 
 #Este es el resultado de la ultima ejecucion con 100 de LON
 # # El valor de la n:  0.9000000357627869

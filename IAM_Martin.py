@@ -14,7 +14,7 @@ df_CPV_AOI_response=pd.DataFrame(data=np.array(df.iloc[2:10,:],dtype='float32'),
 def f1(x):
     return (-0.0003*(x**2) + 0.0027*(x) + 0.9893)
 #Definimos las variables a usar
-LON=100
+LON=10000
 IAM_Martin=np.arange(LON*8,dtype='float32').reshape(LON,8)
 ar_val=float(1.1)
 ar=np.arange(LON,dtype='float32')
@@ -48,5 +48,7 @@ ar_val=float(ar[Pos_ar])
 print('El error cuadrático medio es de: ',Er[Pos_ar])
 print('El valor de la ar es: ',ar[Pos_ar])
 
+
+#El mejor valor encontrado de ar es: 3140001.0
 
 

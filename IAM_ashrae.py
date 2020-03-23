@@ -47,7 +47,7 @@ b_val=float(b[Pos_Er])
 print('Del sumatorio de residuos es de: ',Er[Pos_Er])
 print('El valor de la b es: ',float(b[Pos_Er]))
 
-
+#La mejor b encontrada es de : 1.1779999732971191
 
 
 
