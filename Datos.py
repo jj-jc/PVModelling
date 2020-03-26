@@ -43,6 +43,13 @@ for i in range(0,len(df.index[:])):
         date=np.append(date,str(df.index[i].date()))
 
 
+
+
+
+
+#A partir de aquí solo dibuja las gráficas
+        
+        
 fig=plt.figure(figsize=(20,15))    
 for i in date:
     plt.plot(df[i].index[:].time,df[i]['aoi'], label='Fecha:'+i)
@@ -145,7 +152,7 @@ for i in date:
     plt.legend()
     plt.title("Intensidad de cortocircuito generada por III-V")
 
-'''ver una a una la intensidad'''
+'''ver una a una la DII'''
 for i in date:
     fig=plt.figure(figsize=(20,15))
     plt.plot(df[i].index[:].time,df[i]['DII (W/m2)'], label='Fecha:'+i)
