@@ -76,23 +76,23 @@ for i in filt_df.index[:]:
         filt_df=filt_df.drop(i,axis=0)
         
 
-'''ver una a una la DNI'''
-for i in date:
-    fig=plt.figure(figsize=(30,15))
-    fig.add_subplot(121)
-    plt.plot(df[i].index[:].time,df[i]['DNI (W/m2)'], label='Datos')    
-    plt.plot(df[i].index[:].time,Irradiancias[i]['dni'],label='Cálculos')
-    plt.xlabel('Hora')
-    plt.ylabel('Irradiancia (W/m2)')
-    plt.legend()
-    plt.title("Irradiancia general sobre plano horizontal"+ str(i))
-    fig.add_subplot(122)
-    plt.plot(filt_df[i].index[:].time,filt_df[i]['DNI (W/m2)'], label='Datos')    
-    plt.plot(df[i].index[:].time,Irradiancias[i]['dni'],label='Cálculos')
-    plt.xlabel('Hora')
-    plt.ylabel('Irradiancia (W/m2)')
-    plt.legend()
-    plt.title("Irradiancia general sobre plano horizontal"+str(i))
+#'''ver una a una la DNI'''
+#for i in date:
+#    fig=plt.figure(figsize=(30,15))
+#    fig.add_subplot(121)
+#    plt.plot(df[i].index[:].time,df[i]['DNI (W/m2)'], label='Datos')    
+#    plt.plot(df[i].index[:].time,Irradiancias[i]['dni'],label='Cálculos')
+#    plt.xlabel('Hora')
+#    plt.ylabel('Irradiancia (W/m2)')
+#    plt.legend()
+#    plt.title("Irradiancia general sobre plano horizontal"+ str(i))
+#    fig.add_subplot(122)
+#    plt.plot(filt_df[i].index[:].time,filt_df[i]['DNI (W/m2)'], label='Datos')    
+#    plt.plot(df[i].index[:].time,Irradiancias[i]['dni'],label='Cálculos')
+#    plt.xlabel('Hora')
+#    plt.ylabel('Irradiancia (W/m2)')
+#    plt.legend()
+#    plt.title("Irradiancia general sobre plano horizontal"+str(i))
 
 
 Solar_position=CPV_location.get_solarposition(filt_df.index[:], pressure=None, temperature=filt_df['T_Amb (°C)'])
@@ -115,8 +115,8 @@ filt_df2=filt_df
 limSup=filt_df['aoi'].max()
 limInf=filt_df['aoi'].min()
 Rango=limSup-limInf
-n_intervalos=10
-porcent_mediana=30
+n_intervalos=100
+porcent_mediana=20
 incremento=Rango/n_intervalos
 for i in range(n_intervalos):
     AUX=filt_df[filt_df['aoi']>limInf+i*incremento]
@@ -138,7 +138,6 @@ x_AM=filt_df2['airmass_relative']
 #
 #AOI
 fig, ax=plt.subplots(figsize=(30,15))
-
 ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
 ax.plot(x_aoi,y1,'o',markersize=2)
 plt.ylim(0,0.0015)
