@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import pvlib
+import Error 
 
 #Datos del módulo CPV
 #localización
@@ -106,14 +107,67 @@ filt_df['DII (W/m2)']=POA['poa_direct']
 filt_df['GII (W/m2)']=POA['poa_global']
 filt_df['ISC_IIIV/DII (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII (W/m2)']
 
-
-
+#-----------------------------------------filtrado 
+#para evitar problemas de infinitos
 filt_df=filt_df[filt_df['DII (W/m2)']>0]
+#Ahora vamos a probar a filtrar con una mediana (AOI)
+filt_df2=filt_df
+limSup=filt_df['aoi'].max()
+limInf=filt_df['aoi'].min()
+Rango=limSup-limInf
+n_intervalos=10
+porcent_mediana=30
+incremento=Rango/n_intervalos
+for i in range(n_intervalos):
+    AUX=filt_df[filt_df['aoi']>limInf+i*incremento]
+    AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
+    Mediana=Error.mediana(AUX['ISC_IIIV/DII (A m2/W)'])
+    DEBAJO=AUX[AUX['ISC_IIIV/DII (A m2/W)']<Mediana*(1-porcent_mediana/100)]   
+    filt_df2=filt_df2.drop(DEBAJO.index[:],axis=0)
+    ENCIMA=AUX[AUX['ISC_IIIV/DII (A m2/W)']>Mediana*(1+porcent_mediana/100)]
+    filt_df2=filt_df2.drop(ENCIMA.index[:],axis=0)
+
+
+#
+'''Este es el código para dibujar la nube de puntos con el filtrado'''
+x=filt_df2['aoi']
+y1=filt_df2['ISC_IIIV/DII (A m2/W)']
+x_aoi=filt_df2['aoi']
+x_temp=filt_df2['T_Amb (°C)']
+x_AM=filt_df2['airmass_relative']
+#
+#AOI
+fig, ax=plt.subplots(figsize=(30,15))
+
+ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
+ax.plot(x_aoi,y1,'o',markersize=2)
+plt.ylim(0,0.0015)
+ax.set_xlabel('AOI (°)')
+ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+ax.set_title("Datos")
+plt.legend()
+#T_Amb
+fig, ax=plt.subplots(figsize=(30,15))
+ax.plot(x_temp,y1,'o',markersize=2)
+#plt.ylim(0,0.0015)
+ax.set_xlabel('T_Amb (°C)')
+ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+ax.set_title("Datos")
+plt.legend()
+#airmass_relative
+fig, ax=plt.subplots(figsize=(30,15))
+ax.plot(x_AM,y1,'o',markersize=2)
+#plt.ylim(0,0.0015)
+ax.set_xlabel('airmass_relative')
+ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+ax.set_title("Datos")
+plt.legend()
 
 
 
-filt_df=filt_df[filt_df['ISC_IIIV/DII (A m2/W)']<0.002]
-
+#
+#filt_df=filt_df[filt_df['ISC_IIIV/DII (A m2/W)']<0.002]
+#
 #
 '''Este es el código para dibujar la nube de puntos con el filtrado'''
 x=filt_df['aoi']
@@ -147,4 +201,10 @@ ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("Datos")
 plt.legend()
 
+
+#
+#
+#
+#
+#
 
