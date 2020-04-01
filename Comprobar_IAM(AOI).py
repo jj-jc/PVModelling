@@ -19,12 +19,6 @@ P_nor=df['PMP_estimated_IIIV (W)']/df['PMP_estimated_IIIV (W)'].max()
 AOI=np.array(df['aoi'])
 COS=np.cos(AOI/180*math.pi)
 
-plt.figure(figsize=(10,7))
-plt.plot(AOI,P_nor,'o',markersize=2,label='P_nor')
-plt.plot(AOI,COS,'o',markersize=2,label='cos(AOI)')
-plt.legend()
-plt.show()
-
 AUX=P_nor/COS
 y=np.array(pvlib.iam.physical(aoi=AOI, n=0.9000000357627869,K=10.900008201599121, L=0.10000000149011612))
 plt.figure(figsize=(10,7))

@@ -14,7 +14,7 @@ df_CPV_AOI_response=pd.DataFrame(data=np.array(df.iloc[2:10,:],dtype='float32'),
 def f1(x):
     return (-0.0003*(x**2) + 0.0027*(x) + 0.9893)
 #Definimos las variables a usar
-LON=10000
+LON=100
 IAM_Martin=np.arange(LON*8,dtype='float32').reshape(LON,8)
 ar_val=float(1.1)
 ar=np.arange(LON,dtype='float32')
@@ -24,7 +24,7 @@ Er=np.arange(LON,dtype='float32')
 plt.close('all')
 x=df_CPV_AOI_response['Angle']
 y1=df_CPV_AOI_response['UF (AOI) - Losses additional to cos(AOI) ']    
-plt.figure(figsize=(10,7))
+plt.figure(figsize=(20,15))
 plt.plot(x,y1,'o',markersize=2,label='IAM_datos')
 plt.plot(x,f1(x),'X',markersize=2,label='IAM_curva_datos')
 for i in range(LON):
