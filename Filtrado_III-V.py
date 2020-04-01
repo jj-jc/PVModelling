@@ -110,6 +110,7 @@ filt_df['ISC_IIIV/DII (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII (
 #-----------------------------------------filtrado 
 #para evitar problemas de infinitos
 filt_df=filt_df[filt_df['DII (W/m2)']>0]
+filt_df=filt_df[filt_df['aoi']<=80]
 #Ahora vamos a probar a filtrar con una mediana (AOI)
 filt_df2=filt_df
 limSup=filt_df['aoi'].max()
@@ -138,7 +139,7 @@ x_AM=filt_df2['airmass_relative']
 #
 #AOI
 fig, ax=plt.subplots(figsize=(30,15))
-ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
+#ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
 ax.plot(x_aoi,y1,'o',markersize=2)
 plt.ylim(0,0.0015)
 ax.set_xlabel('AOI (°)')
@@ -163,42 +164,42 @@ ax.set_title("Datos")
 plt.legend()
 
 
-
 #
-#filt_df=filt_df[filt_df['ISC_IIIV/DII (A m2/W)']<0.002]
-#
-#
-'''Este es el código para dibujar la nube de puntos con el filtrado'''
-x=filt_df['aoi']
-y1=filt_df['ISC_IIIV/DII (A m2/W)']
-x_aoi=filt_df['aoi']
-x_temp=filt_df['T_Amb (°C)']
-x_AM=filt_df['airmass_relative']
-#
-#AOI
-fig, ax=plt.subplots(figsize=(30,15))
-ax.plot(x_aoi,y1,'o',markersize=2)
-#plt.ylim(0,0.0015)
-ax.set_xlabel('AOI (°)')
-ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("Datos")
-plt.legend()
-#T_Amb
-fig, ax=plt.subplots(figsize=(30,15))
-ax.plot(x_temp,y1,'o',markersize=2)
-#plt.ylim(0,0.0015)
-ax.set_xlabel('T_Amb (°C)')
-ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("Datos")
-plt.legend()
-#airmass_relative
-fig, ax=plt.subplots(figsize=(30,15))
-ax.plot(x_AM,y1,'o',markersize=2)
-#plt.ylim(0,0.0015)
-ax.set_xlabel('airmass_relative')
-ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("Datos")
-plt.legend()
+##
+##filt_df=filt_df[filt_df['ISC_IIIV/DII (A m2/W)']<0.002]
+##
+##
+#'''Este es el código para dibujar la nube de puntos con el filtrado'''
+#x=filt_df['aoi']
+#y1=filt_df['ISC_IIIV/DII (A m2/W)']
+#x_aoi=filt_df['aoi']
+#x_temp=filt_df['T_Amb (°C)']
+#x_AM=filt_df['airmass_relative']
+##
+##AOI
+#fig, ax=plt.subplots(figsize=(30,15))
+#ax.plot(x_aoi,y1,'o',markersize=2)
+##plt.ylim(0,0.0015)
+#ax.set_xlabel('AOI (°)')
+#ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+#ax.set_title("Datos")
+#plt.legend()
+##T_Amb
+#fig, ax=plt.subplots(figsize=(30,15))
+#ax.plot(x_temp,y1,'o',markersize=2)
+##plt.ylim(0,0.0015)
+#ax.set_xlabel('T_Amb (°C)')
+#ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+#ax.set_title("Datos")
+#plt.legend()
+##airmass_relative
+#fig, ax=plt.subplots(figsize=(30,15))
+#ax.plot(x_AM,y1,'o',markersize=2)
+##plt.ylim(0,0.0015)
+#ax.set_xlabel('airmass_relative')
+#ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+#ax.set_title("Datos")
+#plt.legend()
 
 
 #
