@@ -10,7 +10,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import pvlib
 import Error 
-
+import matplotlib.colors 
+import matplotlib.cm
 #Datos del módulo CPV
 #localización
 lat=40.453
@@ -162,6 +163,97 @@ ax.set_xlabel('airmass_relative')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("Datos")
 plt.legend()
+
+
+
+
+#creamos un scalar mapeable por cada tercera variable a estudiar.
+#Temp
+norm=plt.Normalize(filt_df2['T_Amb (°C)'].min(),filt_df2['T_Amb (°C)'].max())
+cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["blue","violet","red"])
+Mappable_Temp=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
+#aoi
+norm=plt.Normalize(filt_df2['aoi'].min(),filt_df2['aoi'].max())
+cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["blue","violet","red"])
+Mappable_aoi=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
+#airmass
+norm=plt.Normalize(filt_df2['airmass_relative'].min(),filt_df2['airmass_relative'].max())
+cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["blue","violet","red"])
+Mappable_airmass=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
+
+
+
+
+
+
+
+
+#representacion del aoi con el scalar mapeable
+fig, ax = plt.subplots(1,1,figsize=(30,20))
+ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['T_Amb (°C)'],cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
+plt.ylim(0,0.0012)
+plt.xlim(10,60)
+ax.set_xlabel('aoi (°)')
+ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+ax.set_title("ISC/DII en función del ángulo de incidencia y la temperatura")
+(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C)')
+plt.show()
+#representacion del airmass con el scalar mapeable
+fig, ax = plt.subplots(1,1,figsize=(30,20))
+ax.scatter(x=filt_df2['airmass_relative'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['T_Amb (°C)'], cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
+plt.ylim(0,0.0012)
+plt.xlim(1,2)
+ax.set_xlabel('airmass')
+ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+ax.set_title("ISC/DII en función de la masa de aire y la temperatura")
+(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C) ')
+plt.show()
+
+#representamos de la temp con el scalar mapeable
+fig, ax = plt.subplots(1,1,figsize=(30,20))
+ax.scatter(x=filt_df2['T_Amb (°C)'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
+plt.ylim(0,0.0012)
+#plt.xlim(1,2)
+ax.set_xlabel('Temperatura')
+ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia")
+(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)')
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 #

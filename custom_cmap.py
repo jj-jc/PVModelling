@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 
+
 """
 Creating a colormap from a list of colors
 -----------------------------------------
@@ -213,3 +214,24 @@ axs[1, 1].set_title("Varying alpha")
 fig.suptitle('Custom Blue-Red colormaps', fontsize=16)
 
 plt.show()
+
+
+
+
+
+
+
+
+x,y,c = zip(*np.random.rand(30,3)*4-2)
+
+norm=plt.Normalize(-2,2)
+cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["red","violet","blue"])
+
+plt.scatter(x,y,c=c, cmap=cmap, norm=norm)
+plt.colorbar()
+plt.show()
+
+
+
+
+
