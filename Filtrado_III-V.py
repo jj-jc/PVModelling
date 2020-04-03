@@ -36,7 +36,7 @@ df=df.drop(['Date Time'],axis=1)
 CPV_location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
 Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (°C)'])
 filt_df=df[(df['PMP_estimated_IIIV (W)']>0.1)]
-filt_df=df[(df['DII (W/m2)']>100)]
+#filt_df=df[(df['DII (W/m2)']>100)]
 filt_df=df[(df['T_Amb (°C)']>10)]
 
 Irradiancias=CPV_location.get_clearsky(times=Fecha, model='ineichen', solar_position=Solar_position, dni_extra=None)
@@ -209,6 +209,19 @@ ax.set_title("ISC/DII en función de la masa de aire y la temperatura")
 (fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C) ')
 plt.show()
 
+#representacion del airmass con el scalar mapeable
+fig, ax = plt.subplots(1,1,figsize=(30,20))
+ax.scatter(x=filt_df2['airmass_relative'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
+plt.ylim(0,0.0012)
+plt.xlim(1,2)
+ax.set_xlabel('airmass')
+ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+ax.set_title("ISC/DII en función de la masa de aire y la temperatura")
+(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C) ')
+plt.show()
+
+
+
 #representamos de la temp con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=filt_df2['T_Amb (°C)'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
@@ -222,7 +235,9 @@ plt.show()
 
 
 
+fig, ax=plt.subplots(figsize=(30,15))
 
+ax.plot(filt_df2['aoi'],filt_df2['airmass_relative'], marker='o',markersize=0.5)
 
 
 

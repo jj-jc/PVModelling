@@ -8,101 +8,103 @@ Created on Thu Mar 19 20:46:59 2020
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import pvlib
+import Error 
+import matplotlib.colors 
+import matplotlib.cm
+#Datos del módulo CPV
+#localización
+lat=40.453
+lon=-3.727
+alt=667
+tz='Europe/Berlin'
+#orientación
+surface_tilt=30
+surface_azimuth=180
+#localizamos el sistema
 
-df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos.csv')
-df=df.set_index(pd.DatetimeIndex(df['Date Time']))
+
+
+
+df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Entradas.csv')
+Fecha=pd.DatetimeIndex(df['Date Time'])
+df=df.set_index(Fecha)
 df=df.drop(['Date Time'],axis=1)
+###Criterios de filtrado para datos del III-V
+###Potencia estimada <0.001 ( un valor tan bajo no aporta información, de hecho puede empeorar el estudio)
+###criterios de Marcos, SMR, DNI,AM,viento
+CPV_location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
+Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (°C)'])
+
+filt_df=df[(df['PMP_estimated_IIIV (W)']>0.1)]
+filt_df=df[(df['DII (W/m2)']>100)]
+filt_df=df[(df['T_Amb (°C)']>10)]
+
+Irradiancias=CPV_location.get_clearsky(times=Fecha, model='ineichen', solar_position=Solar_position, dni_extra=None)
 
 
-df=df[(df['PMP_estimated_Si (W)']>0.1)]
-df=df[(df['DifusaI (W/m2)']>0.1)]
-df=df[(df['T_Amb (°C)']>10)]
-
-
-'''Calular media por horas de todos los dias'''
-
-AUX=pd.DataFrame(df['DifusaI (W/m2)'])
-AUX.insert(0,'Horas',AUX.index.hour)
-AUX=pd.DataFrame(AUX.groupby(['Horas']))
-AUX=AUX.rename(columns={0: 'Horas',1:'Grupo'})
-AUX=AUX.set_index(AUX['Horas'])
-AUX=AUX.drop(['Horas'],axis=1)
-Media_DII=pd.DataFrame({'Medias':AUX.index},index=AUX.index)
-for i in range(len(AUX.index)):
-    Media_DII.iloc[i]['Medias']=AUX.iloc[i]['Grupo']['DifusaI (W/m2)'].mean()
-
-filt_df2=df
-
-#este es el cógido para encontrar las fechas de los datos, por lo que tiene que estar después del filtrado
 date=np.array(['2019-05-30'])
-for i in range(len(df.index[:])):
+for i in range(0,len(filt_df.index[:])):
     if(i==0):
-        date[0]=str(df.index[0].date())
-    elif(df.index[i-1].date()!=df.index[i].date()):
-        date=np.append(date,str(df.index[i].date()))
+        date[0]=str(filt_df.index[0].date())
+    elif(filt_df.index[i-1].date()!=filt_df.index[i].date()):
+        date=np.append(date,str(filt_df.index[i].date()))
 
-ErrorPercent=25
-#para limipar los valores de DII
-filt_df3=filt_df2
-for i in range(0,len(filt_df2.index[:])):
-    H=filt_df2.index[i].hour
-    Media_Hora=Media_DII.loc[H]['Medias']
-    Cambio=abs(filt_df2.iloc[i]['DifusaI (W/m2)']-Media_Hora)
-    Margen=(ErrorPercent/100)*(Media_Hora)
-    if Cambio>Margen:
-        filt_df3=filt_df3.drop(filt_df2.index[i],axis=0)
-        AUX.loc[H]['Grupo']=AUX.loc[H]['Grupo'].drop(filt_df2.index[i],axis=0)
-        Media_DII.loc[H]['Medias']=AUX.loc[H]['Grupo']['DifusaI (W/m2)'].mean()
+
+#Para visualizar los datos
+#for i in date:
+#    fig=plt.figure(figsize=(30,15))
+#    fig.add_subplot(121)
+#    plt.plot(df[i].index[:].time,Irradiancias[i]['dni'],label='dni')   
+#    plt.plot(df[i].index[:].time,Irradiancias[i]['ghi'],label='ghi')
+#    plt.xlabel('Hora')
+#    plt.ylabel('Irradiancia (W/m2)')
+#    plt.legend()
+#    plt.title("Irradiancias calculadas "+ str(i))
+#    fig.add_subplot(122)
+#    plt.plot(df[i].index[:].time,df[i]['DNI (W/m2)'], label='dni')    
+#    plt.plot(df[i].index[:].time,df[i]['GNI (W/m2)'],label='gni')
+#    plt.xlabel('Hora')
+#    plt.ylabel('Irradiancia (W/m2)')
+#    plt.legend()
+#    plt.title("Datos de irradiancias "+str(i))
+
+
+#para limipar los valores de DNI
+
+for i in filt_df.index[:]:
+    Cambio=filt_df.loc[i]['DNI (W/m2)']-Irradiancias.loc[i]['dni']
+    if Cambio<=0:
+        filt_df=filt_df.drop(i,axis=0)
         
-        
-    
+
+#'''ver una a una la DNI'''
+#for i in date:
+#    fig=plt.figure(figsize=(30,15))
+#    fig.add_subplot(121)
+#    plt.plot(df[i].index[:].time,df[i]['DNI (W/m2)'], label='Datos')    
+#    plt.plot(df[i].index[:].time,Irradiancias[i]['dni'],label='Cálculos')
+#    plt.xlabel('Hora')
+#    plt.ylabel('Irradiancia (W/m2)')
+#    plt.legend()
+#    plt.title("Irradiancia general sobre plano horizontal"+ str(i))
+#    fig.add_subplot(122)
+#    plt.plot(filt_df[i].index[:].time,filt_df[i]['DNI (W/m2)'], label='Datos')    
+#    plt.plot(df[i].index[:].time,Irradiancias[i]['dni'],label='Cálculos')
+#    plt.xlabel('Hora')
+#    plt.ylabel('Irradiancia (W/m2)')
+#    plt.legend()
+#    plt.title("Irradiancia general sobre plano horizontal"+str(i))
 
 
-for i in date:
-    fig=plt.figure(figsize=(20,15))
-    plt.plot(df[i].index[:].time,df[i]['DifusaI (W/m2)'], label='Fecha:'+i)
-    plt.plot(filt_df3[i].index[:].time,filt_df3[i]['DifusaI (W/m2)'], label='Fecha:'+i)
-    
-    plt.xlabel('Hora')
-    plt.ylabel('Irradiancia (W/m2)')
-    plt.legend()
-    plt.title("Irradiancia difusa sobre plano inclinado")
-    
-fig=plt.figure(figsize=(20,15))
-plt.plot(Media_DII.index,Media_DII['Medias'])
-plt.xlabel('Hora')
-plt.ylabel('Irradiancia (W/m2)')
-plt.title("Media de irradiancia difusa por horas")
+Solar_position=CPV_location.get_solarposition(filt_df.index[:], pressure=None, temperature=filt_df['T_Amb (°C)'])
 
+POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
+                                          solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'], 
+                                          dni=filt_df['DNI (W/m2)'], ghi=filt_df['GHI (W/m2)'], dhi=filt_df['DHI (W/m2)'],
+                                          dni_extra=None, airmass=None, albedo=0.25, surface_type=None, model='isotropic', 
+                                          model_perez='allsitescomposite1990')
 
-'''Este es el código para dibujar la nube de puntos con el filtrado'''
-x=filt_df3['aoi']
-y1=filt_df3['ISC_Si/Difusa (A m2/W)']
-x_aoi=filt_df3['aoi']
-x_temp=filt_df3['T_Amb (°C)']
-x_AM=filt_df3['airmass_relative']
-
-#AOI
-fig, ax=plt.subplots(figsize=(20,15))
-ax.plot(x_aoi,y1,'o',markersize=2)
-#plt.ylim(0,0.0015)
-ax.set_xlabel('AOI (°)')
-ax.set_ylabel('ISC_Si/Difusa (A m2/W)')
-ax.set_title("Datos")
-plt.legend()
-#T_Amb
-fig, ax=plt.subplots(figsize=(20,15))
-ax.plot(x_temp,y1,'o',markersize=2)
-#ax.ylimit(0,0.0015)
-ax.set_xlabel('T_Amb (°C)')
-ax.set_ylabel('ISC_Si/Difusa (A m2/W)')
-ax.set_title("Datos")
-plt.legend()
-#airmass_relative
-fig, ax=plt.subplots(figsize=(20,15))
-ax.plot(x_AM,y1,'o',markersize=2)
-#ax.ylimit(0,0.0015)
-ax.set_xlabel('airmass_relative')
-ax.set_ylabel('ISC_Si/Difusa (A m2/W)')
-ax.set_title("Datos")
-plt.legend()
+filt_df['DII (W/m2)']=POA['poa_direct']
+filt_df['GII (W/m2)']=POA['poa_global']
+filt_df['ISC_IIIV/DII (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII (W/m2)']
