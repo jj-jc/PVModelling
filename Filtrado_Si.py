@@ -37,7 +37,6 @@ CPV_location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=a
 Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (°C)'])
 
 filt_df=df[(df['PMP_estimated_IIIV (W)']>0.1)]
-filt_df=df[(df['DII (W/m2)']>100)]
 filt_df=df[(df['T_Amb (°C)']>10)]
 
 Irradiancias=CPV_location.get_clearsky(times=Fecha, model='ineichen', solar_position=Solar_position, dni_extra=None)
@@ -49,26 +48,6 @@ for i in range(0,len(filt_df.index[:])):
         date[0]=str(filt_df.index[0].date())
     elif(filt_df.index[i-1].date()!=filt_df.index[i].date()):
         date=np.append(date,str(filt_df.index[i].date()))
-
-
-#Para visualizar los datos
-#for i in date:
-#    fig=plt.figure(figsize=(30,15))
-#    fig.add_subplot(121)
-#    plt.plot(df[i].index[:].time,Irradiancias[i]['dni'],label='dni')   
-#    plt.plot(df[i].index[:].time,Irradiancias[i]['ghi'],label='ghi')
-#    plt.xlabel('Hora')
-#    plt.ylabel('Irradiancia (W/m2)')
-#    plt.legend()
-#    plt.title("Irradiancias calculadas "+ str(i))
-#    fig.add_subplot(122)
-#    plt.plot(df[i].index[:].time,df[i]['DNI (W/m2)'], label='dni')    
-#    plt.plot(df[i].index[:].time,df[i]['GNI (W/m2)'],label='gni')
-#    plt.xlabel('Hora')
-#    plt.ylabel('Irradiancia (W/m2)')
-#    plt.legend()
-#    plt.title("Datos de irradiancias "+str(i))
-
 
 #para limipar los valores de DNI
 
@@ -107,4 +86,30 @@ POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azi
 
 filt_df['DII (W/m2)']=POA['poa_direct']
 filt_df['GII (W/m2)']=POA['poa_global']
-filt_df['ISC_IIIV/DII (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII (W/m2)']
+filt_df['Difusa (W/m2)']=POA['poa_diffuse']
+filt_df['ISC_Si/Difusa (A m2/W)']=filt_df['ISC_measured_Si (A)']/filt_df['Difusa (W/m2)']
+filt_df['ISC_Si/GII (A m2/W)']=filt_df['ISC_measured_Si (A)']/filt_df['GII (W/m2)']
+
+
+x_aoi=filt_df['aoi']
+y1=filt_df['ISC_Si/Difusa (A m2/W)']
+y2=filt_df['ISC_Si/GII (A m2/W)']
+
+
+
+fig, ax=plt.subplots(figsize=(30,15))
+#ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
+ax.plot(x_aoi,y1,'o',markersize=2)
+ax.plot(x_aoi,y2,'o',markersize=2)
+ax.set_ylim(0,0.015)
+ax.set_xlabel('AOI (°)')
+ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+ax.set_title("Datos")
+plt.legend()
+
+
+
+
+
+
+
