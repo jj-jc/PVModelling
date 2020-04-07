@@ -79,17 +79,6 @@ for i in date:
 
 
 
-
-
-
-
-
-
-#'''decido crear otro excel con los datos ya filtrados, para mayor comodidad'''
-##
-#df.to_excel("C://Users/juanj/OneDrive/Escritorio/TFG/Datos.xlsx",options={'remove_timezone':True})
-##
-
 df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Entradas.csv")
 
 

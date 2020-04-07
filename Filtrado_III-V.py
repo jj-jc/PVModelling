@@ -37,7 +37,7 @@ CPV_location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=a
 Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (°C)'])
 filt_df=df[(df['PMP_estimated_IIIV (W)']>0.1)]
 #filt_df=df[(df['DII (W/m2)']>100)]
-filt_df=df[(df['T_Amb (°C)']>10)]
+#filt_df=df[(df['T_Amb (°C)']>10)]
 
 Irradiancias=CPV_location.get_clearsky(times=Fecha, model='ineichen', solar_position=Solar_position, dni_extra=None)
 
@@ -218,7 +218,7 @@ plt.xlim(1,2)
 ax.set_xlabel('airmass')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC/DII en función de la masa de aire y la temperatura")
-(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C) ')
+(fig.colorbar(Mappable_aoi)).set_label('aoi ')
 plt.show()
 
 
@@ -245,7 +245,7 @@ ax.plot(filt_df2['aoi'],filt_df2['airmass_relative'], marker='o',markersize=0.5)
 
 
 
-filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados.csv")
+filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados.csv",encoding='utf-8')
 
 
 
