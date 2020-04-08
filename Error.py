@@ -1,7 +1,4 @@
 import numpy as np
-
-
-
 def promedio(datos):
     sumatoria = sum(datos)
     longitud = float(len(datos))
@@ -68,3 +65,17 @@ def Determination_coefficient(datos,estimaciones):
     except ZeroDivisionError:
         print('No se puede realizar una division por cero')
         return 1
+def regresion_lineal(x,y):
+    # coeficientes de regresion
+    # y =beta0+beta1*x
+    
+    Mediax=promedio(x)
+    Mediay=promedio(y)
+    sumatorio=0
+    for i in range(len(x)):
+        sumatorio=sumatorio+((x[i]-Mediax)*(y[i]-Mediay))
+    
+    beta1=sumatorio/SS_tot(x)
+    beta0=Mediay-beta1*Mediax
+    return beta0,beta1
+    

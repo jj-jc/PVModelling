@@ -80,6 +80,13 @@ for i in range(n_intervalos):
     plt.legend()
     plt.show()
 
+indep,m=E.regresion_lineal(df['airmass_relative'],df['P_nor'])
+y_regre=indep+m*df['airmass_relative']
+plt.figure(figsize=(30,15))
+plt.plot(df['airmass_relative'],y_regre, 'o',markersize=2)
+plt.plot(df['airmass_relative'],df['P_nor'],'o', markersize=2)
+plt.show()
+print(E.Determination_coefficient(df['P_nor'],y_regre))
 
 
 
