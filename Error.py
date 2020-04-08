@@ -39,9 +39,6 @@ def mediana(datos):
 
     return mediana
 
-
-
-
 def SS_res(datos,estimaciones):#residuos
     sumatorio=0
     for i in range(len(datos)):

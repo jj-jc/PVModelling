@@ -53,7 +53,7 @@ for i in range(0,len(filt_df.index[:])):
 
 
 #para limipar los valores de DNI
-
+Porcentaje=10
 for i in filt_df.index[:]:
     Cambio=filt_df.loc[i]['DNI (W/m2)']-Irradiancias.loc[i]['dni']
     if Cambio<=0:
