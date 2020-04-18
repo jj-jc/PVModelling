@@ -68,14 +68,18 @@ def Determination_coefficient(datos,estimaciones):
 def regresion_lineal(x,y):
     # coeficientes de regresion
     # y =beta0+beta1*x
-    
+#    if isinstance(x,np.ndarray):
+#        x=np.array(x)
+#    if isinstance(y,np.ndarray):
+#        x=np.array(y)
     Mediax=promedio(x)
     Mediay=promedio(y)
     sumatorio=0
     for i in range(len(x)):
         sumatorio=sumatorio+((x[i]-Mediax)*(y[i]-Mediay))
-    
     beta1=sumatorio/SS_tot(x)
     beta0=Mediay-beta1*Mediax
-    return beta0,beta1
+    y_regresion=beta0+beta1*(x)
+    RR=Determination_coefficient(y,y_regresion)
+    return RR,y_regresion,beta0,beta1
     

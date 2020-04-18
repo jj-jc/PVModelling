@@ -56,7 +56,7 @@ def regresion_ashrae(aoi,datos):
     for i in range(1000):     
         IAM_ashrae=pvlib.iam.ashrae(aoi=aoi,b=b)
         RR_nuevo=E.Determination_coefficient(datos,IAM_ashrae)
-        if(abs(RR_nuevo)<RR):
+        if(abs(RR_nuevo)<RR):#como es una aproximacion lineal, en el momento que el error se reduce, en la siguiente iteración aumentara este.
             break 
         else:
             RR=RR_nuevo

@@ -236,11 +236,6 @@ plt.show()
 
 
 
-fig, ax=plt.subplots(figsize=(30,15))
-
-ax.plot(filt_df2['aoi'],filt_df2['airmass_relative'], marker='o',markersize=0.5)
-
-
 
 
 
