@@ -30,11 +30,15 @@ df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Entradas.csv')
 Fecha=pd.DatetimeIndex(df['Date Time'])
 df=df.set_index(Fecha)
 df=df.drop(['Date Time'],axis=1)
-###Criterios de filtrado para datos del III-V
-###Potencia estimada <0.001 ( un valor tan bajo no aporta información, de hecho puede empeorar el estudio)
-###criterios de Marcos, SMR, DNI,AM,viento
+
 CPV_location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
 Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (°C)'])
+
+#--------------------------------------------------------criterios de filtrado
+#Se elminan los datos NAN
+df=df.where(df!='   NaN')
+df=df.dropna()
+#----------Potencia
 filt_df=df[(df['PMP_estimated_IIIV (W)']>0.1)]
 #filt_df=df[(df['DII (W/m2)']>100)]
 #filt_df=df[(df['T_Amb (°C)']>10)]
@@ -52,18 +56,25 @@ for i in range(0,len(filt_df.index[:])):
 
 
 
-#para limipar los valores de DNI
+#-----------DNI 
+#de esta forma limpiamos los datos que no pertenezcan a los días claros
 Porcentaje=10
 for i in filt_df.index[:]:
     Cambio=filt_df.loc[i]['DNI (W/m2)']-Irradiancias.loc[i]['dni']
     if Cambio<=0:
         filt_df=filt_df.drop(i,axis=0)
+#----------velocidad del viento
+filt_df=filt_df[(filt_df['Wind Speed (m/s)']<10.0)]
         
+#----------SMR
 
-
-
+filt_df=filt_df[(filt_df['SMR_Top_Mid (n.d.)'].astype(float)>0.7)]
+filt_df=filt_df[(filt_df['SMR_Top_Mid (n.d.)'].astype(float)<1.1)]
+        
+        
+        
+        
 Solar_position=CPV_location.get_solarposition(filt_df.index[:], pressure=None, temperature=filt_df['T_Amb (°C)'])
-
 POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
                                           solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'], 
                                           dni=filt_df['DNI (W/m2)'], ghi=filt_df['GHI (W/m2)'], dhi=filt_df['DHI (W/m2)'],
@@ -72,13 +83,17 @@ POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azi
 
 filt_df['DII (W/m2)']=POA['poa_direct']
 filt_df['GII (W/m2)']=POA['poa_global']
+
+filt_df=filt_df[filt_df['DII (W/m2)']>0] #evitamos problemas de infinitos en la siguiente ejecución
+
 filt_df['ISC_IIIV/DII (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII (W/m2)']
 
+
+
+
 #-----------------------------------------filtrado 
-#para evitar problemas de infinitos
-filt_df=filt_df[filt_df['DII (W/m2)']>0]
-filt_df=filt_df[filt_df['aoi']<=80]
-#Ahora vamos a probar a filtrar con una mediana (AOI)
+filt_df=filt_df[filt_df['aoi']<=80] #no interesan en el CPV ángulos muy grandes
+#filtrar con una mediana de ISC_IIIV en pequeños intervaloes de aoi
 filt_df2=filt_df
 limSup=filt_df['aoi'].max()
 limInf=filt_df['aoi'].min()
@@ -233,6 +248,8 @@ ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia")
 (fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)')
 plt.show()
+
+
 
 
 
