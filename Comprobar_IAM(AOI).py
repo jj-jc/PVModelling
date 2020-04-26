@@ -64,6 +64,16 @@ print('El valor del parámetro k usado es: ' + str(k)[:str(k).find(".")+3])
 print('El valor del parámetro l usado es: ' + str(l)[:str(l).find(".")+3])
 
 
+#df['IAM']=y_physical
+
+#df['DII_iam']=df['DII (W/m2)']*y_physical
+#
+#
+#plt.figure(figsize=(30,15))
+#plt.plot(df['aoi'],df['DII_iam'],'o',markersize=2,label='IAM(AOI)')
+
+
+
 
 
 #----------------------se pensó en hacer divisiones en función de la temperatura----------------
@@ -72,8 +82,9 @@ limInf=df['T_Amb (°C)'].min()
 Rango=limSup-limInf
 n_intervalos=5
 incremento=Rango/n_intervalos
-#y_ashrae=pd.dataframe()
-#y_physical=pd.Dataframe
+aux_aoi=np.arange(10,55,.1)#Se crea un numpy como auxiliar a los aoi que necesitaran los IAM
+y_ashrae=pd.DataFrame(index=aux_aoi)
+y_physical=pd.DataFrame(index=aux_aoi)
 
 for i in range(n_intervalos):
     lim_inf=limInf+i*incremento
@@ -86,13 +97,13 @@ for i in range(n_intervalos):
     AUX['IAM_aoi']=np.array(P_nor/COS)
     RR_ashrae,b=IAM_ashrae.regresion_ashrae(AUX['aoi'],AUX['IAM_aoi'])
     RR_physical,n,k,l =IAM_pysical_bruto.regresion_pysical(AUX['aoi'],AUX['IAM_aoi'])
-    y_ashrae=np.array(pvlib.iam.ashrae(aoi=AUX['aoi'],b=b))
-    y_pysical=np.array(pvlib.iam.physical(aoi=np.array(AUX['aoi']),n=n,K=k,L=l))
+    y_ashrae_aux=np.array(pvlib.iam.ashrae(aoi=aux_aoi,b=b))
+    y_physical_aux=np.array(pvlib.iam.physical(aoi=np.array(aux_aoi),n=n,K=k,L=l))
     plt.figure(figsize=(30,15))
     plt.plot(df['aoi'],df['IAM_aoi'],'o',markersize=2,label='todos los datos')
     plt.plot(AUX['aoi'],AUX['IAM_aoi'],'o',markersize=2,label='datos estudiados')
-    plt.plot(AUX['aoi'],y_ashrae,'o',markersize=2,label='regresión por ashrae')
-    plt.plot(AUX['aoi'],y_pysical,'o',markersize=2,label='regresión por pysical')
+    plt.plot(aux_aoi,y_ashrae_aux,'o',markersize=2,label='regresión por ashrae')
+    plt.plot(aux_aoi,y_physical_aux,'o',markersize=2,label='regresión por pysical')
     plt.xlabel('Ángulo de incidencia (°)')
     plt.ylabel('Factor de utilización IAM')
     plt.legend()
@@ -104,33 +115,40 @@ for i in range(n_intervalos):
     print('El valor del parámetro n usado es: ' + str(n)[:str(n).find(".")+3])
     print('El valor del parámetro k usado es: ' + str(k)[:str(k).find(".")+3])
     print('El valor del parámetro l usado es: ' + str(l)[:str(l).find(".")+3])
-#---------------------------------Se probo tambien con el aoi, para el pnor/temp, pero se observa que los dtaos están muy dispersos como para hacer aproximaciones
-limSup=df['aoi'].max()
-limInf=df['aoi'].min()
-Rango=limSup-limInf
-n_intervalos=5
-incremento=Rango/n_intervalos
+    y_ashrae['De '+str(lim_inf)[:str(lim_inf).find(".")]+ '°C a '+ str(lim_sup)[:str(lim_sup).find(".")]+'°C']=y_ashrae_aux
+    y_physical['De '+str(lim_inf)[:str(lim_inf).find(".")]+ '°C a '+ str(lim_sup)[:str(lim_sup).find(".")]+'°C']=y_physical_aux
 
-for i in range(n_intervalos):
-    lim_inf=limInf+i*incremento
-    lim_sup=limInf+incremento*(1+i)
-    AUX=df[df['aoi']>lim_inf]
-    AUX=AUX[AUX['aoi']<=lim_sup]
-    RR_temp,y_temp,indep,m=E.regresion_lineal(AUX['T_Amb (°C)'],AUX['IAM_aoi'])
-    plt.figure(figsize=(30,15))
-    plt.plot(df['T_Amb (°C)'],df['IAM_aoi'],'o',markersize=2,label='todos los datos')
-    plt.plot(AUX['T_Amb (°C)'],AUX['IAM_aoi'],'o',markersize=2,label='datos estudiados')
-    plt.plot(AUX['T_Amb (°C)'],y_temp,'o',markersize=2,label='regresión por ashrae')
-    plt.xlabel('Temperatura (°C)')
-    plt.ylabel('Factor de utilización IAM')
-#    plt.text(12, 0.4,'AOI entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ ' y '+ str(lim_sup)[:str(lim_sup).find(".")], fontsize=15)
-#    plt.text(12, 0.35,'El coeficiente de determinación para regresionlineal es:  ' + str(RR_temp)[:str(RR_temp).find(".")+5], fontsize=15)
-    plt.legend()
-    plt.show()
-    print('AOI entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ ' y '+ str(lim_sup)[:str(lim_sup).find(".")])
-    print('El coeficiente de determinación para regresionlineal es:  ' + str(RR_temp)[:str(RR_temp).find(".")+5])
     
     
+    
+#    
+##---------------------------------Se probo tambien con el aoi, para el pnor/temp, pero se observa que los dtaos están muy dispersos como para hacer aproximaciones
+#limSup=df['aoi'].max()
+#limInf=df['aoi'].min()
+#Rango=limSup-limInf
+#n_intervalos=5
+#incremento=Rango/n_intervalos
+#
+#for i in range(n_intervalos):
+#    lim_inf=limInf+i*incremento
+#    lim_sup=limInf+incremento*(1+i)
+#    AUX=df[df['aoi']>lim_inf]
+#    AUX=AUX[AUX['aoi']<=lim_sup]
+#    RR_temp,y_temp,indep,m=E.regresion_lineal(AUX['T_Amb (°C)'],AUX['IAM_aoi'])
+#    plt.figure(figsize=(30,15))
+#    plt.plot(df['T_Amb (°C)'],df['IAM_aoi'],'o',markersize=2,label='todos los datos')
+#    plt.plot(AUX['T_Amb (°C)'],AUX['IAM_aoi'],'o',markersize=2,label='datos estudiados')
+#    plt.plot(AUX['T_Amb (°C)'],y_temp,'o',markersize=2,label='regresión por ashrae')
+#    plt.xlabel('Temperatura (°C)')
+#    plt.ylabel('Factor de utilización IAM')
+##    plt.text(12, 0.4,'AOI entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ ' y '+ str(lim_sup)[:str(lim_sup).find(".")], fontsize=15)
+##    plt.text(12, 0.35,'El coeficiente de determinación para regresionlineal es:  ' + str(RR_temp)[:str(RR_temp).find(".")+5], fontsize=15)
+#    plt.legend()
+#    plt.show()
+#    print('AOI entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ ' y '+ str(lim_sup)[:str(lim_sup).find(".")])
+#    print('El coeficiente de determinación para regresionlineal es:  ' + str(RR_temp)[:str(RR_temp).find(".")+5])
+#    
+#    
 #    
 ##-------------------------Por último se quiere observar el am debido a que las gráficas son mucho más compactas
 #    

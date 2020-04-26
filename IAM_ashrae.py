@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pvlib
 import datetime as dt 
 import Error as E
-#
+
 #df=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/Insolight_CPV_AOI_response.xlsx',encoding= 'unicode_escape')
 ## df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/InsolightMay2019.csv',encoding= 'unicode_escape')
 ##recogemos los datos en un dataframe
@@ -14,7 +14,7 @@ import Error as E
 #def f1(x):
 #    return (-0.0003*(x**2) + 0.0027*(x) + 0.9893)
 ##Definimos las variables a usar
-#LON=1000
+#LON=10
 #IAM_ashrae=np.arange(LON*8,dtype='float32').reshape(LON,8)
 #b_val=float(1)
 #b=np.arange(LON,dtype='float32')
@@ -46,7 +46,7 @@ import Error as E
 #b_val=float(b[Pos_Er])
 #print('Del sumatorio de residuos es de: ',Er[Pos_Er])
 #print('El valor de la b es: ',float(b[Pos_Er]))
-#
+
 
 
 
@@ -56,7 +56,7 @@ def regresion_ashrae(aoi,datos):
     for i in range(1000):     
         IAM_ashrae=pvlib.iam.ashrae(aoi=aoi,b=b)
         RR_nuevo=E.Determination_coefficient(datos,IAM_ashrae)
-        if(abs(RR_nuevo)<RR):#como es una aproximacion lineal, en el momento que el error se reduce, en la siguiente iteración aumentara este.
+        if(abs(RR_nuevo)<RR):#como es una aproximacion lineal, en el momento que el que el RR se reduce significa que se esta se aleja del fitting por ello hay que dejar de iterar.
             break 
         else:
             RR=RR_nuevo
