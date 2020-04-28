@@ -63,7 +63,7 @@ def regresion_martin_ruiz(aoi,datos):
             break 
         else:
             RR=RR_nuevo
-            a_r=a_r+1000000
+            a_r=a_r+100000
     return RR,a_r
 
 

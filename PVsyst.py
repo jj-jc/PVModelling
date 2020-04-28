@@ -23,24 +23,25 @@ module_parameters={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
                'R_sh_exp': 5.50,'R_s': 0.01,'alpha_sc':0.00,'EgRef':3.91,
                'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':12,
                'eta_m':0.32, 'alpha_absorption':0.9}
+
 SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters, 
                                      modules_per_string=1,string_per_inverter=1,
                                      racking_model='freestanding')
 temp_cell=SistemaCPV.pvsyst_celltemp(df['GNI (W/m2)'], df['T_Amb (°C)'],df['Wind Speed (m/s)'])
 
 effective_irradiance=df['DII (W/m2)']
-effective_irradiance1=df['DII (W/m2)']*y_ashrae
+#effective_irradiance1=df['DII (W/m2)']*y_ashrae
 
 Five_parameters=SistemaCPV.calcparams_pvsyst(effective_irradiance, temp_cell)
-Five_parameters1=SistemaCPV.calcparams_pvsyst(effective_irradiance1, temp_cell)
+#Five_parameters1=SistemaCPV.calcparams_pvsyst(effective_irradiance1, temp_cell)
 
 
 Curvas=pvlib.pvsystem.singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
                                  resistance_series=Five_parameters[2],resistance_shunt=Five_parameters[3], 
                                  nNsVth=Five_parameters[4],ivcurve_pnts=100, method='lambertw')
-Curvas1=pvlib.pvsystem.singlediode(photocurrent=Five_parameters1[0], saturation_current=Five_parameters1[1],
-                                 resistance_series=Five_parameters1[2],resistance_shunt=Five_parameters1[3], 
-                                 nNsVth=Five_parameters1[4],ivcurve_pnts=100, method='lambertw')
+#Curvas1=pvlib.pvsystem.singlediode(photocurrent=Five_parameters1[0], saturation_current=Five_parameters1[1],
+#                                 resistance_series=Five_parameters1[2],resistance_shunt=Five_parameters1[3], 
+#                                 nNsVth=Five_parameters1[4],ivcurve_pnts=100, method='lambertw')
 
 
 
@@ -55,13 +56,13 @@ plt.figure(figsize=(30,15))
 plt.plot(df['aoi'],Curvas['p_mp'],'o',markersize=2)
 plt.plot(df['aoi'],df['PMP_estimated_IIIV (W)'],'o',markersize=2)
 
-plt.figure(figsize=(30,15))
-
-plt.plot(Curvas1['v'][0],Curvas1['i'][0],'--',markersize=2,label='IAM(AOI)')
-plt.plot(Curvas1['v'][5],Curvas1['i'][5],'--',markersize=2,label='IAM(AOI)')
-plt.plot(Curvas1['v'][10],Curvas1['i'][10],'--',markersize=2,label='IAM(AOI)')
-plt.plot(Curvas1['v'][50],Curvas1['i'][50],'--',markersize=2,label='IAM(AOI)')
-plt.figure(figsize=(30,15))
-plt.plot(df['aoi'],Curvas1['p_mp'],'o',markersize=2)
-plt.plot(df['aoi'],df['PMP_estimated_IIIV (W)'],'o',markersize=2)
+#plt.figure(figsize=(30,15))
+#
+#plt.plot(Curvas1['v'][0],Curvas1['i'][0],'--',markersize=2,label='IAM(AOI)')
+#plt.plot(Curvas1['v'][5],Curvas1['i'][5],'--',markersize=2,label='IAM(AOI)')
+#plt.plot(Curvas1['v'][10],Curvas1['i'][10],'--',markersize=2,label='IAM(AOI)')
+#plt.plot(Curvas1['v'][50],Curvas1['i'][50],'--',markersize=2,label='IAM(AOI)')
+#plt.figure(figsize=(30,15))
+#plt.plot(df['aoi'],Curvas1['p_mp'],'o',markersize=2)
+#plt.plot(df['aoi'],df['PMP_estimated_IIIV (W)'],'o',markersize=2)
 

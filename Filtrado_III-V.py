@@ -92,7 +92,7 @@ filt_df['ISC_IIIV/DII (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII (
 
 
 #-----------------------------------------filtrado 
-filt_df=filt_df[filt_df['aoi']<=80] #no interesan en el CPV ángulos muy grandes
+#filt_df=filt_df[filt_df['aoi']<=80] #no interesan en el CPV ángulos muy grandes
 #filtrar con una mediana de ISC_IIIV en pequeños intervaloes de aoi
 filt_df2=filt_df
 limSup=filt_df['aoi'].max()
@@ -104,10 +104,10 @@ incremento=Rango/n_intervalos
 for i in range(n_intervalos):
     AUX=filt_df[filt_df['aoi']>limInf+i*incremento]
     AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
-    Mediana=Error.mediana(AUX['ISC_IIIV/DII (A m2/W)'])
-    DEBAJO=AUX[AUX['ISC_IIIV/DII (A m2/W)']<Mediana*(1-porcent_mediana/100)]   
+    Mediana=Error.mediana(AUX['ISC_measured_IIIV (A)'])
+    DEBAJO=AUX[AUX['ISC_measured_IIIV (A)']<Mediana*(1-porcent_mediana/100)]   
     filt_df2=filt_df2.drop(DEBAJO.index[:],axis=0)
-    ENCIMA=AUX[AUX['ISC_IIIV/DII (A m2/W)']>Mediana*(1+porcent_mediana/100)]
+    ENCIMA=AUX[AUX['ISC_measured_IIIV (A)']>Mediana*(1+porcent_mediana/100)]
     filt_df2=filt_df2.drop(ENCIMA.index[:],axis=0)
 
 
@@ -161,7 +161,7 @@ ax.plot(x_aoi,y1,'o',markersize=2)
 plt.ylim(0,0.0015)
 ax.set_xlabel('AOI (°)')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("Datos")
+ax.set_title("ISC_IIIV/DII en función del ángulo de incidencia",fontsize=20)
 plt.legend()
 #T_Amb
 fig, ax=plt.subplots(figsize=(30,15))
@@ -169,7 +169,7 @@ ax.plot(x_temp,y1,'o',markersize=2)
 #plt.ylim(0,0.0015)
 ax.set_xlabel('T_Amb (°C)')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("Datos")
+ax.set_title("ISC_IIIV/DII en función de la temperarua ambiente",fontsize=20)
 plt.legend()
 #airmass_relative
 fig, ax=plt.subplots(figsize=(30,15))
@@ -177,7 +177,7 @@ ax.plot(x_AM,y1,'o',markersize=2)
 #plt.ylim(0,0.0015)
 ax.set_xlabel('airmass_relative')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("Datos")
+ax.set_title("ISC_IIIV/DII en función del airmass",fontsize=20)
 plt.legend()
 
 
@@ -211,7 +211,7 @@ plt.ylim(0,0.0012)
 plt.xlim(10,60)
 ax.set_xlabel('aoi (°)')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("ISC/DII en función del ángulo de incidencia y la temperatura")
+ax.set_title("ISC/DII en función del ángulo de incidencia y la temperatura",fontsize=20)
 (fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C)')
 plt.show()
 #representacion del airmass con el scalar mapeable
@@ -221,7 +221,7 @@ plt.ylim(0,0.0012)
 plt.xlim(1,2)
 ax.set_xlabel('airmass')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("ISC/DII en función de la masa de aire y la temperatura")
+ax.set_title("ISC/DII en función de la masa de aire y la temperatura",fontsize=20)
 (fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C) ')
 plt.show()
 
@@ -232,7 +232,7 @@ plt.ylim(0,0.0012)
 plt.xlim(1,2)
 ax.set_xlabel('airmass')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("ISC/DII en función de la masa de aire y la temperatura")
+ax.set_title("ISC/DII en función de la masa de aire y la temperatura",fontsize=20)
 (fig.colorbar(Mappable_aoi)).set_label('aoi ')
 plt.show()
 
@@ -245,7 +245,7 @@ plt.ylim(0,0.0012)
 #plt.xlim(1,2)
 ax.set_xlabel('Temperatura')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia")
+ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia",fontsize=20)
 (fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)')
 plt.show()
 
@@ -257,7 +257,7 @@ plt.show()
 
 
 
-filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados.csv",encoding='utf-8')
+filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv",encoding='utf-8')
 
 
 

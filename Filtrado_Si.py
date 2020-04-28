@@ -1,10 +1,10 @@
+
 # -*- coding: utf-8 -*-
 """
 Created on Thu Mar 19 20:46:37 2020
 
 @author: juanj
 """
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -56,7 +56,7 @@ for i in range(0,len(filt_df.index[:])):
 
 
 
-#-----------DNI 
+#-----------GNI
 #de esta forma limpiamos los datos que no pertenezcan a los días claros
 Porcentaje=10
 for i in filt_df.index[:]:
@@ -84,16 +84,9 @@ POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azi
 filt_df['DII (W/m2)']=POA['poa_direct']
 filt_df['GII (W/m2)']=POA['poa_global']
 
-
-
-
-
-
-
-
 filt_df=filt_df[filt_df['DII (W/m2)']>0] #evitamos problemas de infinitos en la siguiente ejecución
 
-filt_df['ISC_IIIV/DII (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII (W/m2)']
+filt_df['ISC_Si/GII (A m2/W)']=filt_df['ISC_measured_Si (A)']/filt_df['GII (W/m2)']
 
 
 
@@ -106,22 +99,24 @@ limSup=filt_df['aoi'].max()
 limInf=filt_df['aoi'].min()
 Rango=limSup-limInf
 n_intervalos=100
-porcent_mediana=20
+porcent_mediana=10
 incremento=Rango/n_intervalos
 for i in range(n_intervalos):
     AUX=filt_df[filt_df['aoi']>limInf+i*incremento]
     AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
-    Mediana=Error.mediana(AUX['ISC_IIIV/DII (A m2/W)'])
-    DEBAJO=AUX[AUX['ISC_IIIV/DII (A m2/W)']<Mediana*(1-porcent_mediana/100)]   
+    Mediana=Error.mediana(AUX['ISC_measured_Si (A)'])
+    DEBAJO=AUX[AUX['ISC_measured_Si (A)']<Mediana*(1-porcent_mediana/100)]   
     filt_df2=filt_df2.drop(DEBAJO.index[:],axis=0)
-    ENCIMA=AUX[AUX['ISC_IIIV/DII (A m2/W)']>Mediana*(1+porcent_mediana/100)]
+    ENCIMA=AUX[AUX['ISC_measured_Si (A)']>Mediana*(1+porcent_mediana/100)]
     filt_df2=filt_df2.drop(ENCIMA.index[:],axis=0)
+
+
 
 
 #
 '''Este es el código para dibujar la nube de puntos con el filtrado'''
 x=filt_df2['aoi']
-y1=filt_df2['ISC_IIIV/DII (A m2/W)']
+y1=filt_df2['ISC_Si/GII (A m2/W)']
 x_aoi=filt_df2['aoi']
 x_temp=filt_df2['T_Amb (°C)']
 x_AM=filt_df2['airmass_relative']
@@ -165,26 +160,26 @@ for i in date:
 fig, ax=plt.subplots(figsize=(30,15))
 #ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
 ax.plot(x_aoi,y1,'o',markersize=2)
-plt.ylim(0,0.0015)
+#plt.ylim(0,0.0015)
 ax.set_xlabel('AOI (°)')
-ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("Datos")
+ax.set_ylabel('ISC_Si/GII (A m2/W)')
+ax.set_title("ISC_Si/DII en función del ángulo de incidencia",fontsize=20)
 plt.legend()
 #T_Amb
 fig, ax=plt.subplots(figsize=(30,15))
 ax.plot(x_temp,y1,'o',markersize=2)
 #plt.ylim(0,0.0015)
 ax.set_xlabel('T_Amb (°C)')
-ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("Datos")
+ax.set_ylabel('ISC_Si/GII (A m2/W)')
+ax.set_title("ISC_Si/GII en función de la temperarua ambiente",fontsize=20)
 plt.legend()
 #airmass_relative
 fig, ax=plt.subplots(figsize=(30,15))
 ax.plot(x_AM,y1,'o',markersize=2)
 #plt.ylim(0,0.0015)
 ax.set_xlabel('airmass_relative')
-ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("Datos")
+ax.set_ylabel('ISC_Si/GII (A m2/W)')
+ax.set_title("ISC_Si/GII en función del airmass",fontsize=20)
 plt.legend()
 
 
@@ -213,33 +208,33 @@ Mappable_airmass=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 
 #representacion del aoi con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['T_Amb (°C)'],cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
-plt.ylim(0,0.0012)
-plt.xlim(10,60)
+ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_Si/GII (A m2/W)'],c=filt_df2['T_Amb (°C)'],cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
+#plt.ylim(0,0.0012)
+#plt.xlim(10,60)
 ax.set_xlabel('aoi (°)')
-ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("ISC/DII en función del ángulo de incidencia y la temperatura")
+ax.set_ylabel('ISC_Si/GII (A m2/W)')
+ax.set_title("ISC_si/GII en función del ángulo de incidencia y la temperatura")
 (fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C)')
 plt.show()
 #representacion del airmass con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['airmass_relative'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['T_Amb (°C)'], cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
-plt.ylim(0,0.0012)
-plt.xlim(1,2)
+ax.scatter(x=filt_df2['airmass_relative'],y=filt_df2['ISC_Si/GII (A m2/W)'],c=filt_df2['T_Amb (°C)'], cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
+#plt.ylim(0,0.0012)
+#plt.xlim(1,2)
 ax.set_xlabel('airmass')
-ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("ISC/DII en función de la masa de aire y la temperatura")
+ax.set_ylabel('ISC_Si/GII (A m2/W)')
+ax.set_title("ISC_Si/GII en función de la masa de aire y la temperatura")
 (fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C) ')
 plt.show()
 
 #representacion del airmass con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['airmass_relative'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
-plt.ylim(0,0.0012)
-plt.xlim(1,2)
+ax.scatter(x=filt_df2['airmass_relative'],y=filt_df2['ISC_Si/GII (A m2/W)'],c=filt_df2['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
+#plt.ylim(0,0.0012)
+#plt.xlim(1,2)
 ax.set_xlabel('airmass')
-ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("ISC/DII en función de la masa de aire y la temperatura")
+ax.set_ylabel('ISC_Si/GII (A m2/W)')
+ax.set_title("ISC_Si/GII en función de la masa de aire y la temperatura")
 (fig.colorbar(Mappable_aoi)).set_label('aoi ')
 plt.show()
 
@@ -247,12 +242,12 @@ plt.show()
 
 #representamos de la temp con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['T_Amb (°C)'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
-plt.ylim(0,0.0012)
+ax.scatter(x=filt_df2['T_Amb (°C)'],y=filt_df2['ISC_Si/GII (A m2/W)'],c=filt_df2['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
+#plt.ylim(0,0.0012)
 #plt.xlim(1,2)
 ax.set_xlabel('Temperatura')
-ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia")
+ax.set_ylabel('ISC_Si/GII (A m2/W)')
+ax.set_title("ISC_Si/GII en función de la temperatura y el ángulo de incidencia")
 (fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)')
 plt.show()
 
@@ -263,10 +258,11 @@ plt.show()
 
 
 
-
-filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados.csv",encoding='utf-8')
-
-
+#
+filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_Si.csv",encoding='utf-8')
+#
+#
+#
 
 
 
