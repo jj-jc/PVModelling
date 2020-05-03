@@ -6,12 +6,24 @@ import matplotlib.pyplot as plt
 import plotly.io as pio
 import plotly.graph_objects as go
 
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import plotly.io as pio
+import plotly.graph_objects as go
+
 df_Si=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_Si.csv')
 df_IIIV=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv')
+
+
+
+
+#Se crea un dataframe con los datos de silicio y IIIV enun mismo data
 
 df_juntos=pd.merge(df_IIIV, df_Si,how='outer')
 df_juntos=df_juntos.set_index(pd.DatetimeIndex(df_juntos['Date Time']))
 df_juntos=df_juntos.drop(['Date Time'],axis=1)
+df_juntos=df_juntos.sort_values('Date Time')
 
 df_juntos['ISC_IIIV/ISC_Si']=df_juntos['ISC_measured_IIIV (A)']/df_juntos['ISC_measured_Si (A)']
 df_juntos['DII/GII']=df_juntos['DII (W/m2)']/df_juntos['GII (W/m2)']
@@ -35,6 +47,14 @@ plt.title("Representación de proporción de intensidad IIIV con respecto intens
 fig=plt.figure(figsize=(30,15))
 plt.plot(df_juntos['aoi'],df_juntos['ISC_IIIV/DII (A m2/W)'],'o',markersize=2,label='Intensidad efectiva del III-V')
 plt.plot(df_juntos['aoi'],df_juntos['ISC_Si/GII (A m2/W)'],'o',markersize=2,label='Intensidad efectiva del silicio')
+plt.plot(df_juntos['aoi'],df_juntos['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2,label='Intensidad efectiva del silicio')
+plt.xlabel('Ángulo de incidencia (°)')
+plt.title("Comparativa de intensidades efectivas del III-V con el Silicio en función del ángulo de incidencia")
+plt.legend()
+
+
+fig=plt.figure(figsize=(30,15))
+plt.plot(df_juntos['aoi'],df_juntos['ISC_IIIV/DII (A m2/W)'],'o',markersize=2,label='Intensidad efectiva del III-V')
 plt.plot(df_juntos['aoi'],df_juntos['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2,label='Intensidad efectiva del silicio')
 plt.xlabel('Ángulo de incidencia (°)')
 plt.title("Comparativa de intensidades efectivas del III-V con el Silicio en función del ángulo de incidencia")
