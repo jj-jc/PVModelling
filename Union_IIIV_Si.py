@@ -3,6 +3,8 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import plotly.io as pio
+import plotly.graph_objects as go
 
 df_Si=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_Si.csv')
 df_IIIV=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv')
@@ -33,9 +35,39 @@ plt.title("Representación de proporción de intensidad IIIV con respecto intens
 fig=plt.figure(figsize=(30,15))
 plt.plot(df_juntos['aoi'],df_juntos['ISC_IIIV/DII (A m2/W)'],'o',markersize=2,label='Intensidad efectiva del III-V')
 plt.plot(df_juntos['aoi'],df_juntos['ISC_Si/GII (A m2/W)'],'o',markersize=2,label='Intensidad efectiva del silicio')
+plt.plot(df_juntos['aoi'],df_juntos['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2,label='Intensidad efectiva del silicio')
 plt.xlabel('Ángulo de incidencia (°)')
 plt.title("Comparativa de intensidades efectivas del III-V con el Silicio en función del ángulo de incidencia")
 plt.legend()
+
+#Ahora lo que hacemos es hacer las gráficas teniendo en cuenta que dependiendo del aoi 
+#unas células observanun irradiancia u otra.
+
+
+#df_juntos['']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

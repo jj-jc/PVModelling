@@ -7,11 +7,15 @@ Created on Thu Mar 19 20:46:37 2020
 
 import numpy as np
 import pandas as pd
+import math 
 import matplotlib.pyplot as plt
 import pvlib
 import Error 
 import matplotlib.colors 
 import matplotlib.cm
+import plotly.graph_objects as go
+import plotly.io as pio
+pio.renderers.default = "browser"
 #Datos del módulo CPV
 #localización
 lat=40.453
@@ -252,6 +256,131 @@ plt.show()
 
 
 
+#Ahora escogemos la temperatura más representativa
+
+filt_df3=filt_df2[(filt_df2['aoi']<55)]
+
+
+Incremento=1
+Max_temp=math.ceil(filt_df3['T_Amb (°C)'].max())
+Min_temp=math.floor(filt_df3['T_Amb (°C)'].min())
+Temperaturas=[]
+rep=[]
+for i in range(Min_temp,Max_temp,Incremento):
+    AUX=filt_df3[(filt_df3['T_Amb (°C)']>i)]
+    AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]
+    rep.append(AUX['T_Amb (°C)'].count())
+    Temperaturas.append(i)
+    Datos_irradiancia=AUX['ISC_IIIV/DII (A m2/W)']
+
+    
+
+fig = go.Figure(
+    data=[go.Bar(
+            x=Temperaturas,
+            y=rep)],
+    layout_title_text="A Figure Displayed with fig.show()"
+    
+)
+fig.update_xaxes(title="Temperaturas (°C)")
+fig.update_yaxes(title="Repeticiones")
+fig.show()
+
+
+
+
+#COn el siguiente código representamos los datos en fiferentes temperaturas, el incremento es de 1º
+#el intervalo es desde el valor más pequeño aumentado en uno, es decir tempera 14 signififca desde el 14 al 15 sin incluir
+
+Incremento=1
+Max_temp=math.ceil(filt_df3['T_Amb (°C)'].max())
+Min_temp=math.floor(filt_df3['T_Amb (°C)'].min())
+fig=go.Figure()
+for i in range(Min_temp,Max_temp,Incremento):
+    AUX=filt_df3[(filt_df3['T_Amb (°C)']>=float(i))]
+    AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
+
+    fig.add_trace(go.Scatter(
+    y=AUX['ISC_IIIV/DII (A m2/W)'],
+    x=AUX['aoi'],
+    mode='markers',
+    visible=True,
+    showlegend=True,
+    name='Temperatura '+ str(i)
+    ))
+fig.show()
+
+
+
+
+filt_df4=filt_df3
+filt_df4=filt_df4[(filt_df4['T_Amb (°C)']<27.0)]
+filt_df4=filt_df4[(filt_df4['T_Amb (°C)']>=26.0)]
+
+
+limSup=filt_df4['aoi'].max()
+limInf=filt_df4['aoi'].min()
+Rango=limSup-limInf
+n_intervalos=20
+porcent_mediana=5
+incremento=Rango/n_intervalos
+for i in range(n_intervalos):
+    AUX=filt_df4[filt_df4['aoi']>limInf+i*incremento]
+    AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
+    Mediana=Error.mediana(AUX['ISC_IIIV/DII (A m2/W)'])
+    DEBAJO=AUX[AUX['ISC_IIIV/DII (A m2/W)']<Mediana*(1-porcent_mediana/100)]   
+    filt_df4=filt_df4.drop(DEBAJO.index[:],axis=0)
+    ENCIMA=AUX[AUX['ISC_IIIV/DII (A m2/W)']>Mediana*(1+porcent_mediana/100)]
+    filt_df4=filt_df4.drop(ENCIMA.index[:],axis=0)
+plt.plot(filt_df4['aoi'],filt_df4['ISC_IIIV/DII (A m2/W)'],'o',markersize=2)
+
+
+
+
+
+filt_df4=filt_df3
+filt_df4=filt_df4[(filt_df4['T_Amb (°C)']<27.0)]
+filt_df4=filt_df4[(filt_df4['T_Amb (°C)']>=26.0)]
+
+fig=plt.figure(figsize=(30,15))
+plt.plot(filt_df4['aoi'],filt_df4['ISC_IIIV/DII (A m2/W)'],'o',markersize=4)
+
+
+porcent_mediana=5
+
+AUX=filt_df4[filt_df4['aoi']<=31]
+Mediana=Error.mediana(AUX['ISC_IIIV/DII (A m2/W)'])
+DEBAJO=AUX[AUX['ISC_IIIV/DII (A m2/W)']<Mediana*(1-porcent_mediana/100)]   
+filt_df4=filt_df4.drop(DEBAJO.index[:],axis=0)
+ENCIMA=AUX[AUX['ISC_IIIV/DII (A m2/W)']>Mediana*(1+porcent_mediana/100)]
+filt_df4=filt_df4.drop(ENCIMA.index[:],axis=0)
+plt.plot(filt_df4['aoi'],filt_df4['ISC_IIIV/DII (A m2/W)'],'o',markersize=4)
+
+
+
+
+
+limSup=filt_df4['aoi'].max()
+limInf=30
+Rango=limSup-limInf
+n_intervalos=20
+porcent_mediana=5
+incremento=Rango/n_intervalos
+for i in range(n_intervalos):
+    AUX=filt_df4[filt_df4['aoi']>limInf+i*incremento]
+    AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
+    Mediana=Error.mediana(AUX['ISC_IIIV/DII (A m2/W)'])
+    DEBAJO=AUX[AUX['ISC_IIIV/DII (A m2/W)']<Mediana*(1-porcent_mediana/100)]   
+    filt_df4=filt_df4.drop(DEBAJO.index[:],axis=0)
+    ENCIMA=AUX[AUX['ISC_IIIV/DII (A m2/W)']>Mediana*(1+porcent_mediana/100)]
+    filt_df4=filt_df4.drop(ENCIMA.index[:],axis=0)
+plt.plot(filt_df4['aoi'],filt_df4['ISC_IIIV/DII (A m2/W)'],'o',markersize=2)
+
+
+
+
+#Por lo tanto ya podemos observar que el mejor rango es el de 24 a 27
+
 
 
 
@@ -259,8 +388,9 @@ plt.show()
 
 filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv",encoding='utf-8')
 
-
-
+a=np.arange(0,len(filt_df4.index))
+filt_df5=filt_df4.set_index(a)
+filt_df5.to_excel("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV_temp26.xls")
 
 
 

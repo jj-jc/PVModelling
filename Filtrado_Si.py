@@ -12,6 +12,10 @@ import pvlib
 import Error 
 import matplotlib.colors 
 import matplotlib.cm
+
+AOI_LIMIT=55.0
+
+
 #Datos del módulo CPV
 #localización
 lat=40.453
@@ -88,8 +92,14 @@ filt_df=filt_df[filt_df['DII (W/m2)']>0] #evitamos problemas de infinitos en la 
 
 filt_df['ISC_Si/GII (A m2/W)']=filt_df['ISC_measured_Si (A)']/filt_df['GII (W/m2)']
 
-
-
+filt_df['Difusa']=filt_df['GII (W/m2)']-filt_df['DII (W/m2)']
+filt_df['ISC_Si/(GII-DII) (A m2/W)']=filt_df['ISC_measured_Si (A)']/filt_df['Difusa']
+filt_df['ISC_Si/Irra_vista (A m2/W)']=filt_df['ISC_Si/GII (A m2/W)']
+for i in range(len(filt_df.index[:])):    
+    if filt_df.iloc[i]['aoi']<AOI_LIMIT:
+        print(i)
+        filt_df['ISC_Si/Irra_vista (A m2/W)'][i]=filt_df['ISC_Si/(GII-DII) (A m2/W)'][i]
+#
 
 #-----------------------------------------filtrado 
 
@@ -252,6 +262,16 @@ ax.set_title("ISC_Si/GII en función de la temperatura y el ángulo de incidenci
 plt.show()
 
 
+#representacion del aoi con el scalar mapeable
+fig, ax = plt.subplots(1,1,figsize=(30,20))
+ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_Si/Irra_vista (A m2/W)'],c=filt_df2['T_Amb (°C)'],cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
+#plt.ylim(0,0.0012)filt_df['ISC_Si/Irra_vista (A m2/W)'][i]
+#plt.xlim(10,60)
+ax.set_xlabel('aoi (°)')
+ax.set_ylabel('ISC_Si/Irradiancia vista por la célula (A m2/W)')
+ax.set_title("ISC_Si/Irradiancia vista por la célula en función del ángulo de incidencia y la temperatura")
+(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C)')
+plt.show()
 
 
 

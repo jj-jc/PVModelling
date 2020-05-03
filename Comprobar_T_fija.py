@@ -15,7 +15,7 @@ import Error as E
 import IAM_ashrae
 import IAM_pysical_bruto
 import IAM_Martin
-df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados.csv',encoding='utf-8')
+df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
 #se introduce euna columna aue corresponde al index al escribir
 df=df.set_index(pd.DatetimeIndex(df['Date Time']))
 df=df.drop(['Date Time'],axis=1)
@@ -25,12 +25,20 @@ df=df.drop(['Date Time'],axis=1)
 df=df[(df['aoi']<55)]
 
 
-#Se limita la temperatura para que esta no afecte al estudio de los datos en función del ángulo
-Media_temp=df['T_Amb (°C)'].mean()
-df=df[(df['T_Amb (°C)']<Media_temp+3)]
-df=df[(df['T_Amb (°C)']>Media_temp-3)]
+##Se limita la temperatura para que esta no afecte al estudio de los datos en función del ángulo
+#Media_temp=df['T_Amb (°C)'].mean()
+#df=df[(df['T_Amb (°C)']<Media_temp+3)]
+#df=df[(df['T_Amb (°C)']>Media_temp-3)]
+#
 
+
+##Se limita la temperatura 
+df=df[(df['T_Amb (°C)']<21.0)]
+df=df[(df['T_Amb (°C)']>=20.0)]
+
+df=filt_df4
 filt_df2=df
+
 
 
 
@@ -113,6 +121,9 @@ print('El valor del parámetro k usado es: ' + str(k)[:str(k).find(".")+3])
 print('El valor del parámetro l usado es: ' + str(l)[:str(l).find(".")+3])
 print('El coeficiente de determinación para martin_ruiz es:  ' + str(RR_martin_ruiz)[:str(RR_martin_ruiz).find(".")+5])
 print('El valor del parámetro ar usado es: ' + str(a_r))
+
+
+
 
 #-----------------Se calcula el iam con otra normalización
 ISC_Nor=(df[(df['aoi']<12)]['ISC_IIIV/DII (A m2/W)'].max())
