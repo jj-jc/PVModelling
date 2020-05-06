@@ -64,7 +64,7 @@ def regresion_martin_ruiz(aoi,datos):
         else:
             RR=RR_nuevo
             a_r=a_r+100000
-    return RR,a_r
+    return IAM_martin_ruiz,RR,a_r
 
 
 

@@ -83,7 +83,7 @@ def regresion_pysical(aoi, datos):
     k_val=5.0
     l_val=0.1
 
-    Combinaciones=pd.DataFrame(data=np.zeros(((LON**3)+1,4)), dtype='float32', columns=['n','k','l','E'])
+    Combinaciones=pd.DataFrame(data=np.zeros(((LON**3)+1,4)), dtype='float32', columns=['n','k','l','RR'])
     Combinaciones.iloc[0][0]=n_val
     Combinaciones.iloc[0][1]=k_val
     Combinaciones.iloc[0][2]=l_val
@@ -101,8 +101,9 @@ def regresion_pysical(aoi, datos):
         Combinaciones.iloc[p+LON*j+LON**2*i+1][0]=n_val
         Combinaciones.iloc[p+LON*j+LON**2*i+1][1]=k_val
         Combinaciones.iloc[p+LON*j+LON**2*i+1][2]=Combinaciones.iloc[p+LON*j+LON**2*i][2]+incremento
-    Valores=Combinaciones[Combinaciones['E']==Combinaciones[:]['E'].max()]
-    return float(Valores['E']),float(Valores['n']),float(Valores['k']),float(Valores['l'])
+    Valores=Combinaciones[Combinaciones['RR']==Combinaciones[:]['RR'].max()]
+    IAM_physical=pvlib.iam.physical(aoi=x, n=float(Valores['n']),K=float(Valores['k']), L=float(Valores['l']))
+    return IAM_physical,float(Valores['RR']),float(Valores['n']),float(Valores['k']),float(Valores['l'])
 
 
 

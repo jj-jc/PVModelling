@@ -88,10 +88,9 @@ POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azi
 filt_df['DII (W/m2)']=POA['poa_direct']
 filt_df['GII (W/m2)']=POA['poa_global']
 
-filt_df=filt_df[filt_df['DII (W/m2)']>0] #evitamos problemas de infinitos en la siguiente ejecución
+filt_df=filt_df[filt_df['DII (W/m2)']>0] #Para evitar problemas de infinitos en la siguiente ejecución
 
 filt_df['ISC_Si/GII (A m2/W)']=filt_df['ISC_measured_Si (A)']/filt_df['GII (W/m2)']
-
 filt_df['Difusa']=filt_df['GII (W/m2)']-filt_df['DII (W/m2)']
 filt_df['ISC_Si/(GII-DII) (A m2/W)']=filt_df['ISC_measured_Si (A)']/filt_df['Difusa']
 filt_df['ISC_Si/Irra_vista (A m2/W)']=filt_df['ISC_Si/GII (A m2/W)']

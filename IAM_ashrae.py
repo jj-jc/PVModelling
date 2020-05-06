@@ -8,6 +8,12 @@ import Error as E
 #df=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/Insolight_CPV_AOI_response.xlsx',encoding= 'unicode_escape')
 ## df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/InsolightMay2019.csv',encoding= 'unicode_escape')
 ##recogemos los datos en un dataframe
+
+
+
+df=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV_temp26.xls',encoding='utf-8')
+df=df.drop(['Unnamed: 0'],axis=1)
+df['IAM_aoi_']=(df['ISC_IIIV/DII (A m2/W)'])/(df['ISC_IIIV/DII (A m2/W)'].max())
 #df_CPV_AOI_response=pd.DataFrame(data=np.array(df.iloc[2:10,:],dtype='float32'), columns=np.array(df.iloc[1,:]))
 #
 ##definimos la funcion que aproximan los resultados empíricos
@@ -61,7 +67,7 @@ def regresion_ashrae(aoi,datos):
         else:
             RR=RR_nuevo
             b=b+0.0001
-    return RR,b
+    return IAM_ashrae,RR,b
 
 
 
