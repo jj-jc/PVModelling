@@ -4,13 +4,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-import pvlib
 import Error as E
 import IAM_ashrae
 import IAM_pysical_bruto
 import IAM_Martin
-
-from cpvtopvlib import uf_preprocessing
+#
+#from cpvtopvlib import uf_preprocessing
 
 
 df=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV_temp26.xls',encoding='utf-8')
@@ -26,9 +25,6 @@ y_physical,RR_physical,n,k,l =IAM_pysical_bruto.regresion_pysical(x,y)
 y_martin_ruiz,RR_martin_ruiz,a_r=IAM_Martin.regresion_martin_ruiz(x,y)
 y_poli,RR_poli,a_poli,b_poli=E.regresion_polinomica(x,y,2)
 
-#y_ashrae=np.array(pvlib.iam.ashrae(aoi=df['aoi'],b=b))
-#y_pysical=np.array(pvlib.iam.physical(aoi=np.array(df['aoi']),n=n,K=k,L=l))
-#y_martin_ruiz=np.array(pvlib.iam.martin_ruiz(aoi=df['aoi'],a_r=a_r))
 
 plt.figure(figsize=(30,15))
 plt.plot(x,y,'o',markersize=2,label='todos los datos')
@@ -68,23 +64,6 @@ print('El valor del parámetro b usado es: ' + str(b))
 
 
 
-#------------------------------------------Se trata de obtener los valores de los factores de utilizacion
-
-
-
-#
-#
-#power = data['Isc/DNI']
-#airmass = data['relative_airmass']
-#temperature = data['temp']
-
-#df.rename(columns={'ISC_IIIV/DII (A m2/W)':'Isc/DNI',
-#                   'airmass_relative':'relative_airmass',
-#                   'T_Amb (°C)':'temp'},
-#                    inplace=True)
-#df
-#uf_preprocessing.calculate_UF(df)
-#
 #
 
 

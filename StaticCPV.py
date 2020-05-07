@@ -35,7 +35,7 @@ temp_cell=SistemaCPV.pvsyst_celltemp(df['GNI (W/m2)'], df['T_Amb (°C)'],df['Win
 
 #·con el parámetro de ashrae generamos los IAM necesarios
 iam=np.array(pvlib.iam.ashrae(aoi=df['aoi'],b=B))
-
+iam=y_poli
 effective_irradiance=df['DII (W/m2)']*iam
 
 

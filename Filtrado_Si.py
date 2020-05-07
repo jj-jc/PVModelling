@@ -96,7 +96,6 @@ filt_df['ISC_Si/(GII-DII) (A m2/W)']=filt_df['ISC_measured_Si (A)']/filt_df['Dif
 filt_df['ISC_Si/Irra_vista (A m2/W)']=filt_df['ISC_Si/GII (A m2/W)']
 for i in range(len(filt_df.index[:])):    
     if filt_df.iloc[i]['aoi']<AOI_LIMIT:
-        print(i)
         filt_df['ISC_Si/Irra_vista (A m2/W)'][i]=filt_df['ISC_Si/(GII-DII) (A m2/W)'][i]
 #
 
@@ -125,7 +124,7 @@ for i in range(n_intervalos):
 #
 '''Este es el código para dibujar la nube de puntos con el filtrado'''
 x=filt_df2['aoi']
-y1=filt_df2['ISC_Si/GII (A m2/W)']
+y1=filt_df2['ISC_Si/Irra_vista (A m2/W)']
 x_aoi=filt_df2['aoi']
 x_temp=filt_df2['T_Amb (°C)']
 x_AM=filt_df2['airmass_relative']
@@ -171,24 +170,24 @@ fig, ax=plt.subplots(figsize=(30,15))
 ax.plot(x_aoi,y1,'o',markersize=2)
 #plt.ylim(0,0.0015)
 ax.set_xlabel('AOI (°)')
-ax.set_ylabel('ISC_Si/GII (A m2/W)')
-ax.set_title("ISC_Si/DII en función del ángulo de incidencia",fontsize=20)
+ax.set_ylabel('ISC_Si/Irradiancia vista por silicio (A m2/W)')
+ax.set_title("ISC_Si/Irradancia vista por el silicio en función del ángulo de incidencia",fontsize=20)
 plt.legend()
 #T_Amb
 fig, ax=plt.subplots(figsize=(30,15))
 ax.plot(x_temp,y1,'o',markersize=2)
 #plt.ylim(0,0.0015)
 ax.set_xlabel('T_Amb (°C)')
-ax.set_ylabel('ISC_Si/GII (A m2/W)')
-ax.set_title("ISC_Si/GII en función de la temperarua ambiente",fontsize=20)
+ax.set_ylabel('ISC_Si/Irradiancia vista por silicio (A m2/W)')
+ax.set_title("ISC_Si/Irradiancia vista por silicio en función de la temperarua ambiente",fontsize=20)
 plt.legend()
 #airmass_relative
 fig, ax=plt.subplots(figsize=(30,15))
 ax.plot(x_AM,y1,'o',markersize=2)
 #plt.ylim(0,0.0015)
 ax.set_xlabel('airmass_relative')
-ax.set_ylabel('ISC_Si/GII (A m2/W)')
-ax.set_title("ISC_Si/GII en función del airmass",fontsize=20)
+ax.set_ylabel('ISC_Si/Irradiancia vista por silicio (A m2/W)')
+ax.set_title("ISC_Si/Irradiancia vista por silicio en función del airmass",fontsize=20)
 plt.legend()
 
 
@@ -217,33 +216,33 @@ Mappable_airmass=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 
 #representacion del aoi con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_Si/GII (A m2/W)'],c=filt_df2['T_Amb (°C)'],cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
+ax.scatter(x=x_aoi,y=y1,c=x_temp,cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
 #plt.ylim(0,0.0012)
 #plt.xlim(10,60)
 ax.set_xlabel('aoi (°)')
-ax.set_ylabel('ISC_Si/GII (A m2/W)')
-ax.set_title("ISC_si/GII en función del ángulo de incidencia y la temperatura")
+ax.set_ylabel('ISC_Si/Irradiancia vista por el silicio (A m2/W)')
+ax.set_title("ISC_si/Irradciancia vista poe el silicio en función del ángulo de incidencia y la temperatura")
 (fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C)')
 plt.show()
 #representacion del airmass con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['airmass_relative'],y=filt_df2['ISC_Si/GII (A m2/W)'],c=filt_df2['T_Amb (°C)'], cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
+ax.scatter(x=x_AM,y=y1,c=x_temp, cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
 #plt.ylim(0,0.0012)
 #plt.xlim(1,2)
 ax.set_xlabel('airmass')
-ax.set_ylabel('ISC_Si/GII (A m2/W)')
-ax.set_title("ISC_Si/GII en función de la masa de aire y la temperatura")
+ax.set_ylabel('ISC_Si/Irradiancia vista por el silicio (A m2/W)')
+ax.set_title("ISC_Si/Irradiancia vista por el silicio en función de la masa de aire y la temperatura")
 (fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C) ')
 plt.show()
 
 #representacion del airmass con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['airmass_relative'],y=filt_df2['ISC_Si/GII (A m2/W)'],c=filt_df2['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
+ax.scatter(x=x_AM,y=y1,c=x_aoi, cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
 #plt.ylim(0,0.0012)
 #plt.xlim(1,2)
 ax.set_xlabel('airmass')
-ax.set_ylabel('ISC_Si/GII (A m2/W)')
-ax.set_title("ISC_Si/GII en función de la masa de aire y la temperatura")
+ax.set_ylabel('ISC_Si/Irradiancia vista por el silicio (A m2/W)')
+ax.set_title("ISC_Si/Irradiancia vista por el silicio en función de la masa de aire y la temperatura")
 (fig.colorbar(Mappable_aoi)).set_label('aoi ')
 plt.show()
 
@@ -251,19 +250,19 @@ plt.show()
 
 #representamos de la temp con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['T_Amb (°C)'],y=filt_df2['ISC_Si/GII (A m2/W)'],c=filt_df2['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
+ax.scatter(x=x_temp,y=y1,c=x_aoi, cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
 #plt.ylim(0,0.0012)
 #plt.xlim(1,2)
 ax.set_xlabel('Temperatura')
-ax.set_ylabel('ISC_Si/GII (A m2/W)')
-ax.set_title("ISC_Si/GII en función de la temperatura y el ángulo de incidencia")
+ax.set_ylabel('ISC_Si/Irradiancia vista por el silicio (A m2/W)')
+ax.set_title("ISC_Si/Irradiancia vista por el silicio en función de la temperatura y el ángulo de incidencia")
 (fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)')
 plt.show()
 
 
 #representacion del aoi con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_Si/Irra_vista (A m2/W)'],c=filt_df2['T_Amb (°C)'],cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
+ax.scatter(x=x_aoi,y=y1,c=x_temp,cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
 #plt.ylim(0,0.0012)filt_df['ISC_Si/Irra_vista (A m2/W)'][i]
 #plt.xlim(10,60)
 ax.set_xlabel('aoi (°)')

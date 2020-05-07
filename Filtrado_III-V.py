@@ -25,7 +25,8 @@ tz='Europe/Berlin'
 #orientación
 surface_tilt=30
 surface_azimuth=180
-#localizamos el sistema
+#AOILIMIt
+AOILIMIT=55.0
 
 
 
@@ -258,7 +259,7 @@ plt.show()
 
 #Ahora escogemos la temperatura más representativa
 
-filt_df3=filt_df2[(filt_df2['aoi']<55)]
+filt_df3=filt_df2[(filt_df2['aoi']<AOILIMIT)]
 
 
 Incremento=1

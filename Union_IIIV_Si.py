@@ -75,7 +75,7 @@ ax1.legend()
 ax2.legend()
 plt.show()
 
-
+plt.figure(figsize=(30,20))
 host = host_subplot(111)
 par = host.twinx()
 host.set_xlabel("Ángulo de incidencia (°)")
@@ -89,7 +89,6 @@ leg.texts[0].set_color(p1.get_color())
 par.yaxis.get_label().set_color(p2.get_color())
 leg.texts[1].set_color(p2.get_color())
 plt.show()
-
 
 
 
