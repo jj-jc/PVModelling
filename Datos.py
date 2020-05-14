@@ -78,6 +78,12 @@ for i in date:
     plt.title("Datos de irradiancias "+str(i))
 
 
+#df['ISC_IIIV/DII (A m2/W)']=df['ISC_measured_IIIV (A)']/df['DII (W/m2)']
+#fig=plt.figure(figsize=(30,15))
+#plt.plot(df['airmass_relative'],df['ISC_IIIV/DII (A m2/W)'],'o')  
+#plt.ylim(0,0.01) 
+
+
 
 df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Entradas.csv")
 

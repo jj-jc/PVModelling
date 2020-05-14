@@ -25,7 +25,6 @@ y_physical,RR_physical,n,k,l =IAM_pysical_bruto.regresion_pysical(x,y)
 y_martin_ruiz,RR_martin_ruiz,a_r=IAM_Martin.regresion_martin_ruiz(x,y)
 y_poli,RR_poli,a_poli,b_poli=E.regresion_polinomica(x,y,2)
 
-
 plt.figure(figsize=(30,15))
 plt.plot(x,y,'o',markersize=2,label='todos los datos')
 plt.plot(x,y_ashrae,'o',markersize=2,label='regresión por ashrae')

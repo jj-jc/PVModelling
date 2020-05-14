@@ -34,8 +34,9 @@ l=0.10000000149011612
 
 #--------------probamos con los parametros obtenidos--------------------------------
 y_ashrae=np.array(pvlib.iam.ashrae(aoi=df['aoi'],b=b))
-y_physical,RR_physical=np.array(pvlib.iam.physical(aoi=df['aoi'], n=n,K=k, L=l))
-y_Martin,RR_ashrae=np.array(pvlib.iam.martin_ruiz(aoi=df['aoi'],a_r=3140001.0))
+y_physical=np.array(pvlib.iam.physical(aoi=df['aoi'], n=n,K=k, L=l))
+y_Martin=np.array(pvlib.iam.martin_ruiz(aoi=df['aoi'],a_r=3140001.0))
+
 
 RR_physical=E.Determination_coefficient(df['IAM_aoi'],y_physical)
 RR_ashrae=E.Determination_coefficient(df['IAM_aoi'],y_ashrae)

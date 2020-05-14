@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import pvlib
 import Error as E
-from funciones_excel import f1
+
 
 #df=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/Insolight_CPV_AOI_response.xlsx',encoding= 'unicode_escape')
 ## df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/InsolightMay2019.csv',encoding= 'unicode_escape')
@@ -77,7 +77,7 @@ def regresion_pysical(aoi, datos):
     x=aoi
     y1=datos  
     LON=10
-    incremento=.1
+    incremento=.2
     #tenemos que poner el valor inicial
     n_val=0.7
     k_val=5.0

@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt 
 import pvlib
 import Error as E
-from funciones_excel import f1
+
 
 df=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/Insolight_CPV_AOI_response.xlsx',encoding= 'unicode_escape')
 # df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/InsolightMay2019.csv',encoding= 'unicode_escape')

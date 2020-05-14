@@ -59,14 +59,14 @@ df['IAM_aoi_']=(df['ISC_IIIV/DII (A m2/W)'])/(df['ISC_IIIV/DII (A m2/W)'].max())
 def regresion_ashrae(aoi,datos):
     b=0.0
     RR=0.0
-    for i in range(10000):     
+    for i in range(1000):     
         IAM_ashrae=pvlib.iam.ashrae(aoi=aoi,b=b)
         RR_nuevo=E.Determination_coefficient(datos,IAM_ashrae)
         if(abs(RR_nuevo)<RR):#como es una aproximacion lineal, en el momento que el que el RR se reduce significa que se esta se aleja del fitting por ello hay que dejar de iterar.
             break 
         else:
             RR=RR_nuevo
-            b=b+0.0001
+            b=b+0.001
     return IAM_ashrae,RR,b
 
 
