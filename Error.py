@@ -110,13 +110,22 @@ def regresion_polinomica(x,y,grado):
 #b=pr.intercept_
 #a2=pr.coef_[2]
 #a1=pr.coef_[1]  
-    x=x.values.reshape([x.values.shape[0],1])#ponemos los vectorees en columnas
-    poli_features = PolynomialFeatures(degree = grado)#Elegimos el grado del polinomio
-    x=poli_features.fit_transform(x)
-    pr = LinearRegression()#escogemos el modelo deseado
-    pr.fit(x, y)#hacemos el fiting
-    Y_pred=pr.predict(x)#recogemos los datos
-    RR=Determination_coefficient(y,Y_pred)
+    if isinstance(x, pd.core.series.Series):
+        x=x.values.reshape([x.values.shape[0],1])#ponemos los vectorees en columnas
+        poli_features = PolynomialFeatures(degree = grado)#Elegimos el grado del polinomio
+        x=poli_features.fit_transform(x)
+        pr = LinearRegression()#escogemos el modelo deseado
+        pr.fit(x, y)#hacemos el fiting
+        Y_pred=pr.predict(x)#recogemos los datos
+        RR=Determination_coefficient(y,Y_pred)
+    elif isinstance(x,np.ndarray):
+        x=x.reshape([x.shape[0],1])#ponemos los vectorees en columnas
+        poli_features = PolynomialFeatures(degree = grado)#Elegimos el grado del polinomio
+        x=poli_features.fit_transform(x)
+        pr = LinearRegression()#escogemos el modelo deseado
+        pr.fit(x, y)#hacemos el fiting
+        Y_pred=pr.predict(x)#recogemos los datos
+        RR=Determination_coefficient(y,Y_pred)
     return Y_pred,RR, pr.coef_, pr.intercept_
 
 

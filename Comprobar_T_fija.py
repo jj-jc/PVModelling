@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import pvlib
 import Error as E
 import IAM_ashrae
-import IAM_pysical_bruto
+import IAM_physical_bruto
 import IAM_Martin
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
 #se introduce euna columna aue corresponde al index al escribir
@@ -96,12 +96,12 @@ print('El valor del parámetro ar usado es:  ' + str(a_r)[:str(a_r).find(".")+5]
 
 #-----------------fitting con los datos de normalizacion de ISC/DII------------
 y_ashrae,RR_ashrae,b=IAM_ashrae.regresion_ashrae(df['aoi'],df['IAM_aoi_'])
-y_pysical,RR_physical,n,k,l =IAM_pysical_bruto.regresion_pysical(df['aoi'],df['IAM_aoi_'])
+y_physical,RR_physical,n,k,l =IAM_physical_bruto.regresion_physical(df['aoi'],df['IAM_aoi_'])
 y_martin_ruiz,RR_martin_ruiz,a_r=IAM_Martin.regresion_martin_ruiz(df['aoi'],df['IAM_aoi_'])
 y_poli,RR_poli,a_poli,b_poli=E.regresion_polinomica(df['aoi'],df['IAM_aoi_'],2)
 
 #y_ashrae=np.array(pvlib.iam.ashrae(aoi=df['aoi'],b=b))
-#y_pysical=np.array(pvlib.iam.physical(aoi=np.array(df['aoi']),n=n,K=k,L=l))
+#y_physical=np.array(pvlib.iam.physical(aoi=np.array(df['aoi']),n=n,K=k,L=l))
 #y_martin_ruiz=np.array(pvlib.iam.martin_ruiz(aoi=df['aoi'],a_r=a_r))
 
 plt.figure(figsize=(30,15))
@@ -186,18 +186,18 @@ print('El coeficiente de determinación para Martin es:  ' + str(RR_martin)[:str
 
 
 y_ashrae,RR_ashrae,b=IAM_ashrae.regresion_ashrae(filt_df2['aoi'],filt_df2['IAM_aoi_'])
-y_pysical,RR_physical,n,k,l =IAM_pysical_bruto.regresion_pysical(filt_df2['aoi'],filt_df2['IAM_aoi_'])
+y_physical,RR_physical,n,k,l =IAM_physical_bruto.regresion_physical(filt_df2['aoi'],filt_df2['IAM_aoi_'])
 y_martin_ruiz,RR_martin_ruiz,a_r=IAM_Martin.regresion_martin_ruiz(filt_df2['aoi'],filt_df2['IAM_aoi_'])
 y_poli,RR_poli,a_poli,b_poli=E.regresion_polinomica(filt_df2['aoi'],filt_df2['IAM_aoi_'],2)
 
 #y_ashrae=np.array(pvlib.iam.ashrae(aoi=filt_df2['aoi'],b=b))
-#y_pysical=np.array(pvlib.iam.physical(aoi=np.array(filt_df2['aoi']),n=n,K=k,L=l))
+#y_physical=np.array(pvlib.iam.physical(aoi=np.array(filt_df2['aoi']),n=n,K=k,L=l))
 #y_martin_ruiz=np.array(pvlib.iam.martin_ruiz(aoi=filt_df2['aoi'],a_r=a_r))
 
 plt.figure(figsize=(30,15))
 plt.plot(filt_df2['aoi'],filt_df2['IAM_aoi_'],'o',markersize=2,label='todos los datos')
 plt.plot(filt_df2['aoi'],y_ashrae,'o',markersize=2,label='Ashrae')
-plt.plot(filt_df2['aoi'],y_pysical,'o',markersize=2,label='Physical')
+plt.plot(filt_df2['aoi'],y_physical,'o',markersize=2,label='Physical')
 plt.plot(filt_df2['aoi'],y_martin_ruiz,'o',markersize=2,label='Martin_Ruiz')
 plt.plot(filt_df2['aoi'],y_poli,'o',markersize=2,label='regresión por función polinómica')
 plt.xlabel('Ángulo de incidencia (°)')
@@ -268,17 +268,17 @@ print('El valor del parametro b usado es:  ' + str(b_poli)[:str(b_poli).find("."
 #print('El valor del parámetro l usado es: ' + str(l)[:str(l).find(".")+3])
 ##---------------------Se hace el fitting de potencias calculando parámetros que mejor se ajustan---------------
 #RR_ashrae,b=IAM_ashrae.regresion_ashrae(df['aoi'],df['IAM_aoi'])
-#RR_physical,n,k,l =IAM_pysical_bruto.regresion_pysical(df['aoi'],df['IAM_aoi'])
+#RR_physical,n,k,l =IAM_physical_bruto.regresion_physical(df['aoi'],df['IAM_aoi'])
 #RR_martin_ruiz,a_r=IAM_Martin.regresion_martin_ruiz(df['aoi'],df['IAM_aoi'])
 #
 #y_ashrae=np.array(pvlib.iam.ashrae(aoi=df['aoi'],b=b))
-#y_pysical=np.array(pvlib.iam.physical(aoi=np.array(df['aoi']),n=n,K=k,L=l))
+#y_physical=np.array(pvlib.iam.physical(aoi=np.array(df['aoi']),n=n,K=k,L=l))
 #y_martin_ruiz=np.array(pvlib.iam.martin_ruiz(aoi=df['aoi'],a_r=a_r))
 #
 #plt.figure(figsize=(30,15))
 #plt.plot(df['aoi'],df['IAM_aoi'],'o',markersize=2,label='todos los datos')
 #plt.plot(df['aoi'],y_ashrae,'o',markersize=2,label='regresión por ashrae')
-#plt.plot(df['aoi'],y_pysical,'o',markersize=2,label='regresión por pysical')
+#plt.plot(df['aoi'],y_physical,'o',markersize=2,label='regresión por physical')
 #plt.plot(df['aoi'],y_martin_ruiz,'o',markersize=2,label='regresión por martin_ruiz')
 #plt.xlabel('Ángulo de incidencia (°)')
 #plt.ylabel('Factor de utilización IAM')

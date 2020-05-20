@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 import Error as E
 import IAM_ashrae
-import IAM_pysical_bruto
+import IAM_physical_bruto
 import IAM_Martin
 #
 #from cpvtopvlib import uf_preprocessing
@@ -21,14 +21,14 @@ y=df['IAM_aoi_']
 
 #-----------------fitting con los datos de normalizacion de ISC/DII------------
 y_ashrae,RR_ashrae,b=IAM_ashrae.regresion_ashrae(x,y)
-y_physical,RR_physical,n,k,l =IAM_pysical_bruto.regresion_pysical(x,y)
+y_physical,RR_physical,n,k,l =IAM_physical_bruto.regresion_physical(x,y)
 y_martin_ruiz,RR_martin_ruiz,a_r=IAM_Martin.regresion_martin_ruiz(x,y)
 y_poli,RR_poli,a_poli,b_poli=E.regresion_polinomica(x,y,2)
 
 plt.figure(figsize=(30,15))
 plt.plot(x,y,'o',markersize=2,label='todos los datos')
 plt.plot(x,y_ashrae,'o',markersize=2,label='regresión por ashrae')
-plt.plot(x,y_physical,'o',markersize=2,label='regresión por pysical')
+plt.plot(x,y_physical,'o',markersize=2,label='regresión por physical')
 plt.plot(x,y_martin_ruiz,'o',markersize=2,label='regresión por martin_ruiz')
 plt.plot(x,y_poli,'o',markersize=2,label='regresión polinómica de grado 2')
 plt.xlabel('Ángulo de incidencia (°)')

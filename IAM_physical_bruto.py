@@ -73,7 +73,7 @@ import Error as E
 #plt.show()
 
 
-def regresion_pysical(aoi, datos):
+def regresion_physical(aoi, datos):
     x=aoi
     y1=datos  
     LON=10
