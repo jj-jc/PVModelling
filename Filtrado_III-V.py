@@ -27,6 +27,7 @@ surface_tilt=30
 surface_azimuth=180
 #AOILIMIt
 AOILIMIT=55.0
+pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
 
 
 
@@ -120,6 +121,7 @@ for i in range(n_intervalos):
 '''Este es el código para dibujar la nube de puntos con el filtrado'''
 x=filt_df2['aoi']
 y1=filt_df2['ISC_IIIV/DII (A m2/W)']
+y2=filt_df2['PMP_estimated_IIIV (W)']
 x_aoi=filt_df2['aoi']
 x_temp=filt_df2['T_Amb (°C)']
 x_AM=filt_df2['airmass_relative']
@@ -132,23 +134,24 @@ for i in range(0,len(filt_df.index[:])):
         date[0]=str(filt_df.index[0].date())
     elif(filt_df.index[i-1].date()!=filt_df.index[i].date()):
         date=np.append(date,str(filt_df.index[i].date()))
+
 for i in date:
     fig=plt.figure(figsize=(30,15))
     fig.add_subplot(121)
-    plt.plot(df[i].index[:].time,df[i]['DNI (W/m2)'], label='DNI')    
+    plt.plot(df[str(i)].index[:].time,df[str(i)]['DNI (W/m2)'], label='DNI')    
 #    plt.plot(df[i].index[:].time,df[i]['GNI (W/m2)'],label='GHI')
-    plt.plot(df[i].index[:].time,df[i]['DII (W/m2)'],label='DII')
-    plt.plot(df[i].index[:].time,df[i]['GII (W/m2)'],label='GII')
+    plt.plot(df[str(i)].index[:].time,df[str(i)]['DII (W/m2)'],label='DII')
+    plt.plot(df[str(i)].index[:].time,df[str(i)]['GII (W/m2)'],label='GII')
 
     plt.xlabel('Hora')
     plt.ylabel('Irradiancia (W/m2)')
     plt.legend()
     plt.title("Datos de irradiancias "+ str(i))
     fig.add_subplot(122)
-    plt.plot(filt_df2[i].index[:].time,filt_df2[i]['DNI (W/m2)'], label='DNI')    
+    plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['DNI (W/m2)'], label='DNI')    
 #    plt.plot(filt_df[i].index[:].time,filt_df[i]['GNI (W/m2)'],label='GHI')
-    plt.plot(filt_df2[i].index[:].time,filt_df2[i]['DII (W/m2)'],label='DII')
-    plt.plot(filt_df2[i].index[:].time,filt_df2[i]['GII (W/m2)'],label='GII')
+    plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['DII (W/m2)'],label='DII')
+    plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['GII (W/m2)'],label='GII')
     plt.xlabel('Hora')
     plt.ylabel('Irradiancia (W/m2)')
     plt.legend()
@@ -183,6 +186,15 @@ ax.plot(x_AM,y1,'o',markersize=2)
 ax.set_xlabel('airmass_relative')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC_IIIV/DII en función del airmass",fontsize=20)
+plt.legend()
+
+#Potencia IIIV
+fig, ax=plt.subplots(figsize=(30,15))
+ax.plot(x_aoi,y2,'o',markersize=2)
+#plt.ylim(0,0.0015)
+ax.set_xlabel('AOI (°)')
+ax.set_ylabel('PMP_estimated_IIIV (W)')
+ax.set_title("Potencia estimada en función del aoi",fontsize=20)
 plt.legend()
 
 

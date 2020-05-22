@@ -50,28 +50,29 @@ df['GII (W/m2)']=POA['poa_global']
 
 
 date=np.array(['2019-05-30'])
-for i in range(0,len(df.index[:])):
+for i in range(0,len(df.index.values)):
     if(i==0):
         date[0]=str(df.index[0].date())
     elif(df.index[i-1].date()!=df.index[i].date()):
         date=np.append(date,str(df.index[i].date()))
      
 #Para visualizar los datos
+pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
 for i in date:
     fig=plt.figure(figsize=(30,15))
     fig.add_subplot(121)
-    plt.plot(df[i].index[:].time,Irradiancias[i]['dni'],label='dni')   
-    plt.plot(df[i].index[:].time,Irradiancias[i]['ghi'],label='ghi')
+    plt.plot(df[str(i)].index[:].time,Irradiancias[str(i)]['dni'],label='dni')   
+    plt.plot(df[str(i)].index[:].time,Irradiancias[str(i)]['ghi'],label='ghi')
 
     plt.xlabel('Hora')
     plt.ylabel('Irradiancia (W/m2)')
     plt.legend()
     plt.title("Irradiancias calculadas "+ str(i))
     fig.add_subplot(122)
-    plt.plot(df[i].index[:].time,df[i]['DNI (W/m2)'], label='DNI')    
-    plt.plot(df[i].index[:].time,df[i]['GNI (W/m2)'],label='GHI')
-    plt.plot(df[i].index[:].time,df[i]['DII (W/m2)'],label='DII')
-    plt.plot(df[i].index[:].time,df[i]['GII (W/m2)'],label='GII')
+    plt.plot(df[str(i)].index[:].time,df[str(i)]['DNI (W/m2)'], label='DNI')    
+    plt.plot(df[str(i)].index[:].time,df[str(i)]['GNI (W/m2)'],label='GHI')
+    plt.plot(df[str(i)].index[:].time,df[str(i)]['DII (W/m2)'],label='DII')
+    plt.plot(df[str(i)].index[:].time,df[str(i)]['GII (W/m2)'],label='GII')
     plt.xlabel('Hora')
     plt.ylabel('Irradiancia (W/m2)')
     plt.legend()

@@ -6,7 +6,7 @@ import pandas as pd
 #estos son los modulos necesarios para el fiting polinomial
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
-
+import math
 
 
 def promedio(datos):
@@ -75,6 +75,12 @@ def Determination_coefficient(datos,estimaciones):
     except ZeroDivisionError:
         print('No se puede realizar una division por cero')
         return 1
+def RMSE(datos, estimaciones):
+    Error_cuadrado=(datos-estimaciones)**2
+    rmse=math.sqrt((sum(Error_cuadrado))/len(datos))
+    return rmse
+    
+    
 def crear_estimaciones(a_s,b,x):
 #como el vector que devuelve la recta de regresión es siempre [0, a1,a2...]
 #eesta funcion no sirve para la de marcos

@@ -137,8 +137,11 @@ print('El valor del parametro b usado es:  ' + str(b_poli)[:str(b_poli).find("."
 
 #%%
 #-----------------Se calcula el iam con otra normalización
+
 ISC_Nor=(df[(df['aoi']<12)]['ISC_IIIV/DII (A m2/W)'].max())
-filt_df2['IAM_aoi_']=filt_df2['ISC_IIIV/DII (A m2/W)']/ISC_Nor
+
+Valor_normalizar=0.00096
+filt_df2['IAM_aoi_']=filt_df2['ISC_IIIV/DII (A m2/W)']/Valor_normalizar
 
 
 #-------------------datos obtenidos para parametros de funciones de iam-----------------

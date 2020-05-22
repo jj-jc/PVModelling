@@ -18,8 +18,8 @@ df_juntos['DII/GII']=df_juntos['DII (W/m2)']/df_juntos['GII (W/m2)']
 
 
 fig=plt.figure(figsize=(30,15))
-plt.plot(df_juntos.index,df_juntos['PMP_estimated_Si (W)'],'o',markersize=2, label='Potencia estimada Si')
-plt.plot(df_juntos.index,df_juntos['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Potencia estimada IIIV')
+plt.plot(df_juntos.index.values,df_juntos['PMP_estimated_Si (W)'],'o',markersize=2, label='Potencia estimada Si')
+plt.plot(df_juntos.index.values,df_juntos['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Potencia estimada IIIV')
 plt.xlabel('Tiempo')
 plt.ylabel('Potencia estimada (W)')
 plt.title("Comparativa de potencias estimadas del III-V con el Silicio en función del ángulo de incidencia")
@@ -27,8 +27,8 @@ plt.legend()
 
 
 fig=plt.figure(figsize=(30,15))
-plt.plot(df_juntos.index,df_juntos['ISC_measured_Si (A)'],'o',markersize=2,label='Intensidad Silicio')
-plt.plot(df_juntos.index,df_juntos['ISC_measured_IIIV (A)'],'o',markersize=2,label='Intensidad III-V')
+plt.plot(df_juntos.index.values,df_juntos['ISC_measured_Si (A)'],'o',markersize=2,label='Intensidad Silicio')
+plt.plot(df_juntos.index.values,df_juntos['ISC_measured_IIIV (A)'],'o',markersize=2,label='Intensidad III-V')
 plt.xlabel('Tiempo')
 plt.ylabel('Intensidad medida (A)')
 plt.title("Comparativa de intensidades del III-V con el Silicio en función del tiempo de todos los datos")
@@ -94,11 +94,16 @@ plt.show()
 
 
 
+#%%
+#Se localiza el valor de ISC/DII para normalizar, en condiciones estandart
 
 
+AUX=df_IIIV[df_IIIV['GNI (W/m2)']>990]
+AUX=AUX[AUX['GNI (W/m2)']<1010]
+AUX=AUX[AUX['airmass_relative']>1.45]
+AUX=AUX[AUX['airmass_relative']<1.55]
 
-
-
+#los datos que cumplen estas condiciones tienen aois de 50 a 70 por lo que no cumplen lo de dirercta
 
 
 
