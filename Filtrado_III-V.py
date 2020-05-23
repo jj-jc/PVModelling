@@ -79,16 +79,6 @@ filt_df=filt_df[(filt_df['SMR_Top_Mid (n.d.)'].astype(float)<1.1)]
         
         
         
-        
-Solar_position=CPV_location.get_solarposition(filt_df.index[:], pressure=None, temperature=filt_df['T_Amb (°C)'])
-POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
-                                          solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'], 
-                                          dni=filt_df['DNI (W/m2)'], ghi=filt_df['GHI (W/m2)'], dhi=filt_df['DHI (W/m2)'],
-                                          dni_extra=None, airmass=None, albedo=0.25, surface_type=None, model='isotropic', 
-                                          model_perez='allsitescomposite1990')
-
-filt_df['DII (W/m2)']=POA['poa_direct']
-filt_df['GII (W/m2)']=POA['poa_global']
 
 filt_df=filt_df[filt_df['DII (W/m2)']>0] #evitamos problemas de infinitos en la siguiente ejecución
 

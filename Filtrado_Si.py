@@ -27,7 +27,7 @@ surface_tilt=30
 surface_azimuth=180
 #localizamos el sistema
 
-
+pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
 
 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Entradas.csv')
@@ -77,16 +77,8 @@ filt_df=filt_df[(filt_df['SMR_Top_Mid (n.d.)'].astype(float)<1.1)]
         
         
         
-        
-Solar_position=CPV_location.get_solarposition(filt_df.index[:], pressure=None, temperature=filt_df['T_Amb (°C)'])
-POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
-                                          solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'], 
-                                          dni=filt_df['DNI (W/m2)'], ghi=filt_df['GHI (W/m2)'], dhi=filt_df['DHI (W/m2)'],
-                                          dni_extra=None, airmass=None, albedo=0.25, surface_type=None, model='isotropic', 
-                                          model_perez='allsitescomposite1990')
 
-filt_df['DII (W/m2)']=POA['poa_direct']
-filt_df['GII (W/m2)']=POA['poa_global']
+
 
 filt_df=filt_df[filt_df['DII (W/m2)']>0] #Para evitar problemas de infinitos en la siguiente ejecución
 
@@ -112,10 +104,10 @@ incremento=Rango/n_intervalos
 for i in range(n_intervalos):
     AUX=filt_df[filt_df['aoi']>limInf+i*incremento]
     AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
-    Mediana=Error.mediana(AUX['ISC_measured_Si (A)'])
-    DEBAJO=AUX[AUX['ISC_measured_Si (A)']<Mediana*(1-porcent_mediana/100)]   
+    Mediana=Error.mediana(AUX['ISC_Si/GII (A m2/W)'])
+    DEBAJO=AUX[AUX['ISC_Si/GII (A m2/W)']<Mediana*(1-porcent_mediana/100)]   
     filt_df2=filt_df2.drop(DEBAJO.index[:],axis=0)
-    ENCIMA=AUX[AUX['ISC_measured_Si (A)']>Mediana*(1+porcent_mediana/100)]
+    ENCIMA=AUX[AUX['ISC_Si/GII (A m2/W)']>Mediana*(1+porcent_mediana/100)]
     filt_df2=filt_df2.drop(ENCIMA.index[:],axis=0)
 
 
@@ -140,20 +132,20 @@ for i in range(0,len(filt_df.index[:])):
 for i in date:
     fig=plt.figure(figsize=(30,15))
     fig.add_subplot(121)
-    plt.plot(df[i].index[:].time,df[i]['DNI (W/m2)'], label='DNI')    
+    plt.plot(df[str(i)].index[:].time,df[str(i)]['DNI (W/m2)'], label='DNI')    
 #    plt.plot(df[i].index[:].time,df[i]['GNI (W/m2)'],label='GHI')
-    plt.plot(df[i].index[:].time,df[i]['DII (W/m2)'],label='DII')
-    plt.plot(df[i].index[:].time,df[i]['GII (W/m2)'],label='GII')
+    plt.plot(df[str(i)].index[:].time,df[str(i)]['DII (W/m2)'],label='DII')
+    plt.plot(df[str(i)].index[:].time,df[str(i)]['GII (W/m2)'],label='GII')
 
     plt.xlabel('Hora')
     plt.ylabel('Irradiancia (W/m2)')
     plt.legend()
     plt.title("Datos de irradiancias "+ str(i))
     fig.add_subplot(122)
-    plt.plot(filt_df2[i].index[:].time,filt_df2[i]['DNI (W/m2)'], label='DNI')    
+    plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['DNI (W/m2)'], label='DNI')    
 #    plt.plot(filt_df[i].index[:].time,filt_df[i]['GNI (W/m2)'],label='GHI')
-    plt.plot(filt_df2[i].index[:].time,filt_df2[i]['DII (W/m2)'],label='DII')
-    plt.plot(filt_df2[i].index[:].time,filt_df2[i]['GII (W/m2)'],label='GII')
+    plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['DII (W/m2)'],label='DII')
+    plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['GII (W/m2)'],label='GII')
     plt.xlabel('Hora')
     plt.ylabel('Irradiancia (W/m2)')
     plt.legend()

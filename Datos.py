@@ -40,8 +40,8 @@ POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azi
                                           dni_extra=None, airmass=None, albedo=0.25, surface_type=None, model='isotropic', 
                                           model_perez='allsitescomposite1990')
 
-df['DII (W/m2)']=POA['poa_direct']
-df['GII (W/m2)']=POA['poa_global']
+df['DII_mio']=POA['poa_direct']
+df['GII_mio']=POA['poa_global']
 
 
 
