@@ -76,7 +76,14 @@ filt_df=filt_df[(filt_df['SMR_Top_Mid (n.d.)'].astype(float)>0.7)]
 filt_df=filt_df[(filt_df['SMR_Top_Mid (n.d.)'].astype(float)<1.1)]
         
         
-        
+POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
+                                          solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'], 
+                                          dni=df['DNI (W/m2)'], ghi=df['GHI (W/m2)'], dhi=df['DHI (W/m2)'],
+                                          dni_extra=None, airmass=None, albedo=0.25, surface_type=None, model='isotropic', 
+                                          model_perez='allsitescomposite1990')
+
+df['DII_mio']=POA['poa_direct']
+df['GII_mio']=POA['poa_global']        
 
 
 
@@ -104,10 +111,10 @@ incremento=Rango/n_intervalos
 for i in range(n_intervalos):
     AUX=filt_df[filt_df['aoi']>limInf+i*incremento]
     AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
-    Mediana=Error.mediana(AUX['ISC_Si/GII (A m2/W)'])
-    DEBAJO=AUX[AUX['ISC_Si/GII (A m2/W)']<Mediana*(1-porcent_mediana/100)]   
+    Mediana=Error.mediana(AUX['ISC_measured_Si (A)'])
+    DEBAJO=AUX[AUX['ISC_measured_Si (A)']<Mediana*(1-porcent_mediana/100)]   
     filt_df2=filt_df2.drop(DEBAJO.index[:],axis=0)
-    ENCIMA=AUX[AUX['ISC_Si/GII (A m2/W)']>Mediana*(1+porcent_mediana/100)]
+    ENCIMA=AUX[AUX['ISC_measured_Si (A)']>Mediana*(1+porcent_mediana/100)]
     filt_df2=filt_df2.drop(ENCIMA.index[:],axis=0)
 
 
