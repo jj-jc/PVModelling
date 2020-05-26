@@ -37,8 +37,10 @@ def moda(datos):
 def mediana(datos):
     datos=np.array(datos)
     datos.sort() # Ordena los datos de la lista
+    if len(datos)==0:
+        mediana=0
 
-    if len(datos) % 2 == 0:
+    elif len(datos) % 2 == 0:
         n = len(datos)
         mediana = (datos[int(n / 2 - 1)] + datos[int(n / 2)]) / 2
     else:
@@ -196,7 +198,13 @@ def regresion_physical(aoi, datos):
     IAM_physical=pvlib.iam.physical(aoi=x, n=float(Valores['n']),K=float(Valores['k']), L=float(Valores['l']))
     return IAM_physical,float(Valores['RR']),float(Valores['n']),float(Valores['k']),float(Valores['l'])
 
-
+def obtención_dii_efectiva(datos):
+    Valor_normalizar=0.00096
+    a1=1.45965860e-05
+    a2=-3.50234258e-07
+    b=0.0007236846839700705
+    IAM=(datos*a1+datos**2*a2+b)/Valor_normalizar
+    return IAM
 
 
 

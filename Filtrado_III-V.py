@@ -46,6 +46,7 @@ df=df.where(df!='   NaN')
 df=df.dropna()
 #----------Potencia
 filt_df=df[(df['PMP_estimated_IIIV (W)']>0.1)]
+filt_df=df[(df['T_Amb (°C)']>10.0)]
 #filt_df=df[(df['DII (W/m2)']>100)]
 #filt_df=df[(df['T_Amb (°C)']>10)]
 
@@ -62,15 +63,15 @@ for i in range(0,len(filt_df.index[:])):
 
 
 
-#-----------DNI 
-#de esta forma limpiamos los datos que no pertenezcan a los días claros
-Porcentaje=10
-for i in filt_df.index[:]:
-    Cambio=filt_df.loc[i]['DNI (W/m2)']-Irradiancias.loc[i]['dni']
-    if Cambio<=0:
-        filt_df=filt_df.drop(i,axis=0)
+# #-----------DNI 
+# #de esta forma limpiamos los datos que no pertenezcan a los días claros
+# Porcentaje=5
+# for i in filt_df.index[:]:
+#     Cambio= abs(filt_df.loc[i]['DNI (W/m2)']-Irradiancias.loc[i]['dni'])
+#     if Cambio>=Porcentaje*:
+#         filt_df=filt_df.drop(i,axis=0)
 #----------velocidad del viento
-filt_df=filt_df[(filt_df['Wind Speed (m/s)']<10.0)]
+filt_df=filt_df[(filt_df['Wind Speed (m/s)']<2.5)]
         
 #----------SMR
 
@@ -95,15 +96,15 @@ limSup=filt_df['aoi'].max()
 limInf=filt_df['aoi'].min()
 Rango=limSup-limInf
 n_intervalos=100
-porcent_mediana=20
+porcent_mediana=15
 incremento=Rango/n_intervalos
 for i in range(n_intervalos):
     AUX=filt_df[filt_df['aoi']>limInf+i*incremento]
     AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
-    Mediana=Error.mediana(AUX['ISC_measured_IIIV (A)'])
-    DEBAJO=AUX[AUX['ISC_measured_IIIV (A)']<Mediana*(1-porcent_mediana/100)]   
+    Mediana=Error.mediana(AUX['ISC_IIIV/DII (A m2/W)'].values)
+    DEBAJO=AUX[AUX['ISC_IIIV/DII (A m2/W)']<(Mediana*(1-porcent_mediana/100))]   
     filt_df2=filt_df2.drop(DEBAJO.index[:],axis=0)
-    ENCIMA=AUX[AUX['ISC_measured_IIIV (A)']>Mediana*(1+porcent_mediana/100)]
+    ENCIMA=AUX[AUX['ISC_IIIV/DII (A m2/W)']>(Mediana*(1+porcent_mediana/100))]
     filt_df2=filt_df2.drop(ENCIMA.index[:],axis=0)
 
 
@@ -256,9 +257,9 @@ ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia",
 (fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)')
 plt.show()
 
+#%%
 
-
-filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.xls",encoding='utf-8')
+filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv",encoding='utf-8')
 
 ############################################################LIMPIAR DESDE AQUÍ###########################################################3
 

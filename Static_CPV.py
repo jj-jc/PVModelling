@@ -17,7 +17,7 @@ AOILIMIT=55.0
 
 
 #%%código para cuando aoi<AOILIMIT
-df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
+df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/IIIV.csv',encoding='utf-8')
 # Media_temp=df['T_Amb (°C)'].mean()
 # df=df[(df['T_Amb (°C)']<Media_temp+3)]
 # df=df[(df['T_Amb (°C)']>Media_temp-3)]
@@ -52,13 +52,13 @@ df_filt_temp=df[(df['aoi']<AOILIMIT)]
 
 temp_cell=pvlib.temperature.pvsyst_cell(poa_global=df_filt_temp['GII (W/m2)'], temp_air=df_filt_temp['T_Amb (°C)'], wind_speed=df_filt_temp['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.1, alpha_absorption=0.9)
 
-y_poli,RR_poli,a_s,b=E.regresion_polinomica(df_filt_temp['aoi'].values,df_filt_temp['ISC_IIIV/DII (A m2/W)'].values,2)
-# Valor_normalizar=y_poli.max()
-Valor_normalizar=0.00096
-IAM=y_poli/Valor_normalizar
+# y_poli,RR_poli,a_s,b=E.regresion_polinomica(df_filt_temp['aoi'].values,df_filt_temp['ISC_IIIV/DII (A m2/W)'].values,2)
+# # Valor_normalizar=y_poli.max()
+# Valor_normalizar=0.00096
+# IAM=y_poli/Valor_normalizar
 
 # iam=y_poli
-effective_irradiance=df_filt_temp['DII (W/m2)']*IAM
+effective_irradiance=df_filt_temp['DII_efectiva'].values
 
 
 
