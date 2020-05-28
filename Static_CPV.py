@@ -36,15 +36,25 @@ df=df[((df['T_Amb (°C)'])<=Max_temp)]
 
 
 #------ parámetros de MArcos
-module_parameters={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
+module_parameters_IIIV={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
                 'I_o_ref': 0.00000000017,'R_sh_ref': 5226, 'R_sh_0':21000,
                 'R_sh_exp': 5.50,'R_s': 0.01,'alpha_sc':0.00,'EgRef':3.91,
                 'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':12,
                 'eta_m':0.32, 'alpha_absorption':0.9}
+module_parameters_Si={'gamma_ref': 6.359, 'mu_gamma': 0.439, 'I_L_ref':1.266,
+                'I_o_ref': 0.0102,'R_sh_ref': 3200, 'R_sh_0':128000,
+                'R_sh_exp': 5.5,'R_s': 0.2,'alpha_sc':0.05,'EgRef':1.121,
+                'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':3,
+                'eta_m':0.32, 'alpha_absorption':0.9}
 
 
 
-SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters, 
+
+SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters_IIIV, 
+                                      modules_per_string=1,string_per_inverter=1,
+                                      racking_model='freestanding')
+
+SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters_Si, 
                                       modules_per_string=1,string_per_inverter=1,
                                       racking_model='freestanding')
 

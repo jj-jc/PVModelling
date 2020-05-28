@@ -162,6 +162,7 @@ for i in range(n_intervalos):
     filt_df4=filt_df4.drop(DEBAJO.index[:],axis=0)
     ENCIMA=AUX[AUX['ISC_Si/Irra_vista (A m2/W)']>Mediana*(1+porcent_mediana/100)]
     filt_df4=filt_df4.drop(ENCIMA.index[:],axis=0)
+    
 
 #AOI
 fig, ax=plt.subplots(figsize=(30,15))
@@ -172,6 +173,17 @@ ax.set_xlabel('AOI (°)')
 ax.set_ylabel('Irradiancia vista por silicio (A m2/W)')
 ax.set_title("Irradancia vista por el silicio en función del ángulo de incidencia",fontsize=20)
 plt.legend()
+
+
+
+
+
+#%%se trata de afinar más el filtrado de la primera parte del silicio
+#aunque en principio como se observa, la tendencia es con un intervalalo de temp limitado
+
+
+
+
 
 #%% dibujar la nube de puntos con el filtrado'
 '''Este es el código para dibujar la nube de puntos con el filtrado'''

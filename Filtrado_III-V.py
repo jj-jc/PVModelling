@@ -204,7 +204,14 @@ Mappable_aoi=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 norm=plt.Normalize(filt_df2['airmass_relative'].min(),filt_df2['airmass_relative'].max())
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["blue","violet","red"])
 Mappable_airmass=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
-
+#velocidad del viento
+norm=plt.Normalize(filt_df2['Wind Speed (m/s)'].min(),filt_df2['Wind Speed (m/s)'].max())
+cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["blue","violet","red"])
+Mappable_viento=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
+#dirección del viento
+norm=plt.Normalize(filt_df2['Wind Dir. (m/s)'].min(),filt_df2['Wind Dir. (m/s)'].max())
+cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["blue","violet","red"])
+Mappable_DirViento=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 
 
 
@@ -258,8 +265,95 @@ ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia",
 plt.show()
 
 #%%
+fig, ax = plt.subplots(1,1,figsize=(30,20))
+ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['Wind Speed (m/s)'], cmap=Mappable_viento.cmap, norm=Mappable_viento.norm,s=10)
+plt.ylim(0,0.0012)
+#plt.xlim(1,2)
+ax.set_xlabel('Temperatura')
+ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia",fontsize=20)
+(fig.colorbar(Mappable_viento)).set_label('Ángulo de incidencia (°)')
+plt.show()
+
+fig, ax = plt.subplots(1,1,figsize=(30,20))
+ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['Wind Dir. (m/s)'], cmap=Mappable_DirViento.cmap, norm=Mappable_DirViento.norm,s=10)
+plt.ylim(0,0.0012)
+#plt.xlim(1,2)
+ax.set_xlabel('Temperatura')
+ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia",fontsize=20)
+(fig.colorbar(Mappable_DirViento)).set_label('Ángulo de incidencia (°)')
+plt.show()
+
+
+
+
+
+#%%
 
 filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv",encoding='utf-8')
+
+#%%
+# Estudiamos solo, sobre 
+
+
+
+
+
+filt_df2=filt_df2[filt_df2['aoi']<AOILIMIT]
+
+temp_cell=pvlib.temperature.pvsyst_cell(poa_global=filt_df2['GII (W/m2)'], temp_air=filt_df2['T_Amb (°C)'], wind_speed=filt_df2['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.1, alpha_absorption=0.9)
+
+fig, ax = plt.subplots(1,1,figsize=(30,20))
+ax.scatter(x=temp_cell.values,y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['Wind Speed (m/s)'], cmap=Mappable_viento.cmap, norm=Mappable_viento.norm,s=10)
+plt.ylim(0,0.0012)
+#plt.xlim(1,2)
+ax.set_xlabel('Temperatura')
+ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
+ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia",fontsize=20)
+(fig.colorbar(Mappable_viento)).set_label('Ángulo de incidencia (°)')
+plt.show()
+
+
+
+
+fig=go.Figure(
+data=go.Scatter(
+    y=filt_df2['ISC_IIIV/DII (A m2/W)'],
+    x=temp_cell.values,
+    mode='markers',
+    visible=True,
+    showlegend=True,
+    name='Temperatura '+ str(i)
+    ))
+fig.update_layout(
+    title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
+    xaxis_title="Ángulo de incidencia (°)",
+    yaxis_title="ISC_IIIV/DII (A m2/W)",
+)
+
+fig.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ############################################################LIMPIAR DESDE AQUÍ###########################################################3
 

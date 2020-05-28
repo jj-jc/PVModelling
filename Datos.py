@@ -20,6 +20,7 @@ surface_azimuth=180
 CPV_location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
 #Calculamos la posicion solar
 Fecha=pd.DatetimeIndex(df['Date Time'],tz=tz)
+#%%
 Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (°C)'])
 AOI=pd.DataFrame(pvlib.irradiance.aoi(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth, 
                                       solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth']))
@@ -46,7 +47,7 @@ df['GII_mio']=POA['poa_global']
 
 
 
-
+#%%
 
 
 date=np.array(['2019-05-30'])

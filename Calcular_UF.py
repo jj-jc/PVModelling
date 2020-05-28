@@ -12,6 +12,7 @@ import plotly.io as pio
 import math
 pio.renderers.default='browser'
 AOILIMIT=55.0
+VALOR_NORMALIZAR=0.00096
 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv')
 
@@ -66,7 +67,7 @@ UF=pd.DataFrame(columns=['temp','UF_temp','UF_am','UF_am_2'])
 # fig.show()
 
 #%%Cálculo del UF_temp
-# #SE FIILTRA ENTRE 1.1 A 1.3 AM
+# #SE FIILTRA ENTRE 1.1 A 1.2 sin incluir AM
  #primero hay que corregir la DII por medio del IAM calculado
 
 
@@ -74,13 +75,6 @@ filt_df_temp=filt_df[(filt_df['airmass_relative']<1.2)]
 filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']>1.1)]
 filt_x=filt_df_temp['T_Amb (°C)'].values
 filt_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values
-
-
-
-# filt_df2=df[df['aoi']>AOILIMIT]
-# filt2_x=filt_df2['T_Amb (°C)'].values
-# filt2_y=filt_df2['ISC_IIIV/DII_efectiva (A m2/W)'].values
-
 
 y1_regre,RR1,a_s1,b1=E.regresion_polinomica(filt_x,filt_y,1)
 fig=plt.figure(figsize=(30,15))
@@ -103,6 +97,19 @@ fig=plt.figure(figsize=(30,15))
 plt.plot(filt_x,simple_uf,'o',markersize=4,label='Datos primera parte')
 
 UF_temp=simple_uf
+
+
+#dando como resultado tras el normalizado
+#  1+(Temp-thld)*(m/Normalizar)
+# thld=14.67
+# m=-3.35258382e-06
+# valor_normalizar=0.00096
+
+
+
+
+
+
 
 
 
@@ -158,10 +165,6 @@ UF_temp=simple_uf
 filt_x=filt_df['airmass_relative'].values
 filt_y=filt_df['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
-# filt_df2=df[df['aoi']>AOILIMIT]
-# filt2_x=filt_df2['airmass_relative'].values
-# filt2_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
-
 fig=plt.figure(figsize=(30,15))
 plt.plot(filt_x,filt_y,'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
@@ -198,6 +201,30 @@ fig.update_layout(
 
 
 fig.show()
+
+#al observar el scatter, se observan como dos líneas de tendencias, pero no parecen que se la tempera amb 
+# la causa de tales tendencias. Puede ser perfectamente la temperatura de trabajo de la célula, que debido 
+# al viento en unas disipa mejor el calor que en las otras. Aunque es cierto que se filtraron los datos
+# para velocidades menores que 2.5
+
+fig=plt.figure(figsize=(30,15))
+plt.plot(filt_df['Wind Speed (m/s)'],filt_df['ISC_IIIV/DII_efectiva (A m2/W)'],'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')
+plt.ylabel('ISC_IIIV/DII (A m2/W)')
+plt.title('Cáculo del UF para airmass')
+plt.legend()
+
+fig=plt.figure(figsize=(30,15))
+plt.plot(filt_df['Wind Dir. (m/s)'],filt_df['ISC_IIIV/DII_efectiva (A m2/W)'],'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')
+plt.ylabel('ISC_IIIV/DII (A m2/W)')
+plt.title('Cáculo del UF para airmass')
+plt.legend()
+
+# Si dibujamos la ISC_IIIV/DII_efectiva (A m2/W) en función de la dirección del viento, observamos
+# que existe una mayor densidad de datos, lo que puede indicar mejora de rendimiento en esa situación
+
+
+
+
 
 
 
