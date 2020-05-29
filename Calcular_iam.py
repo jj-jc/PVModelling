@@ -16,7 +16,7 @@ pio.renderers.default='browser'
 
 #AOILIMIT
 AOILIMIT=55.0
-Valor_normalizar=0.00096#Este valor es el valor que Marcos utiliza para normalizar 
+# Valor_normalizar=0.00091802#Este valor es el valor que Marcos utiliza para normalizar 
 
 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
@@ -33,7 +33,7 @@ filt_x=filt_df2['aoi']
 filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 
 
-
+#%%
 Incremento=1
 Max_temp=math.ceil(filt_df2['T_Amb (°C)'].max())
 Min_temp=math.floor(filt_df2['T_Amb (°C)'].min())
@@ -495,15 +495,18 @@ fig.show()
 
 
 #%%
-#Una vez observados los intervalos interesantes de cada variable, intentamos ver que sale
+#Tras el estudio de las variables anteriormente se determina el siguiente código para la obtencion de IAM
 
 filt_cuadro2=filt_df2
-filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']>=26.0]
-filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']<28]
 filt_cuadro2=filt_cuadro2[filt_cuadro2['Wind Dir. (m/s)']>=133.0]
 filt_cuadro2=filt_cuadro2[filt_cuadro2['Wind Dir. (m/s)']<143]
 filt_cuadro2=filt_cuadro2[filt_cuadro2['Wind Speed (m/s)']>=1.4]
 filt_cuadro2=filt_cuadro2[filt_cuadro2['Wind Speed (m/s)']<2.5]
+
+filt_prueba=filt_cuadro2
+filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']>=26.0]
+filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']<28]
+
 
 #ahora buscamos las mejores regresiones
 #----poli2
@@ -522,11 +525,18 @@ x_high=filt_df_high['aoi'].values
 y_high=filt_df_high['ISC_IIIV/DII (A m2/W)'].values
 yr_high, RR_high, a_s_high, b_high=Error.regresion_polinomica(x_high, y_high, 1)
 
-
+a_s1=np.concatenate((a_s_low,a_s_high))
+b1=[b_low,b_high]
 y_total=np.concatenate((y_low,y_high))
 x_total=np.concatenate((x_low,x_high))
 y_poli1=np.concatenate((yr_low,yr_high))
 RR_poli1=Error.Determination_coefficient(y_total, yr_total)
+
+#-------ashrae
+
+#-------physical
+
+#-------Martin Ruiz
 
 
 #ESTE PROGRAMA ES PARA AVERIGUAR CUAL ES EL MEJOR THLDS  PARA EL AOI 
@@ -556,11 +566,6 @@ RR_poli1=Error.Determination_coefficient(y_total, yr_total)
 #     if RR_max < RR:
 #         RR_max=RR
 #         thld=i
-        
-        
-        
-        
-
 
 
 fig=plt.figure(figsize=(30,15))
@@ -576,223 +581,84 @@ print('El coeficiente de determinación para la regresión de primer grado es: '
 print('El coeficiente de determinación para la regresión de segundo grado es: '+str(RR_poli2))
 print('El coeficiente de determinación para la regresión de tercer grado es: '+str(RR_poli3))
 
+fig=plt.figure(figsize=(30,15))
+plt.plot(filt_prueba['aoi'].values,filt_prueba['ISC_IIIV/DII (A m2/W)'].values,'o',markersize=4,label='Datos')
+
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('ISC_IIIV/DII (A m2/W)')
+plt.title('Regresión polinómica para 26 °C' )
+plt.legend() 
+
+
+
+
+#%% PARA CALCULAR EL NUEVO VALOR PARA NORMALIZAR
+Valor_normalizar=b3
+
+
+x=np.arange(0,55,1)
+y3=(a_s3[3]*x**3+a_s3[2]*x**2+a_s3[1]*x+b3)/Valor_normalizar
+y1=(a_s_low[1]*x+b_low)/Valor_normalizar
+y2=(a_s2[2]*x**2+a_s2[1]*x+b2)/Valor_normalizar
+
+
+fig=plt.figure(figsize=(30,15))
+plt.plot(x,y3,'o',markersize=4,label='Datos')
+plt.plot(x,y2,'o',markersize=4,label='Datos')
+plt.plot(x,y1,'o',markersize=4,label='Datos')
+
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('ISC_IIIV/DII (A m2/W)')
+plt.title('Regresión polinómica para 26 °C' )
+plt.legend() 
+print('El coeficiente de determinación para la regresión de primer grado es: '+str(RR_poli1))
+print('El coeficiente de determinación para la regresión de segundo grado es: '+str(RR_poli2))
+print('El coeficiente de determinación para la regresión de tercer grado es: '+str(RR_poli3))
 
 
 
 
 
 
+a_s=[0,0,0]
+b=[0,0,0]
+param=[0,0,0]
+RR=[0,0,0]
+
+
+#NORMALIZAMOS
 
 
 
+a_s[0]=a_s1/Valor_normalizar
+b[0]=b1/Valor_normalizar
+param[0]=0
+RR[0]=RR_poli1
 
+a_s[1]=a_s2/Valor_normalizar
+b[1]=b2/Valor_normalizar
+param[1]=0
+RR[1]=RR_poli2
 
-
-# Incremento=.1
-# Max_temp=math.ceil(filt_cuadro2['Wind Speed (m/s)'].max())
-# Min_temp=math.floor(filt_cuadro2['Wind Speed (m/s)'].min())
-# fig=go.Figure()
-# contador=np.arange(Min_temp,Max_temp,Incremento)
-# for i in contador:
-#     AUX=filt_cuadro2[(filt_cuadro2['Wind Speed (m/s)']>=float(i))]
-#     AUX=AUX[((AUX['Wind Speed (m/s)'])<i+Incremento)]    
-
-#     fig.add_trace(go.Scatter(
-#     y=AUX['ISC_IIIV/DII (A m2/W)'],
-#     x=AUX['aoi'],
-#     mode='markers',
-#     visible=True,
-#     showlegend=True,
-#     name='Temperatura '+ str(i)
-#     ))
-# fig.update_layout(
-#     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-#     xaxis_title="Ángulo de incidencia (°)",
-#     yaxis_title="ISC_IIIV/DII (A m2/W)",
-# )
-# fig.show()
-# fig=go.Figure()
-# for i in range(Min_temp,Max_temp,Incremento):
-#     AUX=df_filt_26[(df_filt_26['T_Amb (°C)']>=float(i/10))]
-#     AUX=AUX[((AUX['T_Amb (°C)'])<(i+Incremento)/10)]    
-
-#     fig.add_trace(go.Scatter(
-#     y=AUX['SMR_Top_Mid (n.d.)'],
-#     x=AUX['aoi'],
-#     mode='markers',
-#     visible=True,
-#     showlegend=True,
-#     name='Temperatura '+ str(i/10)
-#     ))
-# fig.update_layout(
-#     title="SMR_Top_Mid en función del ángulo de incidencia para la temperatura de 26°C",
-#     xaxis_title="Ángulo de incidencia (°)",
-#     yaxis_title="SMR_Top_Mid (n.d.)",
-# )
-# fig.show()
-
-
-#%%
-#ESTDIAR LA POSIBILIDAD DE QUE DEPENDA DE SMR TAMBIEN, YA QUE EN LAS TEMPERATURAS HAY COMPORTAMIENTOS QUE NO SE PUEDEN 
-#EXPLICAR ÚNICAMENE POR LA TEMPERATURA
-
-
-# plt.figure(figsize=(30,20))
-# host = host_subplot(111)
-# par = host.twinx()
-# host.set_xlabel("Ángulo de incidencia (°)")
-# host.set_ylabel("Eficiencia de la captación de irradiancia del IIIV(A m2/W)")
-# par.set_ylabel("SMR")
-# p1, = host.plot(df_filt_temp['aoi'],df_filt_temp['ISC_IIIV/DII (A m2/W)'],'o',markersize=4,color='b',label='IIIV')
-# p2, = par.plot(df_filt_temp['aoi'],df_filt_temp['SMR_Top_Mid (n.d.)'],'o',markersize=4,color='g',label='SMR')
-# leg = plt.legend()
-# host.yaxis.get_label().set_color(p1.get_color())
-# leg.texts[0].set_color(p1.get_color())
-# par.yaxis.get_label().set_color(p2.get_color())
-# leg.texts[1].set_color(p2.get_color())
-# plt.title('Comparacion de ISC con SMR para buscar explicación a datos extraños')
-# plt.show()
-
-
-# fig=plt.figure(figsize=(30,15))
-# plt.plot(df_filt_temp['aoi'],df_filt_temp['DII (W/m2)'],'o',markersize=4,color='b',label='DII')
-# plt.xlabel('Ángulo de incidencia (°)')
-# plt.ylabel('DII (W/m2)')
-# plt.title('DII')
-# plt.legend()  
-
-# fig=plt.figure(figsize=(30,15))
-# plt.plot(df_filt_temp['aoi'],df_filt_temp['ISC_measured_IIIV (A)'],'o',markersize=4,color='b',label='ISC de todos los datos')
-# plt.plot(df_filt_26['aoi'],df_filt_26['ISC_measured_IIIV (A)'],'o',markersize=4,color='g',label='ISC para la temperatura de 26 °C ')
-# plt.xlabel('Ángulo de incidencia (°)')
-# plt.ylabel('DII (W/m2)')
-# plt.title('ISC_IIIV_medida')
-# plt.legend()  
-
-
-
-# fig=plt.figure(figsize=(30,15))
-# plt.plot(df_filt_temp['aoi'],df_filt_temp['DNI_Mid (W/m2)'],'o',markersize=4,color='b',label='DNI_mid')
-# plt.xlabel('Ángulo de incidencia (°)')
-# plt.ylabel('DNI_Mid (W/m2)')
-# plt.title('DNI_Mid (W/m2)')
-# plt.legend()  
-
-
-# fig=plt.figure(figsize=(30,15))
-# plt.plot(df_filt_temp['aoi'],df_filt_temp['DNI_Top (W/m2)'],'o',markersize=4,color='b',label='DNI_mid')
-# plt.xlabel('Ángulo de incidencia (°)')
-# plt.ylabel('DNI_Top (W/m2)')
-# plt.title('DNI_Top (W/m2)')
-# plt.legend()  
-
-
-
-
+a_s[2]=a_s3/Valor_normalizar
+b[2]=b3/Valor_normalizar
+param[2]=0
+RR[2]=RR_poli2
 
 
 #%%
-#POR AHORA ME QUEDO CON EL IAM OBTENIDO DEL INTERVALO DE 19 A 27 GRADOS
+IAM=pd.DataFrame(columns={'Primer grado','Segundo grado','Tercer grado'},index=['a_s','b','parámetros','RR'])
 
 
-# I_DII=np.array(df_filt_temp['ISC_IIIV/DII (A m2/W)'])
-# aoi=np.array(df_filt_temp['aoi'])
-
-# y_poli,RR_poli,a_s,b=E.regresion_polinomica(aoi,I_DII,2)
-# #tengo que decidir un valor para normalizar
-# # Valor_normalizar=y_poli.max()
-# Valor_normalizar=0.00096
-# IAM=y_poli/Valor_normalizar
-# # fig=plt.figure(figsize=(30,15))
-# # plt.plot(aoi,IAM, 'o',markersize=4,color='b',label='IAM')
-# # plt.title('Regresión polinómica')
-# # plt.legend()
-
-#%%CÓDIGO PARA OBTENCION DE IAM CUANDO AOI>AOILIMIT
-
-
-# filt_AOILIMIT=df[(df['aoi']>AOILIMIT)]
-
-# x_AOILIMIT=filt_AOILIMIT['aoi']
-# y_AOILIMIT=filt_AOILIMIT['ISC_IIIV/DII (A m2/W)'].values
-
-# # Incremento=1
-# # Max_temp=math.ceil(filt_AOILIMIT['T_Amb (°C)'].max())
-# # Min_temp=math.floor(filt_AOILIMIT['T_Amb (°C)'].min())
-# # Temperaturas=[]
-# # rep=[]
-# # for i in range(Min_temp,Max_temp,Incremento):
-# #     AUX=filt_AOILIMIT[(filt_AOILIMIT['T_Amb (°C)']>i)]
-# #     AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]
-# #     rep.append(AUX['T_Amb (°C)'].count())
-# #     Temperaturas.append(i)
-
-
-# # rep=np.array(rep)
-# # prob=rep/rep.sum()
-
-# # fig = go.Figure(
-# #     data=[go.Bar(
-# #             x=Temperaturas,
-# #             y=prob)],
-# #     layout_title_text="Histograma con la probabilidad de cada temperatura"
-    
-# # )
-# # fig.update_xaxes(title="Temperaturas (°C)")
-# # fig.update_yaxes(title="Repeticiones")
-# # fig.show()
-
-
-# # #COn el siguiente código representamos los datos en fiferentes temperaturas, el incremento es de 1º
-# # #el intervalo es desde el valor más pequeño aumentado en uno, es decir tempera 14 signififca desde el 14 al 15 sin incluir
-
-# # Incremento=1
-# # Max_temp=math.ceil(filt_AOILIMIT['T_Amb (°C)'].max())
-# # Min_temp=math.floor(filt_AOILIMIT['T_Amb (°C)'].min())
-# # fig=go.Figure()
-# # for i in range(Min_temp,Max_temp,Incremento):
-# #     AUX=filt_AOILIMIT[(filt_AOILIMIT['T_Amb (°C)']>=float(i))]
-# #     AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
-
-# #     fig.add_trace(go.Scatter(
-# #     y=AUX['ISC_IIIV/DII (A m2/W)'],
-# #     x=AUX['aoi'],
-# #     mode='markers',
-# #     visible=True,
-# #     showlegend=True,
-# #     name='Temperatura '+ str(i)
-# #     ))
-# # fig.show()
+IAM.loc['a_s']=a_s
+IAM.loc['b']=b
+IAM.loc['parámetros']=param
+IAM.loc['RR']=RR
 
 
 
-# Max_temp=27.0
-# Min_temp=19.0
-# filt_AOILIMIT=filt_AOILIMIT[(filt_AOILIMIT['T_Amb (°C)']>=Min_temp)]
-# filt_AOILIMIT=filt_AOILIMIT[((filt_AOILIMIT['T_Amb (°C)'])<=Max_temp)] 
+IAM.to_excel("C://Users/juanj/OneDrive/Escritorio/TFG/IAM.xls")
 
-
-# I_DII=np.array(filt_AOILIMIT['ISC_IIIV/DII (A m2/W)'])
-# aoi=np.array(filt_AOILIMIT['aoi'])
-# fig=plt.figure(figsize=(30,15))
-# y_poli,RR_poli,a_s,b=E.regresion_polinomica(aoi,I_DII,2)
-# plt.plot(aoi,I_DII,'o',markersize=4,label='Datos')
-# plt.plot(aoi,y_poli,'o',markersize=4,label='Regresion')
-# plt.xlabel('Ángulo de incidencia (°)')
-# plt.ylabel('ISC_IIIV/DII (W/m2)')
-# plt.title('Regresión polinómica')
-# plt.legend()  
-# # print('Con el '+str(sumatorio)+ 'de los datos')
-# print(RR_poli)
-# print('Temperaturas entre '+ str(Min_temp) +' y '+str(Max_temp)+' °C')
-    
-
-# Valor_normalizar=0.00096
-# IAM=y_poli/Valor_normalizar
-# fig=plt.figure(figsize=(30,15))
-# plt.plot(aoi,IAM, 'o',markersize=4,color='b',label='IAM')
-# plt.title('Regresión polinómica')
-# plt.legend()
 
 
 

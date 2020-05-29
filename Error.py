@@ -198,12 +198,28 @@ def regresion_physical(aoi, datos):
     IAM_physical=pvlib.iam.physical(aoi=x, n=float(Valores['n']),K=float(Valores['k']), L=float(Valores['l']))
     return IAM_physical,float(Valores['RR']),float(Valores['n']),float(Valores['k']),float(Valores['l'])
 
-def obtención_dii_efectiva(datos):
-    Valor_normalizar=0.00096
-    a1=1.45965860e-05
-    a2=-3.50234258e-07
-    b=0.0007236846839700705
-    IAM=(datos*a1+datos**2*a2+b)/Valor_normalizar
+# def obtención_dii_efectiva(datos,regresion):
+#     df_iam=pd.read_excel("C://Users/juanj/OneDrive/Escritorio/TFG/IAM.xls",encoding='utf-8', dtype={'Segundo grado': np.ndarray})
+#     df_iam=df_iam.set_index(df_iam['Unnamed: 0'].values)
+#     df_iam=df_iam.drop('Unnamed: 0',axis=1)
+#     if regresion=='Segundo grado':
+#           IAM_c=(df_iam['Segundo grado']['a_s'][2]*datos**2+df_iam['Segundo grado']['a_s'][1]*datos+df_iam['Segundo grado']['b'])
+        
+#     elif regresion=='Primer grado':
+#         1
+#     elif regresion=='Tercer grado':
+#         1
+#     # a1=1.45965860e-05
+#     # a2=-3.50234258e-07
+#     # b=0.0007236846839700705
+#     # IAM=(datos*a1+datos**2*a2+b)/Valor_normalizar
+#     return IAM
+def obtencion_dii_efectiva(datos):
+    a1=-9.79645026e-03
+    a2=5.17456391e-04
+    a3=-9.47190593e-06
+    b=1.0
+    IAM=(a3*datos**3+a2*datos**2+a1*datos+b)
     return IAM
 
 
