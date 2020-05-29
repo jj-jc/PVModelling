@@ -15,7 +15,7 @@ AOILIMIT=55.0
 VALOR_NORMALIZAR=0.0009180248205304829
 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv')
-df_iam=pd.read_excel("C://Users/juanj/OneDrive/Escritorio/TFG/IAM.xls")
+df_iam=pd.read_csv("C://Users/juanj/OneDrive/Escritorio/TFG/IAM.csv")
 df_iam=df_iam.set_index(df_iam['Unnamed: 0'].values)
 df_iam=df_iam.drop('Unnamed: 0',axis=1)
 
@@ -47,12 +47,12 @@ UF=pd.DataFrame(columns=['temp','UF_temp','UF_am','UF_am_2'])
 
 
 # Incremento=1
-# Max_temp=math.ceil(filt_df['airmass_relative'].max())*10
-# Min_temp=math.floor(filt_df['airmass_relative'].min())*10
+# Max_temp=math.ceil(filt_df['airmass_absolute'].max())*10
+# Min_temp=math.floor(filt_df['airmass_absolute'].min())*10
 # fig=go.Figure()
 # for i in range(Min_temp,Max_temp,Incremento):
-#     AUX=filt_df[(filt_df['airmass_relative']>=float(i/10))]
-#     AUX=AUX[((AUX['airmass_relative'])<(i+Incremento)/10)]    
+#     AUX=filt_df[(filt_df['airmass_absolute']>=float(i/10))]
+#     AUX=AUX[((AUX['airmass_absolute'])<(i+Incremento)/10)]    
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
@@ -80,39 +80,52 @@ filt_df_temp=filt_df
 # filt_df_temp=filt_df_temp[filt_df_temp['Wind Speed (m/s)']>=1.4]
 # filt_df_temp=filt_df_temp[filt_df_temp['Wind Speed (m/s)']<2.5]
 
+temp_cell=pvlib.temperature.pvsyst_cell(poa_global=filt_df_temp['DII_efectiva (W/m2)'], 
+                                        temp_air=filt_df_temp['T_Amb (°C)'],
+                                        wind_speed=filt_df_temp['Wind Speed (m/s)'], 
+                                        u_c=29.0, u_v=0.0, 
+                                        eta_m=0.1, alpha_absorption=0.9)
+fig=plt.figure(figsize=(30,15))
+plt.plot(temp_cell,filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos por debajo de AOILIMIT')
+plt.plot(filt_df_temp['T_Amb (°C)'].values,filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos por debajo de AOILIMIT')
+# plt.ylim(0,0.002)
+plt.xlabel('Temperatura ambiente (°C) ')
+plt.ylabel('ISC_IIIV/DII (A m2/W)')
+plt.title('Cálculo del UF para la temperatura')
+plt.legend()
+# print('El coeficiente de determinación para los datos por debajo de AOILIMIT es de: '+str(RR1))
 
 
+Incremento=0.1
+Max_temp=math.ceil(filt_df_temp['airmass_absolute'].max())
+Min_temp=math.floor(filt_df_temp['airmass_absolute'].min())
+contador=np.arange(Min_temp,Max_temp,Incremento)
+fig=go.Figure()
+for i in contador:
+    AUX=filt_df_temp[(filt_df_temp['airmass_absolute']>=float(i))]
+    AUX=AUX[((AUX['airmass_absolute'])<i+Incremento)]    
 
-# Incremento=0.1
-# Max_temp=math.ceil(filt_df_temp['airmass_relative'].max())
-# Min_temp=math.floor(filt_df_temp['airmass_relative'].min())
-# contador=np.arange(Min_temp,Max_temp,Incremento)
-# fig=go.Figure()
-# for i in contador:
-#     AUX=filt_df_temp[(filt_df_temp['airmass_relative']>=float(i))]
-#     AUX=AUX[((AUX['airmass_relative'])<i+Incremento)]    
+    fig.add_trace(go.Scatter(
+    y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
+    x=AUX['T_Amb (°C)'],
+    mode='markers',
+    visible=True,
+    showlegend=True,
+    name='Temperatura '+ str(i)
+    ))
+fig.update_layout(
+    title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
+    xaxis_title="Ángulo de incidencia (°)",
+    yaxis_title="ISC_IIIV/DII (A m2/W)",
+)
 
-#     fig.add_trace(go.Scatter(
-#     y=AUX['ISC_IIIV/DII (A m2/W)'],
-#     x=AUX['T_Amb (°C)'],
-#     mode='markers',
-#     visible=True,
-#     showlegend=True,
-#     name='Temperatura '+ str(i)
-#     ))
-# fig.update_layout(
-#     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-#     xaxis_title="Ángulo de incidencia (°)",
-#     yaxis_title="ISC_IIIV/DII (A m2/W)",
-# )
-
-# fig.show()
+fig.show()
 
 #se aprecia claramente la influencia del airmass, para poder modelar la temperatura es necesario escoger un intervalo fijo
 #de am para poder estudiar la influencia de la temperatura.
-
-filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']<1.1)]
-filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']>1.0)]
+#%%
+filt_df_temp=filt_df_temp[(filt_df_temp['airmass_absolute']<1.1)]
+# filt_df_temp=filt_df_temp[(filt_df_temp['airmass_absolute']>1.0)]
 filt_x=filt_df_temp['T_Amb (°C)'].values
 filt_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
@@ -204,8 +217,8 @@ filt_df_am=filt_df
 
 # filt_df_am=filt_df_am[filt_df_am['Wind Dir. (m/s)']>=133.0]
 # filt_df_am=filt_df_am[filt_df_am['Wind Dir. (m/s)']<143]
-# filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']>=1.4]
-# filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']<2.5]
+filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']>=1.4]
+filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']<2.5]
 
 
 
@@ -222,7 +235,7 @@ filt_df_am=filt_df
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII (A m2/W)'],
-#     x=AUX['airmass_relative'],
+#     x=AUX['airmass_absolute'],
 #     mode='markers',
 #     visible=True,
 #     showlegend=True,
@@ -238,10 +251,10 @@ filt_df_am=filt_df
 
 
 
-filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=20.0]
-filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28.0]
+# filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=26.0]
+# filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28.0]
 
-filt_x=filt_df_am['airmass_relative'].values
+filt_x=filt_df_am['airmass_absolute'].values
 filt_y=filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
 fig=plt.figure(figsize=(30,15))
@@ -257,16 +270,16 @@ plt.legend()
 #%%CÓDIGO PARA OBSERVAR LAS TENDENDICAS CON DIFERENTES TEMPERATURAS
 
 Incremento=1
-Max_temp=math.ceil(filt_df['T_Amb (°C)'].max())
-Min_temp=math.floor(filt_df['T_Amb (°C)'].min())
+Max_temp=math.ceil(filt_df_am['T_Amb (°C)'].max())
+Min_temp=math.floor(filt_df_am['T_Amb (°C)'].min())
 fig=go.Figure()
 for i in range(Min_temp,Max_temp,Incremento):
-    AUX=filt_df[(filt_df['T_Amb (°C)']>=float(i))]
+    AUX=filt_df_am[(filt_df_am['T_Amb (°C)']>=float(i))]
     AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
 
     fig.add_trace(go.Scatter(
     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
-    x=AUX['airmass_relative'],
+    x=AUX['airmass_absolute'],
     mode='markers',
     visible=True,
     showlegend=True,
@@ -312,18 +325,18 @@ plt.legend()
 #ESTE PROGRAMA ES PARA AVERIGUAR CUAL ES EL MEJOR THLDS
 # Se obtiene un RR=0.8540025403043598 y un thld=1.2467475563652137
 
-aux=np.arange(filt_df_am['airmass_relative'].min(),filt_df_am['airmass_relative'].max(),0.001) 
+aux=np.arange(filt_df_am['airmass_absolute'].min(),filt_df_am['airmass_absolute'].max(),0.001) 
 thld=30
 RR_max=0.01
 for i in aux:
-    filt_df_low=filt_df_am[filt_df_am['airmass_relative']<=i]
-    filt_df_high=filt_df_am[filt_df_am['airmass_relative']>i]
+    filt_df_low=filt_df_am[filt_df_am['airmass_absolute']<=i]
+    filt_df_high=filt_df_am[filt_df_am['airmass_absolute']>i]
 
-    x_low=filt_df_low['airmass_relative'].values
+    x_low=filt_df_low['airmass_absolute'].values
     y_low=filt_df_low['ISC_IIIV/DII_efectiva (A m2/W)'].values
     yr_low, RR_low, a_s_low, b_low=E.regresion_polinomica(x_low, y_low, 1)
     
-    x_high=filt_df_high['airmass_relative'].values
+    x_high=filt_df_high['airmass_absolute'].values
     y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values
     yr_high, RR_high, a_s_high, b_high=E.regresion_polinomica(x_high, y_high, 1)
     
@@ -342,14 +355,14 @@ for i in aux:
         
         
 #%%
-filt_df_low=filt_df_am[filt_df_am['airmass_relative']<=thld]
-filt_df_high=filt_df_am[filt_df_am['airmass_relative']>thld]
+filt_df_low=filt_df_am[filt_df_am['airmass_absolute']<=thld]
+filt_df_high=filt_df_am[filt_df_am['airmass_absolute']>thld]
 
-x_low=filt_df_low['airmass_relative'].values
+x_low=filt_df_low['airmass_absolute'].values
 y_low=filt_df_low['ISC_IIIV/DII_efectiva (A m2/W)'].values
 yr_low, RR_low, a_s_low, b_low=E.regresion_polinomica(x_low, y_low, 1)
 
-x_high=filt_df_high['airmass_relative'].values
+x_high=filt_df_high['airmass_absolute'].values
 y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values
 yr_high, RR_high, a_s_high, b_high=E.regresion_polinomica(x_high, y_high, 1)
 
@@ -388,7 +401,7 @@ y_low_min=float(1 + (x_low[np.where(yr_low==yr_low.min())] - thld_low) * (a_s_lo
 
 
 simple_uf=[]
-for i in filt_df_am['airmass_relative'].values:
+for i in filt_df_am['airmass_absolute'].values:
     if i < thld:
         simple_uf.append(float(1 + (i - thld_low) * (a_s_low[1])/VALOR_NORMALIZAR))
 
@@ -417,7 +430,7 @@ UF_am=simple_uf
 
 
 #%%Compruebo con un segundo grado
-x=filt_df['airmass_relative'].values
+x=filt_df['airmass_absolute'].values
 y=filt_df['ISC_IIIV/DII (A m2/W)'].values
 yr, RR, a_s, b=E.regresion_polinomica(x, y, 2)
 

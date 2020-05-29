@@ -115,7 +115,7 @@ y1=filt_df2['ISC_IIIV/DII (A m2/W)']
 y2=filt_df2['PMP_estimated_IIIV (W)']
 x_aoi=filt_df2['aoi']
 x_temp=filt_df2['T_Amb (°C)']
-x_AM=filt_df2['airmass_relative']
+x_AM=filt_df2['airmass_absolute']
 #
 #Para ver las irradiancias tras el filtrado
 
@@ -170,11 +170,11 @@ ax.set_xlabel('T_Amb (°C)')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC_IIIV/DII en función de la temperarua ambiente",fontsize=20)
 plt.legend()
-#airmass_relative
+#airmass_absolute
 fig, ax=plt.subplots(figsize=(30,15))
 ax.plot(x_AM,y1,'o',markersize=2)
 #plt.ylim(0,0.0015)
-ax.set_xlabel('airmass_relative')
+ax.set_xlabel('airmass_absolute')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC_IIIV/DII en función del airmass",fontsize=20)
 plt.legend()
@@ -201,7 +201,7 @@ norm=plt.Normalize(filt_df2['aoi'].min(),filt_df2['aoi'].max())
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["blue","violet","red"])
 Mappable_aoi=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 #airmass
-norm=plt.Normalize(filt_df2['airmass_relative'].min(),filt_df2['airmass_relative'].max())
+norm=plt.Normalize(filt_df2['airmass_absolute'].min(),filt_df2['airmass_absolute'].max())
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["blue","violet","red"])
 Mappable_airmass=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 #velocidad del viento
@@ -231,7 +231,7 @@ ax.set_title("ISC/DII en función del ángulo de incidencia y la temperatura",fo
 plt.show()
 #representacion del airmass con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['airmass_relative'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['T_Amb (°C)'], cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
+ax.scatter(x=filt_df2['airmass_absolute'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['T_Amb (°C)'], cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
 plt.ylim(0,0.0012)
 plt.xlim(1,2)
 ax.set_xlabel('airmass')
@@ -242,7 +242,7 @@ plt.show()
 
 #representacion del airmass con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['airmass_relative'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
+ax.scatter(x=filt_df2['airmass_absolute'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
 plt.ylim(0,0.0012)
 plt.xlim(1,2)
 ax.set_xlabel('airmass')

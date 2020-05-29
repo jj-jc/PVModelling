@@ -215,12 +215,19 @@ def regresion_physical(aoi, datos):
 #     # IAM=(datos*a1+datos**2*a2+b)/Valor_normalizar
 #     return IAM
 def obtencion_dii_efectiva(datos):
-    a1=-9.79645026e-03
-    a2=5.17456391e-04
-    a3=-9.47190593e-06
-    b=1.0
+    a1=-9.79645026e-03*0.0009180248205304829/0.00096
+    a2=5.17456391e-04*0.0009180248205304829/0.00096
+    a3=-9.47190593e-06*0.0009180248205304829/0.00096
+    b=1.0*0.0009180248205304829/0.00096
     IAM=(a3*datos**3+a2*datos**2+a1*datos+b)
     return IAM
+# def obtencion_dii_efectiva(datos):
+#     a1=-9.79645026e-03
+#     a2=5.17456391e-04
+#     a3=-9.47190593e-06
+#     b=1.0
+#     IAM=(a3*datos**3+a2*datos**2+a1*datos+b)
+#     return IAM
 
 
 

@@ -29,7 +29,7 @@ Irradiancias=CPV_location.get_clearsky(times=Fecha, model='ineichen', solar_posi
 
 AM=AM.set_index([pd.Series(df.index)])
 AOI=AOI.set_index([pd.Series(df.index)])
-df=pd.concat([df,AM['airmass_relative'],AOI],axis=1)
+df=pd.concat([df,AM['airmass_absolute'],AOI],axis=1)
 df=df.set_index(Fecha)
 df=df.drop(['Date Time'],axis=1)
 df['GHI (W/m2)']=Irradiancias['ghi']
@@ -82,7 +82,7 @@ for i in date:
 
 #df['ISC_IIIV/DII (A m2/W)']=df['ISC_measured_IIIV (A)']/df['DII (W/m2)']
 #fig=plt.figure(figsize=(30,15))
-#plt.plot(df['airmass_relative'],df['ISC_IIIV/DII (A m2/W)'],'o')  
+#plt.plot(df['airmass_absolute'],df['ISC_IIIV/DII (A m2/W)'],'o')  
 #plt.ylim(0,0.01) 
 
 

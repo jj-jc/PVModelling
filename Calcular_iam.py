@@ -16,7 +16,7 @@ pio.renderers.default='browser'
 
 #AOILIMIT
 AOILIMIT=55.0
-# Valor_normalizar=0.00091802#Este valor es el valor que Marcos utiliza para normalizar 
+Valor_normalizar=0.00091802#Este valor es el valor que Marcos utiliza para normalizar 
 
 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
@@ -250,7 +250,7 @@ b=0.0007236846839700705
 
 datos=np.arange(10,55,0.1)
 IAM=(datos*a1+datos**2*a2+b)/Valor_normalizar
-IAM2=Error.obtención_dii_efectiva(datos)
+IAM2=Error.obtencion_dii_efectiva(datos)
 fig=plt.figure(figsize=(30,15))
 plt.plot(datos,IAM,'o',markersize=4,label='Datos')
 plt.plot(datos,IAM2,'o',markersize=4,label='Datos')
@@ -529,7 +529,7 @@ a_s1=np.concatenate((a_s_low,a_s_high))
 b1=[b_low,b_high]
 y_total=np.concatenate((y_low,y_high))
 x_total=np.concatenate((x_low,x_high))
-y_poli1=np.concatenate((yr_low,yr_high))
+yr_total=np.concatenate((yr_low,yr_high))
 RR_poli1=Error.Determination_coefficient(y_total, yr_total)
 
 #-------ashrae
@@ -570,7 +570,7 @@ RR_poli1=Error.Determination_coefficient(y_total, yr_total)
 
 fig=plt.figure(figsize=(30,15))
 plt.plot(filt_cuadro2['aoi'].values,filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values,'o',markersize=4,label='Datos')
-plt.plot(x_total,y_poli1,'o',markersize=4,label='Datos')
+plt.plot(x_total,yr_total,'o',markersize=4,label='Datos')
 plt.plot(filt_cuadro2['aoi'].values,y_poli2,'o',markersize=4,label='Datos')
 plt.plot(filt_cuadro2['aoi'].values,y_poli3,'o',markersize=4,label='Datos')
 plt.xlabel('Ángulo de incidencia (°)')
@@ -657,7 +657,7 @@ IAM.loc['RR']=RR
 
 
 
-IAM.to_excel("C://Users/juanj/OneDrive/Escritorio/TFG/IAM.xls")
+IAM.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/IAM.csv")
 
 
 

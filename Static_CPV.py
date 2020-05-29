@@ -17,23 +17,21 @@ AOILIMIT=55.0
 
 
 #%%código para cuando aoi<AOILIMIT
-df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/IIIV.csv',encoding='utf-8')
+df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
+CPV=df[(df['aoi']<=AOILIMIT)]
+
+
+CPV['DII_efectiva (W/m2)']=CPV['DII (W/m2)']*E.obtencion_dii_efectiva(CPV['aoi'].values)
+CPV['ISC_IIIV/DII_efectiva (A m2/W)']=CPV['ISC_measured_IIIV (A)']/CPV['DII_efectiva (W/m2)']
+
 # Media_temp=df['T_Amb (°C)'].mean()
 # df=df[(df['T_Amb (°C)']<Media_temp+3)]
 # df=df[(df['T_Amb (°C)']>Media_temp-3)]
 
-
-
-Max_temp=27.0
-Min_temp=19.0
-df=df[(df['T_Amb (°C)']>=Min_temp)]
-df=df[((df['T_Amb (°C)'])<=Max_temp)] 
-
-
-# #Se recogen los datos de 26º unicamente
-# df=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV_temp26.xls',encoding='utf-8')
-
-
+# Max_temp=27.0
+# Min_temp=19.0
+# df=df[(df['T_Amb (°C)']>=Min_temp)]
+# df=df[((df['T_Amb (°C)'])<=Max_temp)] 
 
 #------ parámetros de MArcos
 module_parameters_IIIV={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
@@ -54,13 +52,23 @@ SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters_IIIV,
                                       modules_per_string=1,string_per_inverter=1,
                                       racking_model='freestanding')
 
-SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters_Si, 
-                                      modules_per_string=1,string_per_inverter=1,
-                                      racking_model='freestanding')
+# SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters_Si, 
+#                                       modules_per_string=1,string_per_inverter=1,
+#                                       racking_model='freestanding')
 
-df_filt_temp=df[(df['aoi']<AOILIMIT)]
 
-temp_cell=pvlib.temperature.pvsyst_cell(poa_global=df_filt_temp['GII (W/m2)'], temp_air=df_filt_temp['T_Amb (°C)'], wind_speed=df_filt_temp['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.1, alpha_absorption=0.9)
+
+temp_cell_DII=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.1, alpha_absorption=0.9)
+temp_cell=pvlib.temperature.pvsyst_cell(poa_global=CPV['GII (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.1, alpha_absorption=0.9)
+
+# plt.figure(figsize=(30,15))
+# plt.plot(CPV['aoi'],temp_cell,'o',markersize=2,label='DII_efectiva')
+# plt.plot(CPV['aoi'],temp_cell_global,'o',markersize=2,label='global')
+# plt.xlabel('Voltaje (III-V) (V)')
+# plt.ylabel('Corriente (III-V) (A)')
+# plt.title('Curvas I-V para validar el proceso anterior')
+# plt.legend()
+
 
 # y_poli,RR_poli,a_s,b=E.regresion_polinomica(df_filt_temp['aoi'].values,df_filt_temp['ISC_IIIV/DII (A m2/W)'].values,2)
 # # Valor_normalizar=y_poli.max()
@@ -68,12 +76,17 @@ temp_cell=pvlib.temperature.pvsyst_cell(poa_global=df_filt_temp['GII (W/m2)'], t
 # IAM=y_poli/Valor_normalizar
 
 # iam=y_poli
-effective_irradiance=df_filt_temp['DII_efectiva'].values
 
 
 
-Five_parameters=SistemaCPV.calcparams_pvsyst(effective_irradiance, temp_cell)
-Five_parameters1=SistemaCPV.calcparams_pvsyst(df_filt_temp['DII (W/m2)'], temp_cell)
+
+
+
+
+
+Five_parameters=SistemaCPV.calcparams_pvsyst(CPV['DII_efectiva (W/m2)'], temp_cell)
+
+Five_parameters1=SistemaCPV.calcparams_pvsyst(CPV['DII (W/m2)'], temp_cell)
 
 
 Curvas=pvlib.pvsystem.singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
@@ -97,14 +110,17 @@ plt.legend()
 
 #Comparamos los datos de Pmp con los calculados
 plt.figure(figsize=(30,15))
-plt.plot(df_filt_temp['aoi'],Curvas['p_mp'],'o',markersize=2,label='con iam')
-plt.plot(df_filt_temp['aoi'],Curvas1['p_mp'],'o',markersize=2,label='sin iam')
-plt.plot(df_filt_temp['aoi'],df_filt_temp['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
+plt.plot(CPV['aoi'],Curvas['p_mp'],'o',markersize=2,label='con iam')
+plt.plot(CPV['aoi'],Curvas1['p_mp'],'o',markersize=2,label='sin iam')
+plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
 plt.xlabel('Ángulo de incidencia (°)')
 plt.ylabel('Puntos de máxima potencia (W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del iam')
 plt.legend()
 
+
+
+#%%
 UF=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/UF.csv',encoding='utf-8')
 
 Max_temp=27.0
@@ -168,7 +184,7 @@ plt.legend()
 print('El error cuadrático medio de las estimaciones es de: ' + str(Potencias_estimadas['RMSE'][index]))
 
 plt.figure(figsize=(30,15))
-plt.plot(df_filt_temp['airmass_relative'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.plot(df_filt_temp['airmass_absolute'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
 plt.xlabel('airmass (n.d.)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
