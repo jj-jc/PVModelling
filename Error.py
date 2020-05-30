@@ -221,6 +221,42 @@ def obtencion_dii_efectiva(datos):
     b=1.0*0.0009180248205304829/0.00096
     IAM=(a3*datos**3+a2*datos**2+a1*datos+b)
     return IAM
+
+
+#calcula el iam con los parametros obtenidos tras el estudio de los datos.
+#faltaría añadir los tres posibles cálculos de iam implementados en pvlib. Aunque se demostró que se determinaba
+#mejor el comportamiento con las regrsiones lineales
+def calc_iam(datos,tipo):
+    
+    df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv')
+    df_iam=pd.read_csv("C://Users/juanj/OneDrive/Escritorio/TFG/IAM.csv")
+    df_iam=df_iam.set_index(df_iam['Unnamed: 0'].values)
+    df_iam=df_iam.drop('Unnamed: 0',axis=1)
+    if tipo=='Tercer grado':
+        a1=df_iam['Tercer grado']['a1']
+        a2=df_iam['Tercer grado']['a2']
+        a3=df_iam['Tercer grado']['a3']
+        b=df_iam['Tercer grado']['b']
+        IAM=a1*datos+a2*datos**2+a3*datos**3+b   
+    elif tipo=='Segundo grado':
+        a1=df_iam['Segundo grado']['a1']
+        a2=df_iam['Segundo grado']['a2']
+        b=df_iam['Segundo grado']['b']
+        IAM=a1*datos+a2*datos**2+b
+    elif tipo=='Primer grado':
+        thld=df_iam['Primer grado low']['thld']
+        a1_low=df_iam['Primer grado low']['a1']
+        b_low=df_iam['Primer grado low']['b']
+        a1_high=df_iam['Primer grado high']['a1']
+        b_high=df_iam['Primer grado high']['b']
+        IAM=[]
+        for i in range(len(datos)):
+            if datos[i]<=thld:
+                IAM.append(a1_low*datos[i]+b_low)
+            else:
+                IAM.append(a1_high*datos[i]+b_high)
+    return IAM
+
 # def obtencion_dii_efectiva(datos):
 #     a1=-9.79645026e-03
 #     a2=5.17456391e-04

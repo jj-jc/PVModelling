@@ -19,10 +19,12 @@ AOILIMIT=55.0
 #%%código para cuando aoi<AOILIMIT
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
 CPV=df[(df['aoi']<=AOILIMIT)]
+Si=df[(df['aoi']>AOILIMIT)]
 
 
 CPV['DII_efectiva (W/m2)']=CPV['DII (W/m2)']*E.obtencion_dii_efectiva(CPV['aoi'].values)
 CPV['ISC_IIIV/DII_efectiva (A m2/W)']=CPV['ISC_measured_IIIV (A)']/CPV['DII_efectiva (W/m2)']
+CPV['DII_efectiva2 (W/m2)']=CPV['DII (W/m2)']*E.calc_iam(CPV['aoi'].values,'Tercer grado')
 
 # Media_temp=df['T_Amb (°C)'].mean()
 # df=df[(df['T_Amb (°C)']<Media_temp+3)]
@@ -87,6 +89,7 @@ temp_cell=pvlib.temperature.pvsyst_cell(poa_global=CPV['GII (W/m2)'], temp_air=C
 Five_parameters=SistemaCPV.calcparams_pvsyst(CPV['DII_efectiva (W/m2)'], temp_cell)
 
 Five_parameters1=SistemaCPV.calcparams_pvsyst(CPV['DII (W/m2)'], temp_cell)
+Five_parameters2=SistemaCPV.calcparams_pvsyst(CPV['DII_efectiva2 (W/m2)'], temp_cell)
 
 
 Curvas=pvlib.pvsystem.singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
@@ -95,6 +98,9 @@ Curvas=pvlib.pvsystem.singlediode(photocurrent=Five_parameters[0], saturation_cu
 Curvas1=pvlib.pvsystem.singlediode(photocurrent=Five_parameters1[0], saturation_current=Five_parameters1[1],
                                   resistance_series=Five_parameters1[2],resistance_shunt=Five_parameters1[3], 
                                   nNsVth=Five_parameters1[4],ivcurve_pnts=100, method='lambertw')
+Curvas2=pvlib.pvsystem.singlediode(photocurrent=Five_parameters2[0], saturation_current=Five_parameters2[1],
+                                  resistance_series=Five_parameters2[2],resistance_shunt=Five_parameters2[3], 
+                                  nNsVth=Five_parameters2[4],ivcurve_pnts=100, method='lambertw')
 
 #Representamos unas cuantas curavs iv
 
@@ -113,6 +119,7 @@ plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],Curvas['p_mp'],'o',markersize=2,label='con iam')
 plt.plot(CPV['aoi'],Curvas1['p_mp'],'o',markersize=2,label='sin iam')
 plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
+plt.plot(CPV['aoi'],Curvas2['p_mp'],'o',markersize=2,label='con calc_iam ')
 plt.xlabel('Ángulo de incidencia (°)')
 plt.ylabel('Puntos de máxima potencia (W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del iam')
@@ -123,10 +130,10 @@ plt.legend()
 #%%
 UF=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/UF.csv',encoding='utf-8')
 
-Max_temp=27.0
-Min_temp=19.0
-UF=UF[(UF['temp']>=Min_temp)]
-UF=UF[((UF['temp'])<=Max_temp)] 
+# Max_temp=27.0
+# Min_temp=19.0
+# UF=UF[(UF['temp']>=Min_temp)]
+# UF=UF[((UF['temp'])<=Max_temp)] 
 
 
 

@@ -22,10 +22,7 @@ Valor_normalizar=0.00091802#Este valor es el valor que Marcos utiliza para norma
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
 
 
-#%%Este es el código para calcular iam cuando AOI<AOILIMIT
-#Se recogen en numpy los vectores que se van a usar
-# x=df['aoi']
-# y=df['ISC_IIIV/DII (A m2/W)'].values
+
 
 
 filt_df2=df[(df['aoi']<AOILIMIT)]
@@ -508,14 +505,44 @@ filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']>=26.0]
 filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']<28]
 
 
+
+#ESTE PROGRAMA ES PARA AVERIGUAR CUAL ES EL MEJOR THLDS  PARA EL AOI 
+
+
+aux=np.arange(filt_cuadro2['aoi'].min(),filt_cuadro2['aoi'].max(),1) 
+thdl=30
+RR_max=0.01
+for i in aux:
+    filt_df_low=filt_cuadro2[filt_cuadro2['aoi']<=i]
+    filt_df_high=filt_cuadro2[filt_cuadro2['aoi']>i]
+
+    x_low=filt_df_low['aoi'].values
+    y_low=filt_df_low['ISC_IIIV/DII (A m2/W)'].values
+    yr_low, RR_low, a_s_low, b_low=Error.regresion_polinomica(x_low, y_low, 1)
+    
+    x_high=filt_df_high['aoi'].values
+    y_high=filt_df_high['ISC_IIIV/DII (A m2/W)'].values
+    yr_high, RR_high, a_s_high, b_high=Error.regresion_polinomica(x_high, y_high, 1)
+    
+
+    # y_datos=filt_df['ISC_IIIV/DII (A m2/W)'].values
+    y=np.concatenate((y_low,y_high))
+    yr=np.concatenate((yr_low,yr_high))
+    xr=np.concatenate((x_low,x_high))
+    RR=Error.Determination_coefficient(y,yr)   
+    if RR_max < RR:
+        RR_max=RR
+        thld=i
+
+
 #ahora buscamos las mejores regresiones
 #----poli2
 y_poli2,RR_poli2,a_s2,b2=Error.regresion_polinomica(filt_cuadro2['aoi'].values,filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values,2)
 #-----poli3
 y_poli3,RR_poli3,a_s3,b3=Error.regresion_polinomica(filt_cuadro2['aoi'].values,filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values,3)
 #-----poli1
-filt_df_low=filt_cuadro2[filt_cuadro2['aoi']<=36.98077777852555]
-filt_df_high=filt_cuadro2[filt_cuadro2['aoi']>36.98077777852555]
+filt_df_low=filt_cuadro2[filt_cuadro2['aoi']<=thld]
+filt_df_high=filt_cuadro2[filt_cuadro2['aoi']>thld]
 
 x_low=filt_df_low['aoi'].values
 y_low=filt_df_low['ISC_IIIV/DII (A m2/W)'].values
@@ -539,33 +566,7 @@ RR_poli1=Error.Determination_coefficient(y_total, yr_total)
 #-------Martin Ruiz
 
 
-#ESTE PROGRAMA ES PARA AVERIGUAR CUAL ES EL MEJOR THLDS  PARA EL AOI 
 
-
-# aux=np.arange(filt_cuadro2['aoi'].min(),filt_cuadro2['aoi'].max(),1) 
-# thdl=30
-# RR_max=0.01
-# for i in aux:
-#     filt_df_low=filt_cuadro2[filt_cuadro2['aoi']<=i]
-#     filt_df_high=filt_cuadro2[filt_cuadro2['aoi']>i]
-
-#     x_low=filt_df_low['aoi'].values
-#     y_low=filt_df_low['ISC_IIIV/DII (A m2/W)'].values
-#     yr_low, RR_low, a_s_low, b_low=Error.regresion_polinomica(x_low, y_low, 1)
-    
-#     x_high=filt_df_high['aoi'].values
-#     y_high=filt_df_high['ISC_IIIV/DII (A m2/W)'].values
-#     yr_high, RR_high, a_s_high, b_high=Error.regresion_polinomica(x_high, y_high, 1)
-    
-
-#     # y_datos=filt_df['ISC_IIIV/DII (A m2/W)'].values
-#     y=np.concatenate((y_low,y_high))
-#     yr=np.concatenate((yr_low,yr_high))
-#     xr=np.concatenate((x_low,x_high))
-#     RR=Error.Determination_coefficient(y,yr)   
-#     if RR_max < RR:
-#         RR_max=RR
-#         thld=i
 
 
 fig=plt.figure(figsize=(30,15))
@@ -593,13 +594,15 @@ plt.legend()
 
 
 #%% PARA CALCULAR EL NUEVO VALOR PARA NORMALIZAR
-Valor_normalizar=b3
 
+#este no puede ser el valor para normzalizar, debido que tiene la influecnia del aoi. Por ello no está corregido 
+#y como no está corregido, no se conoce el valor de ISC/DII normal.
+VALOR_NORMALIZAR=0.001
 
 x=np.arange(0,55,1)
-y3=(a_s3[3]*x**3+a_s3[2]*x**2+a_s3[1]*x+b3)/Valor_normalizar
-y1=(a_s_low[1]*x+b_low)/Valor_normalizar
-y2=(a_s2[2]*x**2+a_s2[1]*x+b2)/Valor_normalizar
+y3=(a_s3[3]*x**3+a_s3[2]*x**2+a_s3[1]*x+b3)/VALOR_NORMALIZAR
+y1=(a_s_low[1]*x+b_low)/VALOR_NORMALIZAR
+y2=(a_s2[2]*x**2+a_s2[1]*x+b2)/VALOR_NORMALIZAR
 
 
 fig=plt.figure(figsize=(30,15))
@@ -615,45 +618,23 @@ print('El coeficiente de determinación para la regresión de primer grado es: '
 print('El coeficiente de determinación para la regresión de segundo grado es: '+str(RR_poli2))
 print('El coeficiente de determinación para la regresión de tercer grado es: '+str(RR_poli3))
 
+# estructura para el dataframe
+# [a1,a2,a3,b,thld,RR]
+iam1_low=[a_s_low[1]/VALOR_NORMALIZAR,0,0,b_low/VALOR_NORMALIZAR,thld,RR_low]
+iam1_high=[a_s_high[1]/VALOR_NORMALIZAR,0,0,b_high/VALOR_NORMALIZAR,0,RR_low]
 
+iam2=[a_s2[1]/VALOR_NORMALIZAR,a_s2[2]/VALOR_NORMALIZAR,0,b2/VALOR_NORMALIZAR,0,RR_poli2]
 
-
-
-
-a_s=[0,0,0]
-b=[0,0,0]
-param=[0,0,0]
-RR=[0,0,0]
-
-
-#NORMALIZAMOS
-
-
-
-a_s[0]=a_s1/Valor_normalizar
-b[0]=b1/Valor_normalizar
-param[0]=0
-RR[0]=RR_poli1
-
-a_s[1]=a_s2/Valor_normalizar
-b[1]=b2/Valor_normalizar
-param[1]=0
-RR[1]=RR_poli2
-
-a_s[2]=a_s3/Valor_normalizar
-b[2]=b3/Valor_normalizar
-param[2]=0
-RR[2]=RR_poli2
-
-
+iam3=[a_s3[1]/VALOR_NORMALIZAR,a_s3[2]/VALOR_NORMALIZAR,a_s3[3]/VALOR_NORMALIZAR,b3/VALOR_NORMALIZAR,0,RR_poli3]
 #%%
-IAM=pd.DataFrame(columns={'Primer grado','Segundo grado','Tercer grado'},index=['a_s','b','parámetros','RR'])
+IAM=pd.DataFrame(columns={'Primer grado low','Primer grado high','Segundo grado','Tercer grado'},index=['a1','a2','a3','b','thld','RR'])
 
 
-IAM.loc['a_s']=a_s
-IAM.loc['b']=b
-IAM.loc['parámetros']=param
-IAM.loc['RR']=RR
+IAM['Primer grado low']=iam1_low
+IAM['Primer grado high']=iam1_high
+IAM['Segundo grado']=iam2
+IAM['Tercer grado']=iam3
+
 
 
 
