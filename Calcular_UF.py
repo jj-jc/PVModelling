@@ -10,6 +10,7 @@ from cpvtopvlib import uf_preprocessing
 import plotly.graph_objects as go
 import plotly.io as pio
 import math
+import pvlib
 pio.renderers.default='browser'
 AOILIMIT=55.0
 # VALOR_NORMALIZAR=0.0009180248205304829
@@ -128,19 +129,21 @@ fig.show()
 filt_df_temp=filt_df
 
 
-# filt_df_temp=filt_df_temp[(filt_df_temp['airmass_absolute']<1.1)]
-# # filt_df_temp=filt_df_temp[(filt_df_temp['airmass_absolute']>1.0)]
+filt_df_temp=filt_df_temp[(filt_df_temp['airmass_absolute']<1.1)]
+filt_df_temp=filt_df_temp[(filt_df_temp['airmass_absolute']>1.0)]
 # filt_x=filt_df_temp['T_Amb (°C)'].values
 # filt_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
+filt_df_temp_x=filt_df_temp['T_Amb (°C)'].values
+filt_df_temp_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR
 
 
 
 
-y1_regre,RR1,a_s1,b1=E.regresion_polinomica(filt_x,filt_y,1)
+y1_regre,RR1,a_s1,b1=E.regresion_polinomica(filt_df_temp_x,filt_df_temp_y,1)
 fig=plt.figure(figsize=(30,15))
-plt.plot(filt_x,filt_y,'o',markersize=4,label='Datos por debajo de AOILIMIT')
-plt.plot(filt_x,y1_regre,'o',markersize=4,label='Línea de regresión')
+plt.plot(filt_df_temp_x,filt_df_temp_y,'o',markersize=4,label='Datos por debajo de AOILIMIT')
+plt.plot(filt_df_temp_x,y1_regre,'o',markersize=4,label='Línea de regresión')
 # plt.ylim(0,0.002)
 plt.xlabel('Temperatura ambiente (°C) ')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
@@ -150,10 +153,10 @@ print('El coeficiente de determinación para los datos por debajo de AOILIMIT es
 
 
 
-thld=filt_x[np.where(y1_regre==y1_regre.max())]
-simple_uf= 1 + (filt_x - thld) * (a_s1[1])/VALOR_NORMALIZAR
+thld=filt_df_temp_x[np.where(y1_regre==y1_regre.max())]
+simple_uf= 1 + (filt_df_temp_x - thld) * (a_s1[1])
 fig=plt.figure(figsize=(30,15))
-plt.plot(filt_x,simple_uf,'o',markersize=4,label='Datos primera parte')
+plt.plot(filt_df_temp_x,simple_uf,'o',markersize=4,label='Datos primera parte')
 UF_temp=simple_uf
 
 
@@ -315,6 +318,7 @@ for i in aux:
     y_low=filt_df_low['ISC_IIIV/DII_efectiva (A m2/W)'].values
     yr_low, RR_low, a_s_low, b_low=E.regresion_polinomica(x_low, y_low, 1)
     
+    
     x_high=filt_df_high['airmass_absolute'].values
     y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values
     yr_high, RR_high, a_s_high, b_high=E.regresion_polinomica(x_high, y_high, 1)
@@ -458,8 +462,98 @@ UF['UF_am_2']=UF_am_2_retocado
 UF.to_csv('C://Users/juanj/OneDrive/Escritorio/TFG/UF.csv', index=False)
 
 
+#%%UN CÓDIGO PARA buscar el más óptimo del airmass
+x=filt_df_am['airmass_absolute'].values
+
+RR_max_high=-1
+RR_max=-1
+thld=0
+a_final_high=0
+b_final_high=0
+a_final_low=0
+b_final_low=0
+thlds=np.arange(x.min(),x.max(),0.001)
+
+for j in thlds:
+    
+    filt_df_low=filt_df_am[filt_df_am['airmass_absolute']<=j]
+    filt_df_high=filt_df_am[filt_df_am['airmass_absolute']>j]
+    
+    x_low=filt_df_low['airmass_absolute'].values
+    y_low=filt_df_low['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR
+    yr_low, RR_low, a_s_low, b_low=E.regresion_polinomica(x_low, y_low, 1)
+    y_max=float(yr_low[np.where(yr_low==yr_low.max())])
+    
+    x_high=filt_df_high['airmass_absolute'].values
+    x_desplazado=filt_df_high['airmass_absolute'].values-thld
+    y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR  
+    
+    #y_regresion=mx+b donde la b=y_max
+    m=np.arange(-1,0,0.001)
+    # yr_high=pd.DataFrame({'x_desplazado': x_desplazado})
+    for i in range(len(m)):
+        yr_high=x_desplazado*m[i]+y_max
+        # yr_high['M= '+str(m[i])]=y_aux
+        RR_high=E.Determination_coefficient(y_high,yr_high)  
+        if RR_max_high < RR_high:
+            RR_max_high=RR_high           
+            y=np.concatenate((y_low,y_high))
+            y_regre=np.concatenate((yr_low,yr_high))
+            RR=E.Determination_coefficient(y,y_regre)
+            if RR_max < RR:
+                RR_max=RR
+                thld=j
+                a_final_high=m[i]
+                a_final_low=a_s_low[1]
+                b_final_low=b_low
+                b_final_high=yr_low.max()+(-thld)*a_final_high
+                print(y_max)
+                print(x_low.min())
+                
+                
+                
+                
+filt_df_low=filt_df_am[filt_df_am['airmass_absolute']<=thld]
+filt_df_high=filt_df_am[filt_df_am['airmass_absolute']>thld]
+
+x_low=filt_df_low['airmass_absolute'].values
+y_low=filt_df_low['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR
+
+x_high=filt_df_high['airmass_absolute'].values
+
+y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR  
 
 
+
+y_producida_low=x_low*a_final_low+b_final_low
+
+
+y_producida_high=x_high*a_final_high+b_final_high
+
+'''  Los mejors resultados han sido:'''
+
+
+
+
+
+
+
+
+
+
+
+#%%
+fig=plt.figure(figsize=(30,15))
+# plt.plot(x,simple_uf,'o',markersize=4,label='Datos primera parte')
+plt.plot(x_low,y_producida_low,'o',markersize=4,label='De forma polinómica de grado 2')
+plt.plot(x_high,y_producida_high,'o',markersize=4,label='De forma polinómica de grado 2')
+plt.plot(filt_df_am['airmass_absolute'],filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)']/VALOR_NORMALIZAR,'o',markersize=4,label='De forma polinómica de grado 2')
+# plt.plot(x_high,y_aux,'o',markersize=4,label='De forma polinómica de grado 2')
+# plt.plot(x_high,y_high,'o',markersize=4,label='De forma polinómica de grado 2')
+plt.xlabel('airmass (n.d.)')
+plt.ylabel('ISC_IIIV/DII (A m2/W)')
+plt.title('Comparación de las dos modelos de UF para el airmass')
+plt.legend()        
 
 
 
