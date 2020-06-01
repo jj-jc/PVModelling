@@ -28,26 +28,32 @@ df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_Si.csv',
 
 
 
-Max_temp=27.0
-Min_temp=19.0
-df=df[(df['T_Amb (°C)']>=Min_temp)]
-df=df[((df['T_Amb (°C)'])<=Max_temp)] 
+# Max_temp=27.0
+# Min_temp=19.0
+# df=df[(df['T_Amb (°C)']>=Min_temp)]
+# df=df[((df['T_Amb (°C)'])<=Max_temp)] 
 
 
 #------ parámetros de MArcos
-module_parameters={'gamma_ref': 5.389, 'mu_gamma': 0.002, 'I_L_ref':3.058,
-                'I_o_ref': 0.00000000045,'R_sh_ref': 18194, 'R_sh_0':73000,
-                'R_sh_exp': 5.50,'R_s': 0.01,'alpha_sc':0.00,'EgRef':3.91,
-                'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':42,'cells'
-                'eta_m':0.29, 'alpha_absorption':0.9}
+# module_parameters={'gamma_ref': 5.389, 'mu_gamma': 0.002, 'I_L_ref':3.058,
+#                 'I_o_ref': 0.00000000045,'R_sh_ref': 18194, 'R_sh_0':73000,
+#                 'R_sh_exp': 5.50,'R_s': 0.01,'alpha_sc':0.00,'EgRef':3.91,
+#                 'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':42,'cells'
+#                 'eta_m':0.29, 'alpha_absorption':0.9}
+module_parameters_Si={'gamma_ref': 6.359, 'mu_gamma': 0.439, 'I_L_ref':1.266,
+                'I_o_ref': 0.0102,'R_sh_ref': 3200, 'R_sh_0':128000,
+                'R_sh_exp': 5.5,'R_s': 0.2,'alpha_sc':0.05,'EgRef':1.121,
+                'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':3,
+                'eta_m':0.1, 'alpha_absorption':0.9}
 
-
-
+SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters_Si, 
+                                      modules_per_string=1,string_per_inverter=1,
+                                      racking_model='freestanding')
 # SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters, 
 #                                      modules_per_string=1,string_per_inverter=1,
 #                                      racking_model='freestanding')
 
-df_filt_Si=df[(df['aoi']<AOILIMIT)]
+df_filt_Si=df[(df['aoi']>AOILIMIT)]
 
 temp_cell=pvlib.temperature.pvsyst_cell(poa_global=df_filt_Si['GII (W/m2)'], 
                                         temp_air=df_filt_Si['T_Amb (°C)'],
@@ -66,24 +72,26 @@ temp_cell=pvlib.temperature.pvsyst_cell(poa_global=df_filt_Si['GII (W/m2)'],
 
 
 # Five_parameters=SistemaCPV.calcparams_pvsyst(effective_irradiance, temp_cell)
-# Five_parameters1=SistemaCPV.calcparams_pvsyst(df_filt_temp['DII (W/m2)'], temp_cell)
+Five_parameters1=SistemaCPV.calcparams_pvsyst(df_filt_Si['GII (W/m2)'], 25)
 
+
+a=np.where((df_filt_Si['GNI (W/m2)']>1000) & (df_filt_Si['GNI (W/m2)']<1081) & (df_filt_Si['DNI (W/m2)']<895) & (df_filt_Si['DNI (W/m2)']>890))[0]
 
 # Curvas=pvlib.pvsystem.singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
 #                                  resistance_series=Five_parameters[2],resistance_shunt=Five_parameters[3], 
 #                                  nNsVth=Five_parameters[4],ivcurve_pnts=100, method='lambertw')
-# Curvas1=pvlib.pvsystem.singlediode(photocurrent=Five_parameters1[0], saturation_current=Five_parameters1[1],
-#                                  resistance_series=Five_parameters1[2],resistance_shunt=Five_parameters1[3], 
-#                                  nNsVth=Five_parameters1[4],ivcurve_pnts=100, method='lambertw')
+Curvas1=pvlib.pvsystem.singlediode(photocurrent=Five_parameters1[0], saturation_current=Five_parameters1[1],
+                                  resistance_series=Five_parameters1[2],resistance_shunt=Five_parameters1[3], 
+                                  nNsVth=Five_parameters1[4],ivcurve_pnts=100, method='lambertw')
 
 # #Representamos unas cuantas curavs iv
-# plt.figure(figsize=(30,15))
+plt.figure(figsize=(30,15))
 
-# plt.plot(Curvas['v'][0],Curvas['i'][0],'--',markersize=2,label='IAM(AOI)')
-# plt.plot(Curvas['v'][5],Curvas['i'][5],'--',markersize=2,label='IAM(AOI)')
-# plt.plot(Curvas['v'][10],Curvas['i'][10],'--',markersize=2,label='IAM(AOI)')
-# plt.plot(Curvas['v'][50],Curvas['i'][50],'--',markersize=2,label='IAM(AOI)')
-
+plt.plot(Curvas1['v'][18],Curvas1['i'][18],'--',markersize=2,label='IAM(AOI)')
+plt.plot(Curvas1['v'][19],Curvas1['i'][19],'--',markersize=2,label='IAM(AOI)')
+plt.plot(Curvas1['v'][384],Curvas1['i'][384],'--',markersize=2,label='esta tiene que ser)')
+plt.plot(Curvas1['v'][390],Curvas1['i'][390],'--',markersize=2,label='IAM(AOI)')
+plt.legend()
 # #Comparamos los datos de Pmp con los calculados
 # plt.figure(figsize=(30,15))
 # plt.plot(df_filt_temp['aoi'],Curvas['p_mp'],'o',markersize=2,label='con iam')

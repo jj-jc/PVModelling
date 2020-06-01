@@ -137,22 +137,59 @@ plt.legend()
 
 #%%#AOI
 
+# filt_df4=filt_df3
+
+# fig, ax=plt.subplots(figsize=(30,15))
+# #ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
+# ax.plot(filt_df4['aoi'],filt_df4['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2)
+# # plt.ylim(0,0.04)
+# ax.set_xlabel('AOI (°)')
+# ax.set_ylabel('Irradiancia vista por silicio (A m2/W)')
+# ax.set_title("Irradancia vista por el silicio en función del ángulo de incidencia",fontsize=20)
+# plt.legend()
+
+# limSup=filt_df3['aoi'].max()
+# limInf=filt_df3['aoi'].min()
+# Rango=limSup-limInf
+# n_intervalos=20
+# porcent_mediana=30
+# incremento=Rango/n_intervalos
+# for i in range(n_intervalos):
+#     AUX=filt_df3[filt_df3['aoi']>limInf+i*incremento]
+#     AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
+#     Mediana=Error.mediana(AUX['ISC_Si/Irra_vista (A m2/W)'])
+#     DEBAJO=AUX[AUX['ISC_Si/Irra_vista (A m2/W)']<Mediana*(1-porcent_mediana/100)]   
+#     filt_df4=filt_df4.drop(DEBAJO.index[:],axis=0)
+#     ENCIMA=AUX[AUX['ISC_Si/Irra_vista (A m2/W)']>Mediana*(1+porcent_mediana/100)]
+#     filt_df4=filt_df4.drop(ENCIMA.index[:],axis=0)
+    
+
+# #AOI
+# fig, ax=plt.subplots(figsize=(30,15))
+# #ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
+# ax.plot(filt_df4['aoi'],filt_df4['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2)
+# # plt.ylim(0,0.04)
+# ax.set_xlabel('AOI (°)')
+# ax.set_ylabel('Irradiancia vista por silicio (A m2/W)')
+# ax.set_title("Irradancia vista por el silicio en función del ángulo de incidencia",fontsize=20)
+# plt.legend()
+
+
+
+
+
+#%%se trata de afinar más el filtrado de la primera parte del silicio
+#aunque en principio como se observa, la tendencia es con un intervalalo de temp limitado
+
+
+# 
 filt_df4=filt_df3
 
-fig, ax=plt.subplots(figsize=(30,15))
-#ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
-ax.plot(filt_df4['aoi'],filt_df4['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2)
-# plt.ylim(0,0.04)
-ax.set_xlabel('AOI (°)')
-ax.set_ylabel('Irradiancia vista por silicio (A m2/W)')
-ax.set_title("Irradancia vista por el silicio en función del ángulo de incidencia",fontsize=20)
-plt.legend()
-
-limSup=filt_df3['aoi'].max()
+limSup=55.0#se limita a 55 para evitar cambios en la parte >AOILIMIT 
 limInf=filt_df3['aoi'].min()
 Rango=limSup-limInf
-n_intervalos=20
-porcent_mediana=30
+n_intervalos=2
+porcent_mediana=15
 incremento=Rango/n_intervalos
 for i in range(n_intervalos):
     AUX=filt_df3[filt_df3['aoi']>limInf+i*incremento]
@@ -162,24 +199,35 @@ for i in range(n_intervalos):
     filt_df4=filt_df4.drop(DEBAJO.index[:],axis=0)
     ENCIMA=AUX[AUX['ISC_Si/Irra_vista (A m2/W)']>Mediana*(1+porcent_mediana/100)]
     filt_df4=filt_df4.drop(ENCIMA.index[:],axis=0)
-    
+
+
+limSup=filt_df3['aoi'].max()#se limita a 55 para evitar cambios en la parte >AOILIMIT 
+limInf=55.0
+Rango=limSup-limInf
+n_intervalos=5
+porcent_mediana=15
+incremento=Rango/n_intervalos
+for i in range(n_intervalos):
+    AUX=filt_df3[filt_df3['aoi']>limInf+i*incremento]
+    AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
+    Mediana=Error.mediana(AUX['ISC_Si/Irra_vista (A m2/W)'])
+    DEBAJO=AUX[AUX['ISC_Si/Irra_vista (A m2/W)']<Mediana*(1-porcent_mediana/100)]   
+    filt_df4=filt_df4.drop(DEBAJO.index[:],axis=0)
+    ENCIMA=AUX[AUX['ISC_Si/Irra_vista (A m2/W)']>Mediana*(1+porcent_mediana/100)]
+    filt_df4=filt_df4.drop(ENCIMA.index[:],axis=0)
+
 
 #AOI
 fig, ax=plt.subplots(figsize=(30,15))
 #ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
 ax.plot(filt_df4['aoi'],filt_df4['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2)
-# plt.ylim(0,0.04)
+plt.ylim(0,0.04)
 ax.set_xlabel('AOI (°)')
-ax.set_ylabel('Irradiancia vista por silicio (A m2/W)')
-ax.set_title("Irradancia vista por el silicio en función del ángulo de incidencia",fontsize=20)
+ax.set_ylabel('ISC_Si/Irradiancia vista por silicio (A m2/W)')
+ax.set_title("ISC_Si/Irradancia vista por el silicio en función del ángulo de incidencia",fontsize=20)
 plt.legend()
 
 
-
-
-
-#%%se trata de afinar más el filtrado de la primera parte del silicio
-#aunque en principio como se observa, la tendencia es con un intervalalo de temp limitado
 
 
 
@@ -192,36 +240,42 @@ y1=filt_df4['ISC_Si/Irra_vista (A m2/W)']
 x_aoi=filt_df4['aoi']
 x_temp=filt_df4['T_Amb (°C)']
 x_AM=filt_df4['airmass_absolute']
-#
+
+
+
+
+
+
+
 #Para ver las irradiancias tras el filtrado
 
-date=np.array(['2019-05-30'])
-for i in range(0,len(filt_df.index[:])):
-    if(i==0):
-        date[0]=str(filt_df.index[0].date())
-    elif(filt_df.index[i-1].date()!=filt_df.index[i].date()):
-        date=np.append(date,str(filt_df.index[i].date()))
-for i in date:
-    fig=plt.figure(figsize=(30,15))
-    fig.add_subplot(121)
-    plt.plot(df[str(i)].index[:].time,df[str(i)]['DNI (W/m2)'], label='DNI')    
-#    plt.plot(df[i].index[:].time,df[i]['GNI (W/m2)'],label='GHI')
-    plt.plot(df[str(i)].index[:].time,df[str(i)]['DII (W/m2)'],label='DII')
-    plt.plot(df[str(i)].index[:].time,df[str(i)]['GII (W/m2)'],label='GII')
+# date=np.array(['2019-05-30'])
+# for i in range(0,len(filt_df.index[:])):
+#     if(i==0):
+#         date[0]=str(filt_df.index[0].date())
+#     elif(filt_df.index[i-1].date()!=filt_df.index[i].date()):
+#         date=np.append(date,str(filt_df.index[i].date()))
+# for i in date:
+#     fig=plt.figure(figsize=(30,15))
+#     fig.add_subplot(121)
+#     plt.plot(df[str(i)].index[:].time,df[str(i)]['DNI (W/m2)'], label='DNI')    
+# #    plt.plot(df[i].index[:].time,df[i]['GNI (W/m2)'],label='GHI')
+#     plt.plot(df[str(i)].index[:].time,df[str(i)]['DII (W/m2)'],label='DII')
+#     plt.plot(df[str(i)].index[:].time,df[str(i)]['GII (W/m2)'],label='GII')
 
-    plt.xlabel('Hora')
-    plt.ylabel('Irradiancia (W/m2)')
-    plt.legend()
-    plt.title("Datos de irradiancias "+ str(i))
-    fig.add_subplot(122)
-    plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['DNI (W/m2)'], label='DNI')    
-#    plt.plot(filt_df[i].index[:].time,filt_df[i]['GNI (W/m2)'],label='GHI')
-    plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['DII (W/m2)'],label='DII')
-    plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['GII (W/m2)'],label='GII')
-    plt.xlabel('Hora')
-    plt.ylabel('Irradiancia (W/m2)')
-    plt.legend()
-    plt.title("Datos de irradiancias filtrados "+str(i))
+#     plt.xlabel('Hora')
+#     plt.ylabel('Irradiancia (W/m2)')
+#     plt.legend()
+#     plt.title("Datos de irradiancias "+ str(i))
+#     fig.add_subplot(122)
+#     plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['DNI (W/m2)'], label='DNI')    
+# #    plt.plot(filt_df[i].index[:].time,filt_df[i]['GNI (W/m2)'],label='GHI')
+#     plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['DII (W/m2)'],label='DII')
+#     plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['GII (W/m2)'],label='GII')
+#     plt.xlabel('Hora')
+#     plt.ylabel('Irradiancia (W/m2)')
+#     plt.legend()
+#     plt.title("Datos de irradiancias filtrados "+str(i))
 
 
 
