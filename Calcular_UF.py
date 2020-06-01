@@ -40,7 +40,6 @@ plt.legend()
 
 
 
-UF=pd.DataFrame(columns=['temp','UF_temp','UF_am','UF_am_2'])
 
 
 
@@ -129,8 +128,8 @@ fig.show()
 filt_df_temp=filt_df
 
 
-filt_df_temp=filt_df_temp[(filt_df_temp['airmass_absolute']<1.1)]
-filt_df_temp=filt_df_temp[(filt_df_temp['airmass_absolute']>1.0)]
+filt_df_temp=filt_df_temp[(filt_df_temp['airmass_absolute']>=0.9)]
+filt_df_temp=filt_df_temp[(filt_df_temp['airmass_absolute']<1.0)]
 # filt_x=filt_df_temp['T_Amb (°C)'].values
 # filt_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
@@ -140,7 +139,7 @@ filt_df_temp_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMA
 
 
 
-y1_regre,RR1,a_s1,b1=E.regresion_polinomica(filt_df_temp_x,filt_df_temp_y,1)
+y1_regre,RR_temp,a_s1,b1=E.regresion_polinomica(filt_df_temp_x,filt_df_temp_y,1)
 fig=plt.figure(figsize=(30,15))
 plt.plot(filt_df_temp_x,filt_df_temp_y,'o',markersize=4,label='Datos por debajo de AOILIMIT')
 plt.plot(filt_df_temp_x,y1_regre,'o',markersize=4,label='Línea de regresión')
@@ -149,12 +148,12 @@ plt.xlabel('Temperatura ambiente (°C) ')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
 plt.title('Cálculo del UF para la temperatura')
 plt.legend()
-print('El coeficiente de determinación para los datos por debajo de AOILIMIT es de: '+str(RR1))
+print('El coeficiente de determinación para los datos por debajo de AOILIMIT es de: '+str(RR_temp))
 
 
-
+a_temp=a_s1[1]
 thld=filt_df_temp_x[np.where(y1_regre==y1_regre.max())]
-simple_uf= 1 + (filt_df_temp_x - thld) * (a_s1[1])
+simple_uf= 1 + (filt_df_temp_x - thld) * (a_temp)
 fig=plt.figure(figsize=(30,15))
 plt.plot(filt_df_temp_x,simple_uf,'o',markersize=4,label='Datos primera parte')
 UF_temp=simple_uf
@@ -451,15 +450,7 @@ plt.legend()
 
 #
 
-#%%Recojo los UF obtenidos y los guardo en un archivo csv
 
-
-
-UF['UF_temp']=UF_temp
-UF['temp']=filt_df['T_Amb (°C)'].values
-UF['UF_am']=UF_am
-UF['UF_am_2']=UF_am_2_retocado
-UF.to_csv('C://Users/juanj/OneDrive/Escritorio/TFG/UF.csv', index=False)
 
 
 #%%UN CÓDIGO PARA buscar el más óptimo del airmass
@@ -525,20 +516,20 @@ y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR
 
 
 
+
+'''  Los mejors resultados han sido:
+        thld=1.1355029758362343
+        RR=0.1476449374269485
+        a_low=0.3146154685597937
+        a_high=-0.27199999999999935
+        b_low=0.560213035356623
+        b_high=1.2261536696305373
+
+'''
 y_producida_low=x_low*a_final_low+b_final_low
 
 
 y_producida_high=x_high*a_final_high+b_final_high
-
-'''  Los mejors resultados han sido:'''
-
-
-
-
-
-
-
-
 
 
 
@@ -554,6 +545,42 @@ plt.xlabel('airmass (n.d.)')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
 plt.title('Comparación de las dos modelos de UF para el airmass')
 plt.legend()        
+#%%ahora hay que aplicar el método de UF
+x=filt_df_am['airmass_absolute'].values
+y=filt_df_am['ISC_IIIV/DII (A m2/W)'].values
 
 
+UF_am=[]
+for i in range(len(x)):
+    if x[i]<=thld:
+        UF_am.append(1 + ( x[i]- thld) * (a_final_low))
+    else:
+        UF_am.append(1 + ( x[i]- thld) * (a_final_high))
+        
+        
+
+fig=plt.figure(figsize=(30,15))
+plt.plot(x,UF_am,'o',markersize=4,label='Datos primera parte')
+#%%
+
+
+
+
+
+
+
+#%%Recojo los UF obtenidos y los guardo en un archivo csv
+
+UF=pd.DataFrame(columns={'UF_am_low','UF_am_high','UF_temp'},index=['a','thld','RR'])
+
+
+UF['UF_am_low']=[a_final_low,thld,RR_max]
+UF['UF_am_high']=[a_final_high,thld,RR_max]
+UF['UF_temp']=[a_temp,0,RR_temp]
+
+
+
+
+
+UF.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/UF.csv")
 

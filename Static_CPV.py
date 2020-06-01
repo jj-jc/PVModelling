@@ -18,7 +18,29 @@ AOILIMIT=55.0
 
 #%%código para cuando aoi<AOILIMIT
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
+
+#SE filtran los datos que no correspondan a una tendencia clara de la potencia.
 CPV=df[(df['aoi']<=AOILIMIT)]
+
+
+#%%
+limSup=CPV['aoi'].max()
+limInf=CPV['aoi'].min()
+Rango=limSup-limInf
+n_intervalos=100
+porcent_mediana=20
+incremento=Rango/n_intervalos
+for i in range(n_intervalos):
+    AUX=CPV[CPV['aoi']>limInf+i*incremento]
+    AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
+    Mediana=E.mediana(AUX['PMP_estimated_IIIV (W)'].values)
+    DEBAJO=AUX[AUX['PMP_estimated_IIIV (W)']<(Mediana*(1-porcent_mediana/100))]   
+    CPV=CPV.drop(DEBAJO.index[:],axis=0)
+    ENCIMA=AUX[AUX['PMP_estimated_IIIV (W)']>(Mediana*(1+porcent_mediana/100))]
+    CPV=CPV.drop(ENCIMA.index[:],axis=0)
+
+
+
 Si=df[(df['aoi']>AOILIMIT)]
 
 
@@ -128,14 +150,48 @@ plt.legend()
 
 
 #%%
-UF=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/UF.csv',encoding='utf-8')
+UF=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/UF.csv')
+UF=UF.set_index(UF['Unnamed: 0'])
+UF=UF.drop(['Unnamed: 0'],axis=1)
 
-# Max_temp=27.0
-# Min_temp=19.0
-# UF=UF[(UF['temp']>=Min_temp)]
-# UF=UF[((UF['temp'])<=Max_temp)] 
+#AHORA HAY QUE GENERAR LOS VALORES CON LOS LAS PENDIENTES DE LOS UF
+#hora hay que aplicar el método de UF
+x_am=CPV['airmass_absolute'].values
 
+# y=CPV['ISC_IIIV/DII (A m2/W)'].values
+thld_am=UF.loc['thld']['UF_am_low']
 
+a_am_low=UF.loc['a']['UF_am_low']
+a_am_high=UF.loc['a']['UF_am_high']
+
+UF_am=[]
+for i in range(len(x_am)):
+    if x_am[i]<=thld_am:
+        UF_am.append(1 + ( x_am[i]- thld_am) * (a_am_low))
+    else:
+        UF_am.append(1 + ( x_am[i]- thld_am) * (a_am_high))
+UF_am=np.array(UF_am)        
+        
+
+fig=plt.figure(figsize=(30,15))
+plt.plot(x_am,UF_am,'o',markersize=4,label='Datos primera parte')
+#%%
+
+thld_temp=UF.loc['thld']['UF_temp']
+x_temp=CPV['T_Amb (°C)'].values
+a_temp=UF.loc['a']['UF_temp']
+
+UF_temp=[]
+for i in range(len(x_temp)):
+    UF_temp.append(1 + ( x_temp[i]- thld_temp) * (a_temp))
+
+        
+        
+UF_temp=np.array(UF_temp)
+fig=plt.figure(figsize=(30,15))
+plt.plot(x_temp,UF_temp,'o',markersize=4,label='Datos primera parte')
+
+#%%
 
 #Ahora hay que buscar los pesos que mejor describan las potencias.
 w_am=0.5
@@ -147,15 +203,15 @@ w_temp=0.5
 
 
 Potencias_estimadas=pd.DataFrame(columns=['Potencias_estimadas (W)','diferencias', 'RMSE'])
-datos_potencia=df_filt_temp['PMP_estimated_IIIV (W)'].values
+datos_potencia=CPV['PMP_estimated_IIIV (W)'].values
 
-aux=np.arange(0,1,0.01)
+aux=np.arange(0,1,0.001)
 for i in aux:
     w_am=i
     w_temp=1-w_am    
-    UF_total=w_am*UF['UF_am']+w_temp*UF['UF_temp']   
-    estimacion=Curvas['p_mp']*UF_total
-    Juntos=[estimacion,datos_potencia-estimacion,E.RMSE(datos_potencia,estimacion)]    
+    UF_total=w_am*UF_am+w_temp*UF_temp 
+    estimacion=Curvas2['p_mp']*UF_total
+    Juntos=[estimacion,estimacion-datos_potencia,E.RMSE(datos_potencia,estimacion)]    
     Potencias_estimadas.loc['w_am='+str(i)]=Juntos
     
 
@@ -164,16 +220,16 @@ index=Potencias_estimadas[Potencias_estimadas['RMSE']==Potencias_estimadas['RMSE
 
 
 plt.figure(figsize=(30,15))
-plt.plot(df_filt_temp['aoi'],Curvas['p_mp'],'o',markersize=2,label='sin UF')
-plt.plot(df_filt_temp['aoi'],Potencias_estimadas['Potencias_estimadas (W)'][index],'o',markersize=2,label='Con UF')
-plt.plot(df_filt_temp['aoi'],df_filt_temp['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
+plt.plot(CPV['aoi'],Curvas2['p_mp'],'o',markersize=2,label='sin UF')
+plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'][index],'o',markersize=2,label='Con UF')
+plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
 plt.xlabel('Ángulo de incidencia (°)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()
 
 plt.figure(figsize=(30,15))
-plt.plot(df_filt_temp['aoi'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.plot(CPV['aoi'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
 plt.xlabel('Ángulo de incidencia (°)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
@@ -183,7 +239,7 @@ print('El error cuadrático medio de las estimaciones es de: ' + str(Potencias_e
 
 
 plt.figure(figsize=(30,15))
-plt.plot(df_filt_temp['T_Amb (°C)'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.plot(CPV['T_Amb (°C)'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
 plt.xlabel('Temperatura ambiente (°C)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
@@ -191,7 +247,7 @@ plt.legend()
 print('El error cuadrático medio de las estimaciones es de: ' + str(Potencias_estimadas['RMSE'][index]))
 
 plt.figure(figsize=(30,15))
-plt.plot(df_filt_temp['airmass_absolute'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.plot(CPV['airmass_absolute'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
 plt.xlabel('airmass (n.d.)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
@@ -199,11 +255,70 @@ plt.legend()
 print('El error cuadrático medio de las estimaciones es de: ' + str(Potencias_estimadas['RMSE'][index]))
 
 
+#%%
 
-# plt.figure(figsize=(30,15))
-# plt.plot(df_filt_temp['aoi'],Potencias_estimadas['Potencias_estimadas (W)'][index],'o',markersize=4,label='Potencia estimada')
-# plt.plot(df_filt_temp['aoi'],datos_potencia,'o',markersize=4,label='Datos de potencia')
-# plt.legend()
+#Ahora hay que buscar los pesos que mejor describan las potencias.
+w_am=0.5
+w_temp=0.5
+
+# UF_total=w_am*UF['UF_am']+w_temp*UF['UF_temp']
+# Potencia_estimada=Curvas['p_mp']*UF_total
+
+
+
+Potencias_estimadas=pd.DataFrame(columns=['Potencias_estimadas (W)','diferencias', 'RMSE'])
+datos_potencia=CPV['PMP_estimated_IIIV (W)'].values
+
+aux=np.arange(0,1,0.001)
+for i in aux:
+    w_am=i
+    w_temp=1-w_am    
+    UF_total=w_am*UF_am+w_temp*UF_temp 
+    estimacion=Curvas['p_mp']*UF_total
+    Juntos=[estimacion,estimacion-datos_potencia,E.RMSE(datos_potencia,estimacion)]    
+    Potencias_estimadas.loc['w_am='+str(i)]=Juntos
+    
+
+   
+index=Potencias_estimadas[Potencias_estimadas['RMSE']==Potencias_estimadas['RMSE'].min()].index[0]
+
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['aoi'],Curvas2['p_mp'],'o',markersize=2,label='sin UF')
+plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'][index],'o',markersize=2,label='Con UF')
+plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
+plt.legend()
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['aoi'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Residuos de las potencias calculadas con los datos estimados')
+plt.legend()
+print('El error cuadrático medio de las estimaciones es de: ' + str(Potencias_estimadas['RMSE'][index]))
+
+
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['T_Amb (°C)'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('Temperatura ambiente (°C)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Residuos de las potencias calculadas con los datos estimados')
+plt.legend()
+print('El error cuadrático medio de las estimaciones es de: ' + str(Potencias_estimadas['RMSE'][index]))
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['airmass_absolute'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('airmass (n.d.)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Residuos de las potencias calculadas con los datos estimados')
+plt.legend()
+print('El error cuadrático medio de las estimaciones es de: ' + str(Potencias_estimadas['RMSE'][index]))
+
+
 
 
 
