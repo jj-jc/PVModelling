@@ -79,11 +79,7 @@ filt_df_temp=filt_df
 # filt_df_temp=filt_df_temp[filt_df_temp['Wind Speed (m/s)']>=1.4]
 # filt_df_temp=filt_df_temp[filt_df_temp['Wind Speed (m/s)']<2.5]
 
-temp_cell=pvlib.temperature.pvsyst_cell(poa_global=filt_df_temp['DII_efectiva (W/m2)'], 
-                                        temp_air=filt_df_temp['T_Amb (°C)'],
-                                        wind_speed=filt_df_temp['Wind Speed (m/s)'], 
-                                        u_c=29.0, u_v=0.0, 
-                                        eta_m=0.1, alpha_absorption=0.9)
+
 fig=plt.figure(figsize=(30,15))
 plt.plot(temp_cell,filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos por debajo de AOILIMIT')
 plt.plot(filt_df_temp['T_Amb (°C)'].values,filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos por debajo de AOILIMIT')

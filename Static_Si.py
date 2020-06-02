@@ -55,7 +55,7 @@ SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters_Si,
 
 df_filt_Si=df[(df['aoi']>AOILIMIT)]
 
-temp_cell=pvlib.temperature.pvsyst_cell(poa_global=df_filt_Si['GII (W/m2)'], 
+temp_cell=pvlib.temperature.pvsyst_cell(poa_global=df_filt_Si['Irra_vista (W/m2)'], 
                                         temp_air=df_filt_Si['T_Amb (°C)'],
                                         wind_speed=df_filt_Si['Wind Speed (m/s)'], 
                                         u_c=29.0, u_v=0.0, 
@@ -71,9 +71,9 @@ temp_cell=pvlib.temperature.pvsyst_cell(poa_global=df_filt_Si['GII (W/m2)'],
 
 
 
-# Five_parameters=SistemaCPV.calcparams_pvsyst(effective_irradiance, temp_cell)
-Five_parameters1=SistemaCPV.calcparams_pvsyst(df_filt_Si['GII (W/m2)'], 25)
-
+Five_parameters=SistemaCPV.calcparams_pvsyst(df_filt_Si['Irra_vista (W/m2)'], temp_cell)
+Five_parameters1=SistemaCPV.calcparams_pvsyst(df_filt_Si['Irra_vista (W/m2)'], 25)
+Five_parameters2=SistemaCPV.calcparams_pvsyst(1000, 25)
 
 a=np.where((df_filt_Si['GNI (W/m2)']>1000) & (df_filt_Si['GNI (W/m2)']<1081) & (df_filt_Si['DNI (W/m2)']<895) & (df_filt_Si['DNI (W/m2)']>890))[0]
 
@@ -83,6 +83,9 @@ a=np.where((df_filt_Si['GNI (W/m2)']>1000) & (df_filt_Si['GNI (W/m2)']<1081) & (
 Curvas1=pvlib.pvsystem.singlediode(photocurrent=Five_parameters1[0], saturation_current=Five_parameters1[1],
                                   resistance_series=Five_parameters1[2],resistance_shunt=Five_parameters1[3], 
                                   nNsVth=Five_parameters1[4],ivcurve_pnts=100, method='lambertw')
+Curvas2=pvlib.pvsystem.singlediode(photocurrent=Five_parameters2[0], saturation_current=Five_parameters2[1],
+                                  resistance_series=Five_parameters2[2],resistance_shunt=Five_parameters2[3], 
+                                  nNsVth=Five_parameters2[4],ivcurve_pnts=100, method='lambertw')
 
 # #Representamos unas cuantas curavs iv
 plt.figure(figsize=(30,15))
@@ -91,6 +94,15 @@ plt.plot(Curvas1['v'][18],Curvas1['i'][18],'--',markersize=2,label='IAM(AOI)')
 plt.plot(Curvas1['v'][19],Curvas1['i'][19],'--',markersize=2,label='IAM(AOI)')
 plt.plot(Curvas1['v'][384],Curvas1['i'][384],'--',markersize=2,label='esta tiene que ser)')
 plt.plot(Curvas1['v'][390],Curvas1['i'][390],'--',markersize=2,label='IAM(AOI)')
+plt.plot(Curvas1['v'][391],Curvas1['i'][391],'--',markersize=2,label='IAM(AOI)')
+plt.plot(Curvas1['v'][392],Curvas1['i'][392],'--',markersize=2,label='IAM(AOI)')
+plt.plot(Curvas1['v'][393],Curvas1['i'][393],'--',markersize=2,label='IAM(AOI)')
+plt.legend()
+
+
+
+plt.figure(figsize=(30,15))
+plt.plot(Curvas2['v'],Curvas2['i'],'--',markersize=2,label='IAM(AOI)')
 plt.legend()
 # #Comparamos los datos de Pmp con los calculados
 # plt.figure(figsize=(30,15))

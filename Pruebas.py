@@ -50,22 +50,31 @@ Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=
 
 
 
-
 Irradiancias=CPV_location.get_clearsky(times=Fecha, model='ineichen', solar_position=Solar_position, dni_extra=None)
 
+
+AM=CPV_location.get_airmass(times=fecha, solar_position=Solar_position)
 
 
 POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
                                           solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'], 
                                           dni=Irradiancias['dni'], ghi=Irradiancias['ghi'], dhi=Irradiancias['dhi'],
-                                          dni_extra=None, airmass=None, albedo=0.25, surface_type=None, model='isotropic', 
+                                          dni_extra=None, airmass=AM['airmass_absolute'], albedo=0.25, surface_type=None, model='isotropic', 
                                           model_perez='allsitescomposite1990')
 
+Irradiancias['dni']=[892,644]
+Irradiancias['ghi']=[1081,950]
 
 
+POA2=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
+                                          solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'], 
+                                          dni=Irradiancias['dni'], ghi=Irradiancias['ghi'], dhi=Irradiancias['dhi'],
+                                          dni_extra=None, airmass=AM['airmass_absolute'], albedo=0.25, surface_type=None, model='isotropic', 
+                                          model_perez='allsitescomposite1990')
 
+print(POA2['poa_diffuse'])
         
-        
+print(POA['poa_diffuse'])        
         
         
         
