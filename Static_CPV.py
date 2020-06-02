@@ -6,21 +6,53 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from cpvtopvlib import cpvsystem
 import Error as E
+import datetime
 
-
+tz='Europe/Berlin'
 
 #AOILIMIT
 AOILIMIT=55.0
+pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
+
+#%%
+dataIV= pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Curvas_IIIV.txt', sep='\t',header=0,encoding='latin1')
+dataIV=dataIV[dataIV['Vmp (V)']<40]
+dataIV=dataIV[dataIV['Imp (A)']<1]
+
+lim_inferior=dataIV['Pmp (W)'].max()-1
+
+dibujar_puntos=dataIV[dataIV['Pmp (W)']>lim_inferior]
+datestr=dataIV['Date (DD/MM/YYYY)']+' '+dataIV['Time (CET)']
+
+dateobject=pd.to_datetime(datestr, format='%d/%m/%Y %H:%M:%S')
+Fecha=pd.DatetimeIndex(dateobject,tz=tz)
+dataIV=dataIV.set_index(Fecha)
+
+dataIV.drop(['Date (DD/MM/YYYY)','Time (CET)'],axis=1)
+#%%
+fig=plt.figure(figsize=(30,15))
+ 
+plt.plot(dataIV['Vmp (V)'],dataIV['Imp (A)'],'o',markersize=2,label='con DII_efectiva y 0.274 de eficiencia')  
+plt.plot(dibujar_puntos['Vmp (V)'],dibujar_puntos['Imp (A)'],'o',markersize=2,label='con DII_efectiva y 0.274 de eficiencia')
+plt.ylim(0,1) 
+plt.xlim(0,50)
+
+plt.xlabel('Horas')
+plt.ylabel('Temperatura de célula (°C)')
+plt.legend()
+plt.title("Temperatura de célula a lo largo de las horas de un día ")
 
 
 
-
-
+    
 #%%código para cuando aoi<AOILIMIT
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
 
 #SE filtran los datos que no correspondan a una tendencia clara de la potencia.
 CPV=df[(df['aoi']<=AOILIMIT)]
+Fecha=pd.DatetimeIndex(CPV['Date Time'])
+CPV=CPV.set_index(Fecha)
+CPV=CPV.drop(['Date Time'],axis=1)
 
 
 #%%
@@ -61,7 +93,7 @@ CPV['DII_efectiva2 (W/m2)']=CPV['DII (W/m2)']*E.calc_iam(CPV['aoi'].values,'Terc
 module_parameters_IIIV={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
                 'I_o_ref': 0.00000000017,'R_sh_ref': 5226, 'R_sh_0':21000,
                 'R_sh_exp': 5.50,'R_s': 0.01,'alpha_sc':0.00,'EgRef':3.91,
-                'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':12,
+                'irrad_ref': 890,'temp_ref':25, 'cells_in_series':12,
                 'eta_m':0.274, 'alpha_absorption':0.9}
 module_parameters_Si={'gamma_ref': 6.359, 'mu_gamma': 0.439, 'I_L_ref':1.266,
                 'I_o_ref': 0.0102,'R_sh_ref': 3200, 'R_sh_0':128000,
@@ -81,19 +113,47 @@ SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters_IIIV,
 #                                       racking_model='freestanding')
 
 
+#Se pone la eficiencia por defecto
+# temp_cell_DII=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.1, alpha_absorption=0.9)
+temp_cell_GII=pvlib.temperature.pvsyst_cell(poa_global=CPV['GII (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.274, alpha_absorption=1)
 
-temp_cell_DII=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.1, alpha_absorption=0.9)
-temp_cell=pvlib.temperature.pvsyst_cell(poa_global=CPV['GII (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.1, alpha_absorption=0.9)
+#Se pone la eficiencia obtenida según el paper de ASkins=0.274
+temp_cell_DII2=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.274, alpha_absorption=1)
+#Se pone la eficiencia obtenida según el paper de ASkins=0.274 y el coeficiente de 1 ya que no hay reflexion en los datos de DII efectiva
+temp_cell_DII3=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva2 (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.274, alpha_absorption=1)
 
-# plt.figure(figsize=(30,15))
-# plt.plot(CPV['aoi'],temp_cell,'o',markersize=2,label='DII_efectiva')
-# plt.plot(CPV['aoi'],temp_cell_global,'o',markersize=2,label='global')
-# plt.xlabel('Voltaje (III-V) (V)')
-# plt.ylabel('Corriente (III-V) (A)')
-# plt.title('Curvas I-V para validar el proceso anterior')
-# plt.legend()
+# date=np.array(['2019-05-30'])
+# for i in range(0,len(CPV.index.values)):
+#     if(i==0):
+#         date[0]=str(CPV.index[0].date())
+#     elif(CPV.index[i-1].date()!=CPV.index[i].date()):
+#         date=np.append(date,str(CPV.index[i].date()))
+     
+# #Para visualizar los datos
+# pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
+# for i in date:
+#     fig=plt.figure(figsize=(30,15))
+#     plt.plot(CPV[str(i)].index[:].time,temp_cell[str(i)],label='dni')   
+#     plt.plot(CPV[str(i)].index[:].time,temp_cell_DII[str(i)],label='ghi')
+
+#     plt.xlabel('Hora')
+#     plt.ylabel('Irradiancia (W/m2)')
+#     plt.legend()
+#     plt.title("Irradiancias calculadas "+ str(i))
+    
+fig=plt.figure(figsize=(30,15))
+plt.plot(CPV.index[:].time,temp_cell_GII,'o',markersize=2,label='con GII')   
+# plt.plot(CPV.index[:].time,temp_cell_DII2,'o',markersize=2,label='con DII_efectiva y 0.274 de eficiencia')   
+plt.plot(CPV.index[:].time,temp_cell_DII3,'o',markersize=2,label='con DII_efectiva y 0.274 de eficiencia y 1 como coeficiente de absorción')   
+plt.plot(dataIV.index[:].time,dataIV['Tlens (°C)'],'o',markersize=2,label='datos')   
+
+plt.xlabel('Horas')
+plt.ylabel('Temperatura de célula (°C)')
+plt.legend()
+plt.title("Temperatura de célula a lo largo de las horas de un día ")
 
 
+#%%
 # y_poli,RR_poli,a_s,b=E.regresion_polinomica(df_filt_temp['aoi'].values,df_filt_temp['ISC_IIIV/DII (A m2/W)'].values,2)
 # # Valor_normalizar=y_poli.max()
 # Valor_normalizar=0.00096
@@ -101,36 +161,44 @@ temp_cell=pvlib.temperature.pvsyst_cell(poa_global=CPV['GII (W/m2)'], temp_air=C
 
 # iam=y_poli
 
+temp_cell_DII=temp_cell_DII3
 
 
+Five_parameters_DII=SistemaCPV.calcparams_pvsyst(CPV['DII_efectiva (W/m2)'], temp_cell_DII)
+Five_parameters_GII=SistemaCPV.calcparams_pvsyst(CPV['DII_efectiva (W/m2)'], temp_cell_GII)
+Five_parameters=SistemaCPV.calcparams_pvsyst(CPV['DII (W/m2)'], temp_cell_DII)
+Five_parameters2_DII=SistemaCPV.calcparams_pvsyst(CPV['DII_efectiva2 (W/m2)'], temp_cell_DII)
+Five_parameters2_GII=SistemaCPV.calcparams_pvsyst(CPV['DII_efectiva2 (W/m2)'], temp_cell_GII)
 
-
-
-
-
-Five_parameters=SistemaCPV.calcparams_pvsyst(CPV['DII_efectiva (W/m2)'], temp_cell)
-
-Five_parameters1=SistemaCPV.calcparams_pvsyst(CPV['DII (W/m2)'], temp_cell)
-Five_parameters2=SistemaCPV.calcparams_pvsyst(CPV['DII_efectiva2 (W/m2)'], temp_cell)
-
-
+Curvas_DII=pvlib.pvsystem.singlediode(photocurrent=Five_parameters_DII[0], saturation_current=Five_parameters_DII[1],
+                                  resistance_series=Five_parameters_DII[2],resistance_shunt=Five_parameters_DII[3], 
+                                  nNsVth=Five_parameters_DII[4],ivcurve_pnts=100, method='lambertw')
+Curvas_GII=pvlib.pvsystem.singlediode(photocurrent=Five_parameters_GII[0], saturation_current=Five_parameters_GII[1],
+                                  resistance_series=Five_parameters_GII[2],resistance_shunt=Five_parameters_GII[3], 
+                                  nNsVth=Five_parameters_GII[4],ivcurve_pnts=100, method='lambertw')
+Curvas2_DII=pvlib.pvsystem.singlediode(photocurrent=Five_parameters2_DII[0], saturation_current=Five_parameters2_DII[1],
+                                  resistance_series=Five_parameters2_DII[2],resistance_shunt=Five_parameters2_DII[3], 
+                                  nNsVth=Five_parameters2_DII[4],ivcurve_pnts=100, method='lambertw')
+Curvas2_GII=pvlib.pvsystem.singlediode(photocurrent=Five_parameters2_GII[0], saturation_current=Five_parameters2_GII[1],
+                                  resistance_series=Five_parameters2_GII[2],resistance_shunt=Five_parameters2_GII[3], 
+                                  nNsVth=Five_parameters2_DII[4],ivcurve_pnts=100, method='lambertw')
 Curvas=pvlib.pvsystem.singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
                                   resistance_series=Five_parameters[2],resistance_shunt=Five_parameters[3], 
-                                  nNsVth=Five_parameters[4],ivcurve_pnts=100, method='lambertw')
-Curvas1=pvlib.pvsystem.singlediode(photocurrent=Five_parameters1[0], saturation_current=Five_parameters1[1],
-                                  resistance_series=Five_parameters1[2],resistance_shunt=Five_parameters1[3], 
-                                  nNsVth=Five_parameters1[4],ivcurve_pnts=100, method='lambertw')
-Curvas2=pvlib.pvsystem.singlediode(photocurrent=Five_parameters2[0], saturation_current=Five_parameters2[1],
-                                  resistance_series=Five_parameters2[2],resistance_shunt=Five_parameters2[3], 
-                                  nNsVth=Five_parameters2[4],ivcurve_pnts=100, method='lambertw')
+                                  nNsVth=Five_parameters2_DII[4],ivcurve_pnts=100, method='lambertw')
 
 #Representamos unas cuantas curavs iv
-
 plt.figure(figsize=(30,15))
-plt.plot(Curvas['v'][0],Curvas['i'][0],'--',markersize=2,label='IAM(AOI)')
-plt.plot(Curvas['v'][5],Curvas['i'][5],'--',markersize=2,label='IAM(AOI)')
-plt.plot(Curvas['v'][10],Curvas['i'][10],'--',markersize=2,label='IAM(AOI)')
-plt.plot(Curvas['v'][165],Curvas['i'][165],'--',markersize=2,label='IAM(AOI)')
+# plt.plot(Curvas['v'][0],Curvas['i'][0],'--',markersize=2,label='IAM(AOI)')
+# plt.plot(Curvas['v'][5],Curvas['i'][5],'--',markersize=2,label='IAM(AOI)')
+# plt.plot(Curvas['v'][10],Curvas['i'][10],'--',markersize=2,label='IAM(AOI)')
+plt.plot(Curvas_DII['v'][165],Curvas_DII['i'][165],'--',markersize=2,label='IAM_DII')
+plt.plot(Curvas_GII['v'][165],Curvas_GII['i'][165],'--',markersize=2,label='IAM_GII')
+plt.plot(Curvas2_DII['v'][165],Curvas2_DII['i'][165],'--',markersize=2,label='IAM_segundo_grado')
+plt.plot(Curvas2_GII['v'][165],Curvas2_GII['i'][165],'--',markersize=2,label='IAM_segundo_grado_GII')
+plt.plot(Curvas['v'][165],Curvas['i'][165],'--',markersize=2,label='IAM_segundo_grado_GII')
+plt.plot(dibujar_puntos['Vmp (V)'],dibujar_puntos['Imp (A)'],'o',markersize=2,label='con DII_efectiva y 0.274 de eficiencia')
+
+
 plt.xlabel('Voltaje (III-V) (V)')
 plt.ylabel('Corriente (III-V) (A)')
 plt.title('Curvas I-V para validar el proceso anterior')
@@ -138,10 +206,10 @@ plt.legend()
 
 #Comparamos los datos de Pmp con los calculados
 plt.figure(figsize=(30,15))
-plt.plot(CPV['aoi'],Curvas['p_mp'],'o',markersize=2,label='con iam')
-plt.plot(CPV['aoi'],Curvas1['p_mp'],'o',markersize=2,label='sin iam')
+plt.plot(CPV['aoi'],Curvas_DII['p_mp'],'o',markersize=2,label='con iam')
+plt.plot(CPV['aoi'],Curvas['p_mp'],'o',markersize=2,label='sin iam')
 plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
-plt.plot(CPV['aoi'],Curvas2['p_mp'],'o',markersize=2,label='con calc_iam ')
+plt.plot(CPV['aoi'],Curvas2_DII['p_mp'],'o',markersize=2,label='con calc_iam ')
 plt.xlabel('Ángulo de incidencia (°)')
 plt.ylabel('Puntos de máxima potencia (W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del iam')
@@ -210,7 +278,7 @@ for i in aux:
     w_am=i
     w_temp=1-w_am    
     UF_total=w_am*UF_am+w_temp*UF_temp 
-    estimacion=Curvas2['p_mp']*UF_total
+    estimacion=Curvas2_DII['p_mp']*UF_total
     Juntos=[estimacion,estimacion-datos_potencia,E.RMSE(datos_potencia,estimacion)]    
     Potencias_estimadas.loc['w_am='+str(i)]=Juntos
     
@@ -274,7 +342,7 @@ for i in aux:
     w_am=i
     w_temp=1-w_am    
     UF_total=w_am*UF_am+w_temp*UF_temp 
-    estimacion=Curvas['p_mp']*UF_total
+    estimacion=Curvas_DII['p_mp']*UF_total
     Juntos=[estimacion,estimacion-datos_potencia,E.RMSE(datos_potencia,estimacion)]    
     Potencias_estimadas.loc['w_am='+str(i)]=Juntos
     

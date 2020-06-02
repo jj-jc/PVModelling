@@ -53,16 +53,6 @@ filt_df=df[(df['T_Amb (°C)']>10.0)]
 Irradiancias=CPV_location.get_clearsky(times=Fecha, model='ineichen', solar_position=Solar_position, dni_extra=None)
 
 
-date=np.array(['2019-05-30'])
-for i in range(0,len(filt_df.index[:])):
-    if(i==0):
-        date[0]=str(filt_df.index[0].date())
-    elif(filt_df.index[i-1].date()!=filt_df.index[i].date()):
-        date=np.append(date,str(filt_df.index[i].date()))
-
-
-
-
 # #-----------DNI 
 # #de esta forma limpiamos los datos que no pertenezcan a los días claros
 # Porcentaje=5
@@ -79,8 +69,7 @@ filt_df=filt_df[(filt_df['SMR_Top_Mid (n.d.)'].astype(float)>0.7)]
 filt_df=filt_df[(filt_df['SMR_Top_Mid (n.d.)'].astype(float)<1.1)]
         
         
-        
-
+    
 filt_df=filt_df[filt_df['DII (W/m2)']>0] #evitamos problemas de infinitos en la siguiente ejecución
 
 filt_df['ISC_IIIV/DII (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII (W/m2)']
@@ -89,8 +78,7 @@ filt_df['ISC_IIIV/DII (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII (
 
 
 #-----------------------------------------filtrado 
-#filt_df=filt_df[filt_df['aoi']<=80] #no interesan en el CPV ángulos muy grandes
-#filtrar con una mediana de ISC_IIIV en pequeños intervaloes de aoi
+
 filt_df2=filt_df
 limSup=filt_df['aoi'].max()
 limInf=filt_df['aoi'].min()
@@ -264,25 +252,27 @@ ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia",
 (fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)')
 plt.show()
 
-#%%
+#%%AQUÍ SE OBSERVA LA DEPENDENCIA CON LA VELOCIDAD DEL VIENTO Y CON LA DIRECION DEL VIENTO
+
+
 fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['Wind Speed (m/s)'], cmap=Mappable_viento.cmap, norm=Mappable_viento.norm,s=10)
 plt.ylim(0,0.0012)
 #plt.xlim(1,2)
-ax.set_xlabel('Temperatura')
+ax.set_xlabel('Ángulo de incidencia (°)')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia",fontsize=20)
-(fig.colorbar(Mappable_viento)).set_label('Ángulo de incidencia (°)')
+ax.set_title("ISC/DII en función del ángulo de incidencia y la velocidad del viento",fontsize=20)
+(fig.colorbar(Mappable_viento)).set_label('Velocidad del viento (m/s)')
 plt.show()
 
 fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['Wind Dir. (m/s)'], cmap=Mappable_DirViento.cmap, norm=Mappable_DirViento.norm,s=10)
 plt.ylim(0,0.0012)
 #plt.xlim(1,2)
-ax.set_xlabel('Temperatura')
+ax.set_xlabel('Ángulo de incidencia (°)')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
-ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia",fontsize=20)
-(fig.colorbar(Mappable_DirViento)).set_label('Ángulo de incidencia (°)')
+ax.set_title("ISC/DII en función del ángulo de incidencia y la dirección del viento",fontsize=20)
+(fig.colorbar(Mappable_DirViento)).set_label('Dirección del viento (°N)')
 plt.show()
 
 
@@ -294,7 +284,7 @@ plt.show()
 filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv",encoding='utf-8')
 
 #%%
-# Estudiamos solo, sobre 
+ 
 
 
 
