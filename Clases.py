@@ -580,14 +580,14 @@ class PVSystem(object):
         else:
             return {}
 
-    def sapm_spectral_loss(self, airmass_absolute):
+    def sapm_spectral_loss(self, airmass_relative):
         """
         Use the :py:func:`sapm_spectral_loss` function, the input
         parameters, and ``self.module_parameters`` to calculate F1.
 
         Parameters
         ----------
-        airmass_absolute : numeric
+        airmass_relative : numeric
             Absolute airmass.
 
         Returns
@@ -595,7 +595,7 @@ class PVSystem(object):
         F1 : numeric
             The SAPM spectral loss coefficient.
         """
-        return sapm_spectral_loss(airmass_absolute, self.module_parameters)
+        return sapm_spectral_loss(, self.module_parameters)
 
     def sapm_aoi_loss(self, aoi):
         """
@@ -608,7 +608,7 @@ class PVSystem(object):
         return PVSystem.get_iam(self, aoi, iam_model='sapm')
 
     def sapm_effective_irradiance(self, poa_direct, poa_diffuse,
-                                  airmass_absolute, aoi,
+                                  airmass_relative, aoi,
                                   reference_irradiance=1000):
         """
         Use the :py:func:`sapm_effective_irradiance` function, the input
@@ -623,7 +623,7 @@ class PVSystem(object):
         poa_diffuse : numeric
             The diffuse irradiance incident on module.  [W/m2]
 
-        airmass_absolute : numeric
+        airmass_relative : numeric
             Absolute airmass. [unitless]
 
         aoi : numeric
@@ -635,7 +635,7 @@ class PVSystem(object):
             The SAPM effective irradiance. [W/m2]
         """
         return sapm_effective_irradiance(
-            poa_direct, poa_diffuse, airmass_absolute, aoi,
+            poa_direct, poa_diffuse, airmass_relative, aoi,
             self.module_parameters)
 
     def pvsyst_celltemp(self, poa_global, temp_air, wind_speed=1.0):
@@ -692,7 +692,7 @@ class PVSystem(object):
         return temperature.faiman(poa_global, temp_air, wind_speed,
                                   **kwargs)
 
-    def first_solar_spectral_loss(self, pw, airmass_absolute):
+    def first_solar_spectral_loss(self, pw, airmass_relative):
 
         """
         Use the :py:func:`first_solar_spectral_correction` function to
@@ -710,7 +710,7 @@ class PVSystem(object):
         pw : array-like
             atmospheric precipitable water (cm).
 
-        airmass_absolute : array-like
+        airmass_relative : array-like
             absolute (pressure corrected) airmass.
 
         Returns
@@ -732,7 +732,7 @@ class PVSystem(object):
             coefficients = None
 
         return atmosphere.first_solar_spectral_correction(pw,
-                                                          airmass_absolute,
+                                                          airmass_relative,
                                                           module_type,
                                                           coefficients)
 

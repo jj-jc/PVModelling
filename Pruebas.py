@@ -59,7 +59,7 @@ import matplotlib.cm
 # POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
 #                                           solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'], 
 #                                           dni=Irradiancias['dni'], ghi=Irradiancias['ghi'], dhi=Irradiancias['dhi'],
-#                                           dni_extra=None, airmass=AM['airmass_absolute'], albedo=0.25, surface_type=None, model='isotropic', 
+#                                           dni_extra=None, airmass=AM['airmass_relative'], albedo=0.25, surface_type=None, model='isotropic', 
 #                                           model_perez='allsitescomposite1990')
 
 # Irradiancias['dni']=[892,644]
@@ -69,7 +69,7 @@ import matplotlib.cm
 # POA2=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
 #                                           solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'], 
 #                                           dni=Irradiancias['dni'], ghi=Irradiancias['ghi'], dhi=Irradiancias['dhi'],
-#                                           dni_extra=None, airmass=AM['airmass_absolute'], albedo=0.25, surface_type=None, model='isotropic', 
+#                                           dni_extra=None, airmass=AM['airmass_relative'], albedo=0.25, surface_type=None, model='isotropic', 
 #                                           model_perez='allsitescomposite1990')
 
 # print(POA2['poa_diffuse'])

@@ -49,12 +49,12 @@ plt.legend()
 
 
 # Incremento=1
-# Max_temp=math.ceil(filt_df['airmass_absolute'].max())*10
-# Min_temp=math.floor(filt_df['airmass_absolute'].min())*10
+# Max_temp=math.ceil(filt_df['airmass_relative'].max())*10
+# Min_temp=math.floor(filt_df['airmass_relative'].min())*10
 # fig=go.Figure()
 # for i in range(Min_temp,Max_temp,Incremento):
-#     AUX=filt_df[(filt_df['airmass_absolute']>=float(i/10))]
-#     AUX=AUX[((AUX['airmass_absolute'])<(i+Incremento)/10)]    
+#     AUX=filt_df[(filt_df['airmass_relative']>=float(i/10))]
+#     AUX=AUX[((AUX['airmass_relative'])<(i+Incremento)/10)]    
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
@@ -94,13 +94,13 @@ plt.legend()
 
 
 # Incremento=0.1
-# Max_temp=math.ceil(filt_df_temp['airmass_absolute'].max())
-# Min_temp=math.floor(filt_df_temp['airmass_absolute'].min())
+# Max_temp=math.ceil(filt_df_temp['airmass_relative'].max())
+# Min_temp=math.floor(filt_df_temp['airmass_relative'].min())
 # contador=np.arange(Min_temp,Max_temp,Incremento)
 # fig=go.Figure()
 # for i in contador:
-#     AUX=filt_df_temp[(filt_df_temp['airmass_absolute']>=float(i))]
-#     AUX=AUX[((AUX['airmass_absolute'])<i+Incremento)]    
+#     AUX=filt_df_temp[(filt_df_temp['airmass_relative']>=float(i))]
+#     AUX=AUX[((AUX['airmass_relative'])<i+Incremento)]    
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
@@ -126,8 +126,8 @@ plt.legend()
 filt_df_temp=filt_df
 
 
-filt_df_temp=filt_df_temp[(filt_df_temp['airmass_absolute']>=0.9)]
-filt_df_temp=filt_df_temp[(filt_df_temp['airmass_absolute']<1.0)]
+filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']>=0.9)]
+filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']<1.0)]
 # filt_x=filt_df_temp['T_Amb (°C)'].values
 # filt_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
@@ -196,7 +196,7 @@ filt_df_am=filt_df
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII (A m2/W)'],
-#     x=AUX['airmass_absolute'],
+#     x=AUX['airmass_relative'],
 #     mode='markers',
 #     visible=True,
 #     showlegend=True,
@@ -215,7 +215,7 @@ filt_df_am=filt_df
 # filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=26.0]
 # filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28.0]
 
-filt_x=filt_df_am['airmass_absolute'].values
+filt_x=filt_df_am['airmass_relative'].values
 filt_y=filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
 
@@ -235,7 +235,7 @@ filt_y=filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
-#     x=AUX['airmass_absolute'],
+#     x=AUX['airmass_relative'],
 #     mode='markers',
 #     visible=True,
 #     showlegend=True,
@@ -261,7 +261,7 @@ filt_y=filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
-#     x=AUX['airmass_absolute'],
+#     x=AUX['airmass_relative'],
 #     mode='markers',
 #     visible=True,
 #     showlegend=True,
@@ -305,7 +305,7 @@ filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28]
 
 fig=plt.figure(figsize=(30,15))
 plt.plot(filt_x,filt_y,'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')
-plt.plot(filt_df_am['airmass_absolute'].values, filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')
+plt.plot(filt_df_am['airmass_relative'].values, filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
 plt.title('Datos escogidos de la nube de puntos')
 plt.legend()
@@ -318,19 +318,19 @@ plt.legend()
 #ESTE PROGRAMA ES PARA AVERIGUAR CUAL ES EL MEJOR THLDS
 # Se obtiene un RR=0.8540025403043598 y un thld=1.2467475563652137
 
-aux=np.arange(filt_df_am['airmass_absolute'].min(),filt_df_am['airmass_absolute'].max(),0.001) 
+aux=np.arange(filt_df_am['airmass_relative'].min(),filt_df_am['airmass_relative'].max(),0.001) 
 thld=30
 RR_max=0.01
 for i in aux:
-    filt_df_low=filt_df_am[filt_df_am['airmass_absolute']<=i]
-    filt_df_high=filt_df_am[filt_df_am['airmass_absolute']>i]
+    filt_df_low=filt_df_am[filt_df_am['airmass_relative']<=i]
+    filt_df_high=filt_df_am[filt_df_am['airmass_relative']>i]
 
-    x_low=filt_df_low['airmass_absolute'].values
+    x_low=filt_df_low['airmass_relative'].values
     y_low=filt_df_low['ISC_IIIV/DII_efectiva (A m2/W)'].values
     yr_low, RR_low, a_s_low, b_low=E.regresion_polinomica(x_low, y_low, 1)
     
     
-    x_high=filt_df_high['airmass_absolute'].values
+    x_high=filt_df_high['airmass_relative'].values
     y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values
     yr_high, RR_high, a_s_high, b_high=E.regresion_polinomica(x_high, y_high, 1)
     
@@ -349,14 +349,14 @@ for i in aux:
         
         
 #%%
-filt_df_low=filt_df_am[filt_df_am['airmass_absolute']<=thld]
-filt_df_high=filt_df_am[filt_df_am['airmass_absolute']>thld]
+filt_df_low=filt_df_am[filt_df_am['airmass_relative']<=thld]
+filt_df_high=filt_df_am[filt_df_am['airmass_relative']>thld]
 
-x_low=filt_df_low['airmass_absolute'].values
+x_low=filt_df_low['airmass_relative'].values
 y_low=filt_df_low['ISC_IIIV/DII_efectiva (A m2/W)'].values
 yr_low, RR_low, a_s_low, b_low=E.regresion_polinomica(x_low, y_low, 1)
 
-x_high=filt_df_high['airmass_absolute'].values
+x_high=filt_df_high['airmass_relative'].values
 y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values
 yr_high, RR_high, a_s_high, b_high=E.regresion_polinomica(x_high, y_high, 1)
 
@@ -395,7 +395,7 @@ y_low_min=float(1 + (x_low[np.where(yr_low==yr_low.min())] - thld_low) * (a_s_lo
 
 
 simple_uf=[]
-for i in filt_df_am['airmass_absolute'].values:
+for i in filt_df_am['airmass_relative'].values:
     if i < thld:
         simple_uf.append(float(1 + (i - thld_low) * (a_s_low[1])/VALOR_NORMALIZAR))
 
@@ -405,7 +405,7 @@ for i in filt_df_am['airmass_absolute'].values:
         
 
 fig=plt.figure(figsize=(30,15))
-plt.plot(filt_df_am['airmass_absolute'],simple_uf,'o',markersize=4,label='Datos primera parte')
+plt.plot(filt_df_am['airmass_relative'],simple_uf,'o',markersize=4,label='Datos primera parte')
 
 
 
@@ -424,7 +424,7 @@ UF_am=simple_uf
 
 
 #%%Compruebo con un segundo grado
-x=filt_df['airmass_absolute'].values
+x=filt_df['airmass_relative'].values
 y=filt_df['ISC_IIIV/DII (A m2/W)'].values
 yr, RR, a_s, b=E.regresion_polinomica(x, y, 2)
 
@@ -466,7 +466,7 @@ print('El coeficiente de determinación es de: ', str(RR))
 
 
 #%%UN CÓDIGO PARA buscar el más óptimo del airmass
-x=filt_df_am['airmass_absolute'].values
+x=filt_df_am['airmass_relative'].values
 
 RR_max_high=-1
 RR_max=-1
@@ -479,16 +479,16 @@ thlds=np.arange(x.min(),x.max(),0.001)
 
 for j in thlds:
     
-    filt_df_low=filt_df_am[filt_df_am['airmass_absolute']<=j]
-    filt_df_high=filt_df_am[filt_df_am['airmass_absolute']>j]
+    filt_df_low=filt_df_am[filt_df_am['airmass_relative']<=j]
+    filt_df_high=filt_df_am[filt_df_am['airmass_relative']>j]
     
-    x_low=filt_df_low['airmass_absolute'].values
+    x_low=filt_df_low['airmass_relative'].values
     y_low=filt_df_low['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR
     yr_low, RR_low, a_s_low, b_low=E.regresion_polinomica(x_low, y_low, 1)
     y_max=float(yr_low[np.where(yr_low==yr_low.max())])
     
-    x_high=filt_df_high['airmass_absolute'].values
-    x_desplazado=filt_df_high['airmass_absolute'].values-thld
+    x_high=filt_df_high['airmass_relative'].values
+    x_desplazado=filt_df_high['airmass_relative'].values-thld
     y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR  
     
     #y_regresion=mx+b donde la b=y_max
@@ -516,13 +516,13 @@ for j in thlds:
                 
                 
                 
-filt_df_low=filt_df_am[filt_df_am['airmass_absolute']<=thld]
-filt_df_high=filt_df_am[filt_df_am['airmass_absolute']>thld]
+filt_df_low=filt_df_am[filt_df_am['airmass_relative']<=thld]
+filt_df_high=filt_df_am[filt_df_am['airmass_relative']>thld]
 
-x_low=filt_df_low['airmass_absolute'].values
+x_low=filt_df_low['airmass_relative'].values
 y_low=filt_df_low['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR
 
-x_high=filt_df_high['airmass_absolute'].values
+x_high=filt_df_high['airmass_relative'].values
 
 y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR  
 
@@ -550,7 +550,7 @@ fig=plt.figure(figsize=(30,15))
 # plt.plot(x,simple_uf,'o',markersize=4,label='Datos primera parte')
 plt.plot(x_low,y_producida_low,'o',markersize=4,label='De forma polinómica de grado 2')
 plt.plot(x_high,y_producida_high,'o',markersize=4,label='De forma polinómica de grado 2')
-plt.plot(filt_df_am['airmass_absolute'],filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)']/VALOR_NORMALIZAR,'o',markersize=4,label='De forma polinómica de grado 2')
+plt.plot(filt_df_am['airmass_relative'],filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)']/VALOR_NORMALIZAR,'o',markersize=4,label='De forma polinómica de grado 2')
 # plt.plot(x_high,y_aux,'o',markersize=4,label='De forma polinómica de grado 2')
 # plt.plot(x_high,y_high,'o',markersize=4,label='De forma polinómica de grado 2')
 plt.xlabel('airmass (n.d.)')
@@ -558,7 +558,7 @@ plt.ylabel('ISC_IIIV/DII (A m2/W)')
 plt.title('Comparación de las dos modelos de UF para el airmass')
 plt.legend()        
 #%%ahora hay que aplicar el método de UF
-x=filt_df_am['airmass_absolute'].values
+x=filt_df_am['airmass_relative'].values
 y=filt_df_am['ISC_IIIV/DII (A m2/W)'].values
 
 

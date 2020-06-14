@@ -45,7 +45,7 @@ plt.legend()
 
 
 plt.figure(figsize=(30,15))
-plt.plot(filt_df2['airmass_absolute'],filt_y,'o',markersize=2,label='Previsión actual')
+plt.plot(filt_df2['airmass_relative'],filt_y,'o',markersize=2,label='Previsión actual')
 # plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'],'o',markersize=2,label='Con UF')
 plt.xlabel('airmass (n.d.)')
 plt.ylabel('Eficiencia de intensidad (A m2/W)')
@@ -181,7 +181,7 @@ plt.legend()
 
 
 # plt.figure(figsize=(30,15))
-# plt.plot(filt_df2['airmass_absolute'],filt_y,'o',markersize=2,label='Previsión actual')
+# plt.plot(filt_df2['airmass_relative'],filt_y,'o',markersize=2,label='Previsión actual')
 # # plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'],'o',markersize=2,label='Con UF')
 # plt.xlabel('Ángulo de incidencia (°)')
 # plt.ylabel('Potencia (III-V)(W)')

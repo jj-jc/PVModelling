@@ -246,7 +246,7 @@ UF=UF.drop(['Unnamed: 0'],axis=1)
 
 #AHORA HAY QUE GENERAR LOS VALORES CON LOS LAS PENDIENTES DE LOS UF
 #hora hay que aplicar el método de UF
-x_am=CPV['airmass_absolute'].values
+x_am=CPV['airmass_relative'].values
 
 # y=CPV['ISC_IIIV/DII (A m2/W)'].values
 thld_am=UF.loc['thld']['UF_am_low']
@@ -330,7 +330,7 @@ plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['airmass_absolute'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.plot(CPV['airmass_relative'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
 plt.xlabel('airmass (n.d.)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
@@ -388,7 +388,7 @@ plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['airmass_absolute'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.plot(CPV['airmass_relative'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
 plt.xlabel('airmass (n.d.)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
@@ -445,7 +445,7 @@ plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['airmass_absolute'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.plot(CPV['airmass_relative'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
 plt.xlabel('airmass (n.d.)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
@@ -491,7 +491,7 @@ plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['airmass_absolute'],Potencias_estimadas['diferencias'],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.plot(CPV['airmass_relative'],Potencias_estimadas['diferencias'],'o',markersize=4,label='Residuos de las potencias calculadas ')
 plt.xlabel('airmass (n.d.)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')

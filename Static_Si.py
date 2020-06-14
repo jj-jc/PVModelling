@@ -262,7 +262,7 @@ print('El error cuadrático medio de la aproximación es de: ' + str(Error_iam_S
 
 
 # plt.figure(figsize=(30,15))
-# plt.plot(df_filt_Si['airmass_absolute'],df_filt_Si['ISC_Si/Irra_vista_efectiva (A m2/W)'],'o',markersize=2,label='IAM(AOI)')
+# plt.plot(df_filt_Si['airmass_relative'],df_filt_Si['ISC_Si/Irra_vista_efectiva (A m2/W)'],'o',markersize=2,label='IAM(AOI)')
 # plt.legend()
 
 # plt.figure(figsize=(30,15))

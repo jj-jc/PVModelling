@@ -559,14 +559,17 @@ plt.plot(filt_cuadro2['aoi'].values,filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values
 #%%
 
 #ESTE PROGRAMA ES PARA AVERIGUAR CUAL ES EL MEJOR THLDS  PARA EL AOI 
+filt_regresion=pd.DataFrame({'aoi':x_regresion,'ISC_IIIV/DII (A m2/W)':y_regresion})
 
 
-aux=np.arange(filt_cuadro2['aoi'].min(),filt_cuadro2['aoi'].max(),1) 
+#%%
+
+aux=np.arange(filt_regresion['aoi'].min(),filt_regresion['aoi'].max(),1) 
 thdl=30
 RR_max=0.01
 for i in aux:
-    filt_df_low=filt_cuadro2[filt_cuadro2['aoi']<=i]
-    filt_df_high=filt_cuadro2[filt_cuadro2['aoi']>i]
+    filt_df_low=filt_regresion[filt_regresion['aoi']<=i]
+    filt_df_high=filt_regresion[filt_regresion['aoi']>i]
 
     x_low=filt_df_low['aoi'].values
     y_low=filt_df_low['ISC_IIIV/DII (A m2/W)'].values
@@ -589,12 +592,12 @@ for i in aux:
 
 #ahora buscamos las mejores regresiones
 #----poli2
-y_poli2,RR_poli2,a_s2,b2=Error.regresion_polinomica(filt_cuadro2['aoi'].values,filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values,2)
+y_poli2,RR_poli2,a_s2,b2=Error.regresion_polinomica(filt_regresion['aoi'].values,filt_regresion['ISC_IIIV/DII (A m2/W)'].values,2)
 #-----poli3
-y_poli3,RR_poli3,a_s3,b3=Error.regresion_polinomica(filt_cuadro2['aoi'].values,filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values,3)
+y_poli3,RR_poli3,a_s3,b3=Error.regresion_polinomica(filt_regresion['aoi'].values,filt_regresion['ISC_IIIV/DII (A m2/W)'].values,3)
 #-----poli1
-filt_df_low=filt_cuadro2[filt_cuadro2['aoi']<=thld]
-filt_df_high=filt_cuadro2[filt_cuadro2['aoi']>thld]
+filt_df_low=filt_regresion[filt_regresion['aoi']<=thld]
+filt_df_high=filt_regresion[filt_regresion['aoi']>thld]
 
 x_low=filt_df_low['aoi'].values
 y_low=filt_df_low['ISC_IIIV/DII (A m2/W)'].values
@@ -612,15 +615,15 @@ yr_total=np.concatenate((yr_low,yr_high))
 RR_poli1=Error.Determination_coefficient(y_total, yr_total)
 
 #-------ashrae
-IAM_ashrae,RR_ashrae,b_ashrae=Error.regresion_ashrae(filt_cuadro2['aoi'].values,filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values/VALOR_NORMALIZAR)
+IAM_ashrae,RR_ashrae,b_ashrae=Error.regresion_ashrae(filt_regresion['aoi'].values,filt_regresion['ISC_IIIV/DII (A m2/W)'].values/VALOR_NORMALIZAR)
 #b=a1
 
 #-------physical
-IAM_physical,RR_physical,n,k,l=Error.regresion_physical(filt_cuadro2['aoi'].values,filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values/VALOR_NORMALIZAR)
+IAM_physical,RR_physical,n,k,l=Error.regresion_physical(filt_regresion['aoi'].values,filt_regresion['ISC_IIIV/DII (A m2/W)'].values/VALOR_NORMALIZAR)
 #n=a1,k=a2,l=a3
 
 #-------Martin Ruiz
-IAM_martin_ruiz,RR_martin_ruiz,a_r=Error.regresion_martin_ruiz(filt_cuadro2['aoi'].values,filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values/VALOR_NORMALIZAR)
+IAM_martin_ruiz,RR_martin_ruiz,a_r=Error.regresion_martin_ruiz(filt_regresion['aoi'].values,filt_regresion['ISC_IIIV/DII (A m2/W)'].values/VALOR_NORMALIZAR)
 #a_r=a1
 
 fig=plt.figure(figsize=(30,15))
@@ -633,10 +636,10 @@ plt.title('Datos filtrados para 26 °C' )
 plt.legend()
 
 fig=plt.figure(figsize=(30,15))
-plt.plot(filt_cuadro2['aoi'].values,filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values,'o',markersize=4,label='Datos')
+plt.plot(filt_regresion['aoi'].values,filt_regresion['ISC_IIIV/DII (A m2/W)'].values,'o',markersize=4,label='Datos')
 plt.plot(x_total,yr_total,'o',markersize=4,label='regresión de primer grado')
-plt.plot(filt_cuadro2['aoi'].values,y_poli2,'o',markersize=4,label='regresión de segundo grado')
-plt.plot(filt_cuadro2['aoi'].values,y_poli3,'o',markersize=4,label='regresión de tercer grado')
+plt.plot(filt_regresion['aoi'].values,y_poli2,'o',markersize=4,label='regresión de segundo grado')
+plt.plot(filt_regresion['aoi'].values,y_poli3,'o',markersize=4,label='regresión de tercer grado')
 
 plt.xlabel('Ángulo de incidencia (°)')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
@@ -664,7 +667,7 @@ print('El coeficiente de determinación para la regresión de physical es: '+str
 
 #este no puede ser el valor para normzalizar, debido que tiene la influecnia del aoi. Por ello no está corregido 
 #y como no está corregido, no se conoce el valor de ISC/DII normal.
-VALOR_NORMALIZAR=0.00096
+VALOR_NORMALIZAR=y_poli3.max()
 
 x=np.arange(0,55,1)
 y3=(a_s3[3]*x**3+a_s3[2]*x**2+a_s3[1]*x+b3)/VALOR_NORMALIZAR
@@ -678,9 +681,9 @@ plt.plot(filt_cuadro2['aoi'].values,filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values
 plt.plot(x,y3,'o',markersize=4,label='IAM_tercer_grado')
 plt.plot(x,y2,'o',markersize=4,label='IAM_segundo_grado')
 plt.plot(x,y1,'o',markersize=4,label='IAM_primer_grado')
-plt.plot(filt_cuadro2['aoi'].values,IAM_martin_ruiz,'o',markersize=4,label='IAM_martin_ruiz')
-plt.plot(filt_cuadro2['aoi'].values,IAM_ashrae,'o',markersize=4,label='IAM_ashrae')
-plt.plot(filt_cuadro2['aoi'].values,IAM_physical,'o',markersize=4,label='IAM_physical')
+plt.plot(filt_regresion['aoi'].values,IAM_martin_ruiz,'o',markersize=4,label='IAM_martin_ruiz')
+plt.plot(filt_regresion['aoi'].values,IAM_ashrae,'o',markersize=4,label='IAM_ashrae')
+plt.plot(filt_regresion['aoi'].values,IAM_physical,'o',markersize=4,label='IAM_physical')
 
 plt.xlabel('Ángulo de incidencia (°)')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')

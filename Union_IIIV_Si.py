@@ -130,8 +130,8 @@ df_IIIV=df_IIIV.drop(['Date Time'],axis=1)
 
 # AUX=df_IIIV[df_IIIV['GNI (W/m2)']>990]
 # AUX=AUX[AUX['GNI (W/m2)']<1010]
-# AUX=AUX[AUX['airmass_absolute']>1.45]
-# AUX=AUX[AUX['airmass_absolute']<1.55]
+# AUX=AUX[AUX['airmass_relative']>1.45]
+# AUX=AUX[AUX['airmass_relative']<1.55]
 
 #los datos que cumplen estas condiciones tienen aois de 50 a 70 por lo que no cumplen lo de dirercta
 

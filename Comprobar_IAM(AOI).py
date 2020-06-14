@@ -153,10 +153,10 @@ for i in range(n_intervalos):
 #    
 ##-------------------------Por último se quiere observar el am debido a que las gráficas son mucho más compactas
 #    
-#RR_am, y_regre, indep, m=E.regresion_lineal(df['airmass_absolute'],df['IAM_aoi'])
+#RR_am, y_regre, indep, m=E.regresion_lineal(df['airmass_relative'],df['IAM_aoi'])
 #plt.figure(figsize=(30,15))
-#plt.plot(df['airmass_absolute'],y_regre, 'o',markersize=2)
-#plt.plot(df['airmass_absolute'],df['IAM_aoi'],'o', markersize=2)
+#plt.plot(df['airmass_relative'],y_regre, 'o',markersize=2)
+#plt.plot(df['airmass_relative'],df['IAM_aoi'],'o', markersize=2)
 #plt.show()
 #print(RR_am)
 #
@@ -173,11 +173,11 @@ for i in range(n_intervalos):
 #    lim_sup=limInf+incremento*(1+i)
 #    AUX=df[df['T_Amb (°C)']>lim_inf]
 #    AUX=AUX[AUX['T_Amb (°C)']<=lim_sup]
-#    RR_am,y_am,indep,m=E.regresion_lineal(AUX['airmass_absolute'],AUX['IAM_aoi'])
+#    RR_am,y_am,indep,m=E.regresion_lineal(AUX['airmass_relative'],AUX['IAM_aoi'])
 #    plt.figure(figsize=(30,15))
-#    plt.plot(df['airmass_absolute'],df['IAM_aoi'],'o',markersize=2,label='todos los datos')
-#    plt.plot(AUX['airmass_absolute'],AUX['IAM_aoi'],'o',markersize=2,label='datos estudiados')
-#    plt.plot(AUX['airmass_absolute'],y_am,'o',markersize=2,label='regresión lineal')
+#    plt.plot(df['airmass_relative'],df['IAM_aoi'],'o',markersize=2,label='todos los datos')
+#    plt.plot(AUX['airmass_relative'],AUX['IAM_aoi'],'o',markersize=2,label='datos estudiados')
+#    plt.plot(AUX['airmass_relative'],y_am,'o',markersize=2,label='regresión lineal')
 #    plt.xlabel('relative airmass')
 #    plt.ylabel('Factor de utilización IAM_am')
 ##    plt.text(12, 0.4,'AOI entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ ' y '+ str(lim_sup)[:str(lim_sup).find(".")], fontsize=15)

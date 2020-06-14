@@ -321,7 +321,7 @@ x=filt_df2['aoi']
 y1=filt_df2['ISC_Si/Irra_vista (A m2/W)']
 x_aoi=filt_df2['aoi']
 x_temp=filt_df2['T_Amb (°C)']
-x_AM=filt_df2['airmass_absolute']
+x_AM=filt_df2['airmass_relative']
 #
 #Para ver las irradiancias tras el filtrado
 
@@ -375,11 +375,11 @@ ax.set_xlabel('T_Amb (°C)')
 ax.set_ylabel('ISC_Si/Irradiancia vista por silicio (A m2/W)')
 ax.set_title("ISC_Si/Irradiancia vista por silicio en función de la temperarua ambiente",fontsize=20)
 plt.legend()
-#airmass_absolute
+#airmass_relative
 fig, ax=plt.subplots(figsize=(30,15))
 ax.plot(x_AM,y1,'o',markersize=2)
 plt.ylim(0,0.04)
-ax.set_xlabel('airmass_absolute')
+ax.set_xlabel('airmass_relative')
 ax.set_ylabel('ISC_Si/Irradiancia vista por silicio (A m2/W)')
 ax.set_title("ISC_Si/Irradiancia vista por silicio en función del airmass",fontsize=20)
 plt.legend()
@@ -397,7 +397,7 @@ norm=plt.Normalize(filt_df2['aoi'].min(),filt_df2['aoi'].max())
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["blue","violet","red"])
 Mappable_aoi=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 #airmass
-norm=plt.Normalize(filt_df2['airmass_absolute'].min(),filt_df2['airmass_absolute'].max())
+norm=plt.Normalize(filt_df2['airmass_relative'].min(),filt_df2['airmass_relative'].max())
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["blue","violet","red"])
 Mappable_airmass=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 

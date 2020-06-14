@@ -22,14 +22,56 @@ CPV_location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=a
 Fecha=pd.DatetimeIndex(df['Date Time'],tz=tz)
 
 Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (°C)'])
+# Solar_position2=pvlib.solarposition.get_solarposition(Fecha, latitude=lat,
+#                                                       longitude=lon, altitude=alt, 
+#                                                       pressure=None, method='nrel_numpy', 
+#                                                       temperature=df['T_Amb (°C)'])
 AOI=pd.DataFrame(pvlib.irradiance.aoi(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth, 
                                       solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth']))
-AM=CPV_location.get_airmass(times=Fecha, solar_position=Solar_position)
+AM=CPV_location.get_airmass(times=Fecha, solar_position=Solar_position,model='simple')
+'''PARA COMPARAR LOS DIFEERNTES MODELOS 
+AM1=CPV_location.get_airmass(times=Fecha, solar_position=Solar_position,model='simple')
+AM2=CPV_location.get_airmass(times=Fecha, solar_position=Solar_position,model='youngirvine1967')
+
+AM3=CPV_location.get_airmass(times=Fecha, solar_position=Solar_position,model='kastenyoung1989')
+AM4=CPV_location.get_airmass(times=Fecha, solar_position=Solar_position,model='gueymard1993')
+AM5=CPV_location.get_airmass(times=Fecha, solar_position=Solar_position,model='young1994')
+AM6=CPV_location.get_airmass(times=Fecha, solar_position=Solar_position,model='pickering2002')
+
+
+print(AM['airmass_absolute'].min())
+print(AM1['airmass_absolute'].min())
+print(AM2['airmass_absolute'].min())
+
+print(AM3['airmass_absolute'].min())
+
+print(AM4['airmass_absolute'].min())
+
+print(AM5['airmass_absolute'].min())
+print(AM6['airmass_absolute'].min())
+
+print('airmass_relative')
+print(AM['airmass_relative'].min())
+print(AM1['airmass_relative'].min())
+print(AM2['airmass_relative'].min())
+
+print(AM3['airmass_relative'].min())
+
+print(AM4['airmass_relative'].min())
+
+print(AM5['airmass_relative'].min())
+print(AM6['airmass_relative'].min())
+
+
+'''
+
+
+#%%
 Irradiancias=CPV_location.get_clearsky(times=Fecha, model='ineichen', solar_position=None, dni_extra=None)
 
 AM=AM.set_index([pd.Series(df.index)])
 AOI=AOI.set_index([pd.Series(df.index)])
-df=pd.concat([df,AM['airmass_absolute'],AOI],axis=1)
+df=pd.concat([df,AM['airmass_relative'],AOI],axis=1)
 df=df.set_index(Fecha)
 df=df.drop(['Date Time'],axis=1)
 df['GHI (W/m2)']=Irradiancias['ghi']
@@ -91,7 +133,7 @@ for i in date:
 
 #df['ISC_IIIV/DII (A m2/W)']=df['ISC_measured_IIIV (A)']/df['DII (W/m2)']
 #fig=plt.figure(figsize=(30,15))
-#plt.plot(df['airmass_absolute'],df['ISC_IIIV/DII (A m2/W)'],'o')  
+#plt.plot(df['airmass_relative'],df['ISC_IIIV/DII (A m2/W)'],'o')  
 #plt.ylim(0,0.01) 
 
 
