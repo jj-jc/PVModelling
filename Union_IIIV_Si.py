@@ -23,7 +23,7 @@ plt.plot(df_juntos.index.values,df_juntos['PMP_estimated_Si (W)'],'o',markersize
 plt.plot(df_juntos.index.values,df_juntos['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Potencia estimada IIIV')
 plt.xlabel('Tiempo')
 plt.ylabel('Potencia estimada (W)')
-plt.title("Comparativa de potencias estimadas del III-V con el Silicio en función del ángulo de incidencia")
+plt.title("Comparativa de potencias estimadas del III-V con el Silicio en función del tiempo")
 plt.legend()
 
 
@@ -35,14 +35,13 @@ plt.ylabel('Intensidad medida (A)')
 plt.title("Comparativa de intensidades del III-V con el Silicio en función del tiempo de todos los datos")
 plt.legend()
 
-
-# fig=plt.figure(figsize=(30,15))
-# plt.xlim(0.6,1)
-# plt.plot(df_juntos['DII/GII'],df_juntos['ISC_IIIV/ISC_Si'],'o',markersize=2)
-# plt.xlabel('Proporción de Irradiancia directa incidente sobre la Irradiancia general incidente')
-# plt.ylabel('Proporción de Intensidad de concentración sobre intensidad del silicio')
-# plt.title("Representación de proporción de intensidades en función de la proporción de irradiancias")
-
+fig=plt.figure(figsize=(30,15))
+plt.plot(df_juntos['aoi'],df_juntos['PMP_estimated_Si (W)'],'o',markersize=2, label='Potencia estimada Si')
+plt.plot(df_juntos['aoi'],df_juntos['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Potencia estimada IIIV')
+plt.xlabel('Tiempo')
+plt.ylabel('Potencia estimada (W)')
+plt.title("Comparativa de potencias estimadas del III-V con el Silicio en función del ángulo de incidencia")
+plt.legend()
 
 # fig=plt.figure(figsize=(30,15))
 # plt.plot(df_juntos['aoi'],df_juntos['ISC_IIIV/DII (A m2/W)'],'o',markersize=2,label='Intensidad efectiva del III-V')
@@ -89,6 +88,8 @@ host.yaxis.get_label().set_color(p1.get_color())
 leg.texts[0].set_color(p1.get_color())
 par.yaxis.get_label().set_color(p2.get_color())
 leg.texts[1].set_color(p2.get_color())
+plt.title("Comparativa de eficiencia de intensidad III-V con el Silicio en función del ángulo de incidencia")
+
 plt.show()
 
 

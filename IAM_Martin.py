@@ -71,7 +71,25 @@ def regresion_martin_ruiz(aoi,datos):
 
 
 
-
+# x=np.arange(55,80,1)
+# # y=pvlib.iam.ashrae(filt_x, b=0.05)
+# plt.figure(figsize=(20,15))
+# # plt.plot(x,y1,'o',markersize=2,label='IAM_datos')
+# # plt.plot(x,f1(x),'X',markersize=2,label='IAM_curva_datos')
+# LON=10
+# b_val=10
+# b=np.arange(LON)
+# IAM_ashrae=np.arange(LON)
+# for i in range(LON):
+#     b[i]=b_val
+#     IAM_ashrae=pvlib.iam.martin_ruiz(x,b_val)
+#     plt.plot(x,IAM_ashrae,'--',markersize=2,label='IAM_ashrae '+str(round(b_val,2)))
+#     # R[i]=E.Determination_coefficient(y1,IAM_ashrae[i])
+#     # Er[i]=E.SS_res(y1,IAM_ashrae[i])
+#     b_val=b_val+float(0.001)
+# plt.legend()
+# plt.show()
+# print('El valor de b ha ido desde: '+str(b[0])+ ' al ' + str(b[i]))
 
 
 

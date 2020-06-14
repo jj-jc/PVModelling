@@ -23,17 +23,19 @@ df_iam=df_iam.drop('Unnamed: 0',axis=1)
 
 
 filt_df=df[df['aoi']<=AOILIMIT]
-filt_df['DII_efectiva (W/m2)']=filt_df['DII (W/m2)']*E.obtencion_dii_efectiva(filt_df['aoi'].values)
+filt_df['DII_efectiva (W/m2)']=filt_df['DII (W/m2)']*E.calc_iam(filt_df['aoi'].values,'Tercer grado')
 filt_df['ISC_IIIV/DII_efectiva (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII_efectiva (W/m2)']
 filt_x=filt_df['T_Amb (°C)'].values
 filt_y=filt_df['ISC_IIIV/DII_efectiva (A m2/W)'].values
+
+
 
 fig=plt.figure(figsize=(30,15))
 plt.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=4,label='Datos por debajo de thdl')
 plt.plot(filt_df['aoi'],filt_y,'o',markersize=4,label='Datos por debajo de thdl')
 plt.ylabel('Ángulo de incidencia (°)')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
-plt.title('Ificiencia de la parte de III-V una vez corregida la irradiancia con el IAM')
+plt.title('Eficiencia de la parte de III-V una vez corregida la irradiancia con el IAM')
 plt.legend()
 
 
@@ -73,48 +75,48 @@ plt.legend()
 
 #%%Cálculo del UF_temp
 
-filt_df_temp=filt_df
-# filt_df_temp=filt_df_temp[filt_df_temp['Wind Dir. (m/s)']>=133.0]
-# filt_df_temp=filt_df_temp[filt_df_temp['Wind Dir. (m/s)']<143]
-# filt_df_temp=filt_df_temp[filt_df_temp['Wind Speed (m/s)']>=1.4]
-# filt_df_temp=filt_df_temp[filt_df_temp['Wind Speed (m/s)']<2.5]
+# filt_df_temp=filt_df
+# # filt_df_temp=filt_df_temp[filt_df_temp['Wind Dir. (m/s)']>=133.0]
+# # filt_df_temp=filt_df_temp[filt_df_temp['Wind Dir. (m/s)']<143]
+# # filt_df_temp=filt_df_temp[filt_df_temp['Wind Speed (m/s)']>=1.4]
+# # filt_df_temp=filt_df_temp[filt_df_temp['Wind Speed (m/s)']<2.5]
 
 
-fig=plt.figure(figsize=(30,15))
-plt.plot(temp_cell,filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos por debajo de AOILIMIT')
-plt.plot(filt_df_temp['T_Amb (°C)'].values,filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos por debajo de AOILIMIT')
-# plt.ylim(0,0.002)
-plt.xlabel('Temperatura ambiente (°C) ')
-plt.ylabel('ISC_IIIV/DII (A m2/W)')
-plt.title('Cálculo del UF para la temperatura')
-plt.legend()
-# print('El coeficiente de determinación para los datos por debajo de AOILIMIT es de: '+str(RR1))
+# fig=plt.figure(figsize=(30,15))
+# # plt.plot(temp_cell,filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos por debajo de AOILIMIT')
+# plt.plot(filt_df_temp['T_Amb (°C)'].values,filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos por debajo de AOILIMIT')
+# # plt.ylim(0,0.002)
+# plt.xlabel('Temperatura ambiente (°C) ')
+# plt.ylabel('ISC_IIIV/DII (A m2/W)')
+# plt.title('Cálculo del UF para la temperatura')
+# plt.legend()
+# # print('El coeficiente de determinación para los datos por debajo de AOILIMIT es de: '+str(RR1))
 
 
-Incremento=0.1
-Max_temp=math.ceil(filt_df_temp['airmass_absolute'].max())
-Min_temp=math.floor(filt_df_temp['airmass_absolute'].min())
-contador=np.arange(Min_temp,Max_temp,Incremento)
-fig=go.Figure()
-for i in contador:
-    AUX=filt_df_temp[(filt_df_temp['airmass_absolute']>=float(i))]
-    AUX=AUX[((AUX['airmass_absolute'])<i+Incremento)]    
+# Incremento=0.1
+# Max_temp=math.ceil(filt_df_temp['airmass_absolute'].max())
+# Min_temp=math.floor(filt_df_temp['airmass_absolute'].min())
+# contador=np.arange(Min_temp,Max_temp,Incremento)
+# fig=go.Figure()
+# for i in contador:
+#     AUX=filt_df_temp[(filt_df_temp['airmass_absolute']>=float(i))]
+#     AUX=AUX[((AUX['airmass_absolute'])<i+Incremento)]    
 
-    fig.add_trace(go.Scatter(
-    y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
-    x=AUX['T_Amb (°C)'],
-    mode='markers',
-    visible=True,
-    showlegend=True,
-    name='Temperatura '+ str(i)
-    ))
-fig.update_layout(
-    title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-    xaxis_title="Ángulo de incidencia (°)",
-    yaxis_title="ISC_IIIV/DII (A m2/W)",
-)
+#     fig.add_trace(go.Scatter(
+#     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
+#     x=AUX['T_Amb (°C)'],
+#     mode='markers',
+#     visible=True,
+#     showlegend=True,
+#     name='Temperatura '+ str(i)
+#     ))
+# fig.update_layout(
+#     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
+#     xaxis_title="Ángulo de incidencia (°)",
+#     yaxis_title="ISC_IIIV/DII (A m2/W)",
+# )
 
-fig.show()
+# fig.show()
 
 #se aprecia claramente la influencia del airmass, para poder modelar la temperatura es necesario escoger un intervalo fijo
 #de am para poder estudiar la influencia de la temperatura.
@@ -133,6 +135,13 @@ filt_df_temp_x=filt_df_temp['T_Amb (°C)'].values
 filt_df_temp_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR
 
 
+fig=plt.figure(figsize=(30,15))
+plt.plot(filt_df['T_Amb (°C)'].values,filt_df['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR,'o',markersize=4,label='Línea de regresión')
+plt.plot(filt_df_temp_x,filt_df_temp_y,'o',markersize=4,label='Datos por debajo de AOILIMIT')
+plt.xlabel('Temperatura ambiente (°C) ')
+plt.ylabel('ISC_IIIV/DII (A m2/W)')
+plt.title('Datos escogidos de la nube de puntos')
+plt.legend()
 
 
 y1_regre,RR_temp,a_s1,b1=E.regresion_polinomica(filt_df_temp_x,filt_df_temp_y,1)
@@ -150,9 +159,10 @@ print('El coeficiente de determinación para los datos por debajo de AOILIMIT es
 a_temp=a_s1[1]
 thld=filt_df_temp_x[np.where(y1_regre==y1_regre.max())]
 simple_uf= 1 + (filt_df_temp_x - thld) * (a_temp)
-fig=plt.figure(figsize=(30,15))
-plt.plot(filt_df_temp_x,simple_uf,'o',markersize=4,label='Datos primera parte')
+# fig=plt.figure(figsize=(30,15))
+# plt.plot(filt_df_temp_x,simple_uf,'o',markersize=4,label='Datos primera parte')
 UF_temp=simple_uf
+thld_temp=thld[0]
 
 
 #dando como resultado tras el normalizado
@@ -208,11 +218,6 @@ filt_df_am=filt_df
 filt_x=filt_df_am['airmass_absolute'].values
 filt_y=filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
-fig=plt.figure(figsize=(30,15))
-plt.plot(filt_x,filt_y,'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')
-plt.ylabel('ISC_IIIV/DII (A m2/W)')
-plt.title('Cáculo del UF para airmass')
-plt.legend()
 
 
 
@@ -220,80 +225,91 @@ plt.legend()
 
 #%%CÓDIGO PARA OBSERVAR LAS TENDENDICAS CON DIFERENTES TEMPERATURAS
 
-Incremento=1
-Max_temp=math.ceil(filt_df_am['T_Amb (°C)'].max())
-Min_temp=math.floor(filt_df_am['T_Amb (°C)'].min())
-fig=go.Figure()
-for i in range(Min_temp,Max_temp,Incremento):
-    AUX=filt_df_am[(filt_df_am['T_Amb (°C)']>=float(i))]
-    AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
+# Incremento=1
+# Max_temp=math.ceil(filt_df_am['T_Amb (°C)'].max())
+# Min_temp=math.floor(filt_df_am['T_Amb (°C)'].min())
+# fig=go.Figure()
+# for i in range(Min_temp,Max_temp,Incremento):
+#     AUX=filt_df_am[(filt_df_am['T_Amb (°C)']>=float(i))]
+#     AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
 
-    fig.add_trace(go.Scatter(
-    y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
-    x=AUX['airmass_absolute'],
-    mode='markers',
-    visible=True,
-    showlegend=True,
-    name='Temperatura '+ str(i)
-    ))
-fig.update_layout(
-    title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
-    xaxis_title="Ángulo de incidencia (°)",
-    yaxis_title="ISC_IIIV/DII (A m2/W)",
-)
-
-
-fig.show()
-
-Incremento=0.1
-Max_temp=math.ceil(filt_df_am['Wind Speed (m/s)'].max())
-Min_temp=math.floor(filt_df_am['Wind Speed (m/s)'].min())
-aux_vector=np.arange(Min_temp,Max_temp,Incremento)
-fig=go.Figure()
-for i in aux_vector:
-    AUX=filt_df_am[(filt_df_am['Wind Speed (m/s)']>=float(i))]
-    AUX=AUX[((AUX['Wind Speed (m/s)'])<i+Incremento)]    
-
-    fig.add_trace(go.Scatter(
-    y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
-    x=AUX['airmass_absolute'],
-    mode='markers',
-    visible=True,
-    showlegend=True,
-    name='Temperatura '+ str(i)
-    ))
-fig.update_layout(
-    title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
-    xaxis_title="Ángulo de incidencia (°)",
-    yaxis_title="ISC_IIIV/DII (A m2/W)",
-)
+#     fig.add_trace(go.Scatter(
+#     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
+#     x=AUX['airmass_absolute'],
+#     mode='markers',
+#     visible=True,
+#     showlegend=True,
+#     name='Temperatura '+ str(i)
+#     ))
+# fig.update_layout(
+#     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
+#     xaxis_title="Ángulo de incidencia (°)",
+#     yaxis_title="ISC_IIIV/DII (A m2/W)",
+# )
 
 
-fig.show()
-#al observar el scatter, se observan como dos líneas de tendencias, pero no parecen que se la tempera amb 
-# la causa de tales tendencias. Puede ser perfectamente la temperatura de trabajo de la célula, que debido 
-# al viento en unas disipa mejor el calor que en las otras. Aunque es cierto que se filtraron los datos
-# para velocidades menores que 2.5
+# fig.show()
 
-fig=plt.figure(figsize=(30,15))
-plt.plot(filt_df['Wind Speed (m/s)'],filt_df['ISC_IIIV/DII_efectiva (A m2/W)'],'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')
-plt.ylabel('ISC_IIIV/DII (A m2/W)')
-plt.title('Cáculo del UF para airmass')
-plt.legend()
+# Incremento=0.1
+# Max_temp=math.ceil(filt_df_am['Wind Speed (m/s)'].max())
+# Min_temp=math.floor(filt_df_am['Wind Speed (m/s)'].min())
+# aux_vector=np.arange(Min_temp,Max_temp,Incremento)
+# fig=go.Figure()
+# for i in aux_vector:
+#     AUX=filt_df_am[(filt_df_am['Wind Speed (m/s)']>=float(i))]
+#     AUX=AUX[((AUX['Wind Speed (m/s)'])<i+Incremento)]    
 
-fig=plt.figure(figsize=(30,15))
-plt.plot(filt_df['Wind Dir. (m/s)'],filt_df['ISC_IIIV/DII_efectiva (A m2/W)'],'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')
-plt.ylabel('ISC_IIIV/DII (A m2/W)')
-plt.title('Cáculo del UF para airmass')
-plt.legend()
+#     fig.add_trace(go.Scatter(
+#     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
+#     x=AUX['airmass_absolute'],
+#     mode='markers',
+#     visible=True,
+#     showlegend=True,
+#     name='Temperatura '+ str(i)
+#     ))
+# fig.update_layout(
+#     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
+#     xaxis_title="Ángulo de incidencia (°)",
+#     yaxis_title="ISC_IIIV/DII (A m2/W)",
+# )
+
+
+# fig.show()
+# #al observar el scatter, se observan como dos líneas de tendencias, pero no parecen que se la tempera amb 
+# # la causa de tales tendencias. Puede ser perfectamente la temperatura de trabajo de la célula, que debido 
+# # al viento en unas disipa mejor el calor que en las otras. Aunque es cierto que se filtraron los datos
+# # para velocidades menores que 2.5
+
+# fig=plt.figure(figsize=(30,15))
+# plt.plot(filt_df['Wind Speed (m/s)'],filt_df['ISC_IIIV/DII_efectiva (A m2/W)'],'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')
+# plt.ylabel('ISC_IIIV/DII (A m2/W)')
+# plt.title('Cáculo del UF para airmass')
+# plt.legend()
+
+# fig=plt.figure(figsize=(30,15))
+# plt.plot(filt_df['Wind Dir. (m/s)'],filt_df['ISC_IIIV/DII_efectiva (A m2/W)'],'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')
+# plt.ylabel('ISC_IIIV/DII (A m2/W)')
+# plt.title('Cáculo del UF para airmass')
+# plt.legend()
 
 # Si dibujamos la ISC_IIIV/DII_efectiva (A m2/W) en función de la dirección del viento, observamos
 # que existe una mayor densidad de datos, lo que puede indicar mejora de rendimiento en esa situación
 
 
 #%%
+
 filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']>=0.9]
 filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']<1.1]
+filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=20]
+filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28]
+
+fig=plt.figure(figsize=(30,15))
+plt.plot(filt_x,filt_y,'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')
+plt.plot(filt_df_am['airmass_absolute'].values, filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')
+plt.ylabel('ISC_IIIV/DII (A m2/W)')
+plt.title('Datos escogidos de la nube de puntos')
+plt.legend()
+
 
 
 
@@ -430,17 +446,17 @@ print('El coeficiente de determinación es de: ', str(RR))
 #HAY QUE BUSCAR UN VALOR PARA NORMALIZAR LOS RESULTADOS, 
 #escojo el mayor obtenido tras la regresion
 
-UF_am_2=yr/VALOR_NORMALIZAR
-UF_am_2_retocado=(1-UF_am_2.max())+UF_am_2
-fig=plt.figure(figsize=(30,15))
-# plt.plot(x,simple_uf,'o',markersize=4,label='Datos primera parte')
-plt.plot(x,UF_am_2,'o',markersize=4,label='De forma polinómica de grado 2')
-plt.plot(x,UF_am_2_retocado,'o',markersize=4,label='De forma polinómica de grado 2 desplazado')
-plt.plot(x, UF_am, 'o', markersize=4, label='De forma lineal')
-plt.xlabel('airmass (n.d.)')
-plt.ylabel('ISC_IIIV/DII (A m2/W)')
-plt.title('Comparación de las dos modelos de UF para el airmass')
-plt.legend()
+# UF_am_2=yr/VALOR_NORMALIZAR
+# UF_am_2_retocado=(1-UF_am_2.max())+UF_am_2
+# fig=plt.figure(figsize=(30,15))
+# # plt.plot(x,simple_uf,'o',markersize=4,label='Datos primera parte')
+# plt.plot(x,UF_am_2,'o',markersize=4,label='De forma polinómica de grado 2')
+# plt.plot(x,UF_am_2_retocado,'o',markersize=4,label='De forma polinómica de grado 2 desplazado')
+# plt.plot(x, UF_am, 'o', markersize=4, label='De forma lineal')
+# plt.xlabel('airmass (n.d.)')
+# plt.ylabel('ISC_IIIV/DII (A m2/W)')
+# plt.title('Comparación de las dos modelos de UF para el airmass')
+# plt.legend()
 
 
 
@@ -494,8 +510,8 @@ for j in thlds:
                 a_final_low=a_s_low[1]
                 b_final_low=b_low
                 b_final_high=yr_low.max()+(-thld)*a_final_high
-                print(y_max)
-                print(x_low.min())
+                # print(y_max)
+                # print(x_low.min())
                 
                 
                 

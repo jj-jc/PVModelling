@@ -77,6 +77,8 @@ def Determination_coefficient(datos,estimaciones):
     except ZeroDivisionError:
         print('No se puede realizar una division por cero')
         return 1
+    
+    
 def RMSE(datos, estimaciones):
     Error_cuadrado=(datos-estimaciones)**2
     rmse=math.sqrt((sum(Error_cuadrado))/len(datos))
@@ -141,28 +143,28 @@ def regresion_polinomica(x,y,grado):
 def regresion_martin_ruiz(aoi,datos):
     a_r=1
     RR=0.0
-    for i in range(100):     
+    for i in range(1000):     
         IAM_martin_ruiz=pvlib.iam.martin_ruiz(aoi=aoi,a_r=a_r)
         RR_nuevo=Determination_coefficient(datos,IAM_martin_ruiz)
         if(abs(RR_nuevo)<RR):#como es una aproximacion lineal, en el momento que el error se reduce, en la siguiente iteración aumentara este.
             break 
         else:
             RR=RR_nuevo
-            a_r=a_r+100000
+            a_r=a_r+1000
     return IAM_martin_ruiz,RR,a_r
 
 
 def regresion_ashrae(aoi,datos):
     b=0.0
     RR=0.0
-    for i in range(1000):     
+    for i in range(10000):     
         IAM_ashrae=pvlib.iam.ashrae(aoi=aoi,b=b)
         RR_nuevo=Determination_coefficient(datos,IAM_ashrae)
         if(abs(RR_nuevo)<RR):#como es una aproximacion lineal, en el momento que el que el RR se reduce significa que se esta se aleja del fitting por ello hay que dejar de iterar.
             break 
         else:
             RR=RR_nuevo
-            b=b+0.001
+            b=b+0.0001
     return IAM_ashrae,RR,b
 
 
@@ -184,6 +186,7 @@ def regresion_physical(aoi, datos):
     j=0
     p=0
     for i in range(LON):#se ocupará de las centenas, en la base que se ponga de LON
+        print(i)
         for j in range(LON):#se ocupará de las decenas
             for p in range(LON):#se ocupará de las unidades
                 Combinaciones.iloc[p+LON*j+LON**2*i][3]=Determination_coefficient(y1,np.array(pvlib.iam.physical(aoi=x, n=Combinaciones.iloc[p+LON*j+LON**2*i][0],K=Combinaciones.iloc[p+LON*j+LON**2*i][1], L=Combinaciones.iloc[p+LON*j+LON**2*i][2])))
@@ -194,7 +197,7 @@ def regresion_physical(aoi, datos):
         Combinaciones.iloc[p+LON*j+LON**2*i+1][0]=n_val
         Combinaciones.iloc[p+LON*j+LON**2*i+1][1]=k_val
         Combinaciones.iloc[p+LON*j+LON**2*i+1][2]=Combinaciones.iloc[p+LON*j+LON**2*i][2]+incremento
-    Valores=Combinaciones[Combinaciones['RR']==Combinaciones[:]['RR'].max()]
+    Valores=Combinaciones[Combinaciones['RR']==Combinaciones['RR'].max()]
     IAM_physical=pvlib.iam.physical(aoi=x, n=float(Valores['n']),K=float(Valores['k']), L=float(Valores['l']))
     return IAM_physical,float(Valores['RR']),float(Valores['n']),float(Valores['k']),float(Valores['l'])
 
@@ -228,8 +231,36 @@ def obtencion_dii_efectiva(datos):
 #mejor el comportamiento con las regrsiones lineales
 def calc_iam(datos,tipo):
     
-    df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv')
     df_iam=pd.read_csv("C://Users/juanj/OneDrive/Escritorio/TFG/IAM.csv")
+    df_iam=df_iam.set_index(df_iam['Unnamed: 0'].values)
+    df_iam=df_iam.drop('Unnamed: 0',axis=1)
+    if tipo=='Tercer grado':
+        a1=df_iam['Tercer grado']['a1']
+        a2=df_iam['Tercer grado']['a2']
+        a3=df_iam['Tercer grado']['a3']
+        b=df_iam['Tercer grado']['b']
+        IAM=a1*datos+a2*datos**2+a3*datos**3+b   
+    elif tipo=='Segundo grado':
+        a1=df_iam['Segundo grado']['a1']
+        a2=df_iam['Segundo grado']['a2']
+        b=df_iam['Segundo grado']['b']
+        IAM=a1*datos+a2*datos**2+b
+    elif tipo=='Primer grado':
+        thld=df_iam['Primer grado low']['thld']
+        a1_low=df_iam['Primer grado low']['a1']
+        b_low=df_iam['Primer grado low']['b']
+        a1_high=df_iam['Primer grado high']['a1']
+        b_high=df_iam['Primer grado high']['b']
+        IAM=[]
+        for i in range(len(datos)):
+            if datos[i]<=thld:
+                IAM.append(a1_low*datos[i]+b_low)
+            else:
+                IAM.append(a1_high*datos[i]+b_high)
+    return IAM
+def calc_iam_Si(datos,tipo):
+    
+    df_iam=pd.read_csv("C://Users/juanj/OneDrive/Escritorio/TFG/IAM_Si.csv")
     df_iam=df_iam.set_index(df_iam['Unnamed: 0'].values)
     df_iam=df_iam.drop('Unnamed: 0',axis=1)
     if tipo=='Tercer grado':
