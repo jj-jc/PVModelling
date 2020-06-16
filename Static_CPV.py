@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from cpvtopvlib import cpvsystem
 import Error as E
 import datetime
+import CPVClass
 
 tz='Europe/Berlin'
 
@@ -38,7 +39,76 @@ I1=[0.8708,0.8089,0]
 
 V2=[0,31.03,35.37]
 I2=[0.6473,0.6133,0]
+#%%COMPROBAR CURVAS 3-5
 
+module_parameters_IIIV={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
+                'I_o_ref': 0.00000000017,'R_sh_ref': 5226, 'R_sh_0':21000,
+                'R_sh_exp': 5.50,'R_s': 0.01,'alpha_sc':0.00,'EgRef':3.91,
+                'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':12,
+                'eta_m':0.274, 'alpha_absorption':1}
+
+SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters_IIIV, 
+                                      modules_per_string=1,string_per_inverter=1,
+                                      racking_model='freestanding')
+Five_parameters=SistemaCPV.calcparams_pvsyst(890, 48.16)
+
+
+temp_cell=pvlib.temperature.pvsyst_cell(poa_global=890, 
+                                        temp_air=11.413,
+                                        wind_speed=1.191, 
+                                        u_c=10.0, u_v=0.0, 
+                                        eta_m=0.274, alpha_absorption=1)
+
+
+Five_parameters1=pvlib.pvsystem.calcparams_pvsyst(890, temp_cell, alpha_sc=module_parameters_IIIV['alpha_sc'],
+                                 gamma_ref=module_parameters_IIIV['gamma_ref'], mu_gamma=module_parameters_IIIV['mu_gamma'],
+                                 I_L_ref=module_parameters_IIIV['I_L_ref'], I_o_ref=module_parameters_IIIV['I_o_ref'],
+                                 R_sh_ref=module_parameters_IIIV['R_sh_ref'], R_sh_0=module_parameters_IIIV['R_sh_0'], 
+                                 R_s=module_parameters_IIIV['R_s'], cells_in_series=module_parameters_IIIV['cells_in_series'], 
+                                 R_sh_exp=5.5, EgRef=3.91, irrad_ref=1000, temp_ref=25)
+
+Five_parameters_2=SistemaCPV.calcparams_pvsyst(644, 80)
+
+temp_cell1_2=pvlib.temperature.pvsyst_cell(poa_global=644, 
+                                        temp_air=12.629,
+                                        wind_speed=1.069, 
+                                        u_c=10.0, u_v=0.0, 
+                                        eta_m=0.274, alpha_absorption=1)
+
+
+Five_parameters1_2=pvlib.pvsystem.calcparams_pvsyst(644, temp_cell1_2, alpha_sc=module_parameters_IIIV['alpha_sc'],
+                                 gamma_ref=module_parameters_IIIV['gamma_ref'], mu_gamma=module_parameters_IIIV['mu_gamma'],
+                                 I_L_ref=module_parameters_IIIV['I_L_ref'], I_o_ref=module_parameters_IIIV['I_o_ref'],
+                                 R_sh_ref=module_parameters_IIIV['R_sh_ref'], R_sh_0=module_parameters_IIIV['R_sh_0'], 
+                                 R_s=module_parameters_IIIV['R_s'], cells_in_series=module_parameters_IIIV['cells_in_series'], 
+                                 R_sh_exp=5.5, EgRef=3.91, irrad_ref=1000, temp_ref=25)
+
+Curvas=pvlib.pvsystem.singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
+                                  resistance_series=Five_parameters[2],resistance_shunt=Five_parameters[3], 
+                                  nNsVth=Five_parameters[4],ivcurve_pnts=100, method='lambertw')
+Curvas1=pvlib.pvsystem.singlediode(photocurrent=Five_parameters1[0], saturation_current=Five_parameters1[1],
+                                  resistance_series=Five_parameters1[2],resistance_shunt=Five_parameters1[3], 
+                                   nNsVth=Five_parameters1[4],ivcurve_pnts=100, method='lambertw')
+Curvas_2=pvlib.pvsystem.singlediode(photocurrent=Five_parameters_2[0], saturation_current=Five_parameters_2[1],
+                                  resistance_series=Five_parameters_2[2],resistance_shunt=Five_parameters_2[3], 
+                                  nNsVth=Five_parameters_2[4],ivcurve_pnts=100, method='lambertw')
+Curvas1_2=pvlib.pvsystem.singlediode(photocurrent=Five_parameters1_2[0], saturation_current=Five_parameters1_2[1],
+                                  resistance_series=Five_parameters1_2[2],resistance_shunt=Five_parameters1_2[3], 
+                                  nNsVth=Five_parameters1_2[4],ivcurve_pnts=100, method='lambertw')
+
+plt.figure(figsize=(30,15))
+
+plt.plot(Curvas1['v'],Curvas1['i'],'--',markersize=2,label='890 con temp_cell')
+plt.plot(Curvas['v'],Curvas['i'],'--',markersize=2,label='890 con los datos fijos')
+plt.plot(V1,I1,'--',markersize=2,label='datos_890')
+plt.plot(V2,I2,'--',markersize=2,label='datos_644')
+plt.plot(Curvas_2['v'],Curvas_2['i'],'--',markersize=2,label='644 con los valores fijos')
+plt.plot(Curvas1_2['v'],Curvas1_2['i'],'--',markersize=2,label='644 con temp_cell')
+plt.title('Comparación de las curvas IV obtenidas con los datos')
+plt.xlabel('V[V]')
+plt.ylabel('I[A]')
+
+plt.legend()
 
 
 
@@ -498,48 +568,22 @@ plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
 print('El error cuadrático medio de las estimaciones es de: ' + str(RMSE))
 
-
-#%%COMPROBAR CURVAS 3-5
-
-module_parameters_IIIV={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
-                'I_o_ref': 0.00000000017,'R_sh_ref': 5226, 'R_sh_0':21000,
-                'R_sh_exp': 5.50,'R_s': 0.01,'alpha_sc':0.00,'EgRef':3.91,
-                'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':12,
-                'eta_m':0.274, 'alpha_absorption':1}
-
-
-
-
-
-SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters_IIIV, 
-                                      modules_per_string=1,string_per_inverter=1,
-                                      racking_model='freestanding')
+#%% Probamos la clase creada.
+Mi_CPV=CPVClass.CPVSystem(surface_tilt=0, surface_azimuth=180,
+                 albedo=None, surface_type=None,
+                 module=None, module_type='glass_polymer',
+                 module_parameters=None,
+                 temperature_model_parameters='open_rack_glass_glass',
+                 modules_per_string=1, strings_per_inverter=1,
+                 inverter=None, inverter_parameters=None,
+                 racking_model='open_rack', losses_parameters=None, name=None,
+                 iam_parameters=None)
 
 
-Five_parameters=SistemaCPV.calcparams_pvsyst(890, 80)
-Five_parameters1=SistemaCPV.calcparams_pvsyst(644, 80)
+Mi_CPV.iam_parameters={'a3':-8.315977512579898e-06,'a2':0.00039212250547851236,
+                       'a1':-0.006006260890940105,'b':1.0}
 
-Curvas=pvlib.pvsystem.singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
-                                  resistance_series=Five_parameters[2],resistance_shunt=Five_parameters[3], 
-                                  nNsVth=Five_parameters[4],ivcurve_pnts=100, method='lambertw')
-Curvas1=pvlib.pvsystem.singlediode(photocurrent=Five_parameters1[0], saturation_current=Five_parameters1[1],
-                                  resistance_series=Five_parameters1[2],resistance_shunt=Five_parameters1[3], 
-                                  nNsVth=Five_parameters1[4],ivcurve_pnts=100, method='lambertw')
-
-
-plt.figure(figsize=(30,15))
-
-plt.plot(Curvas1['v'],Curvas1['i'],'--',markersize=2,label='644')
-plt.plot(Curvas['v'],Curvas['i'],'--',markersize=2,label='890')
-plt.plot(V1,I1,'--',markersize=2,label='datos_890')
-plt.plot(V2,I2,'--',markersize=2,label='datos_644')
-
-plt.title('Comparación de las curvas IV obtenidas con los datos')
-plt.xlabel('V[V]')
-plt.ylabel('I[A]')
-
-plt.legend()
-
+IAM=Mi_CPV.get_iam(aoi=CPV['aoi'],iam_model='tercer grado')
 
 #%%CÓDIGO PARA CUANDO AOI>AOILIMIT ,no corre prisa es mas importante el silicio
 

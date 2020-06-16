@@ -5,7 +5,7 @@ import numpy as np
 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/InsolightMay2019.csv',encoding= 'unicode_escape')
 
-
+#%%
 #df=df.loc[:, ['Date Time','DNI (W/m2)','T_Amb (°C)']]
 #Datos del módulo CPV
 #localización
@@ -86,7 +86,17 @@ POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azi
 df['DII_mio']=POA['poa_direct']
 df['GII_mio']=POA['poa_global']
 
+fig=plt.figure(figsize=(30,20))
 
+plt.plot(df['aoi'],df['DII_mio'],'o',markersize='4',label='dii')   
+plt.plot(df['aoi'],df['DII (W/m2)'],'o',markersize='2',label='dii')   
+
+
+plt.xlabel('Hora')
+plt.ylabel('Irradiancia (W/m2)')
+plt.legend()
+
+#%%
 
 fig=plt.figure(figsize=(30,20))
 

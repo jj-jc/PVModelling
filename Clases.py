@@ -216,7 +216,7 @@ class PVSystem(object):
     pvlib.pvsystem.LocalizedPVSystem
     """
 
-[docs]
+
     def __init__(self,
                  surface_tilt=0, surface_azimuth=180,
                  albedo=None, surface_type=None,
@@ -914,3 +914,34 @@ class PVSystem(object):
             location = Location(latitude, longitude, **kwargs)
 
         return LocalizedPVSystem(pvsystem=self, location=location
+                                 
+class LocalizedPVSystem(PVSystem, Location):
+    """
+    The LocalizedPVSystem class defines a standard set of installed PV
+    system attributes and modeling functions. This class combines the
+    attributes and methods of the PVSystem and Location classes.
+
+    The LocalizedPVSystem may have bugs due to the difficulty of
+    robustly implementing multiple inheritance. See
+    :py:class:`~pvlib.modelchain.ModelChain` for an alternative paradigm
+    for modeling PV systems at specific locations.
+    """
+[docs]
+    def __init__(self, pvsystem=None, location=None, **kwargs):
+
+        new_kwargs = _combine_localized_attributes(
+            pvsystem=pvsystem,
+            location=location,
+            **kwargs,
+        )
+
+        PVSystem.__init__(self, **new_kwargs)
+        Location.__init__(self, **new_kwargs)
+
+
+    def __repr__(self):
+        attrs = ['name', 'latitude', 'longitude', 'altitude', 'tz',
+                 'surface_tilt', 'surface_azimuth', 'module', 'inverter',
+                 'albedo', 'racking_model']
+        return ('LocalizedPVSystem: \n  ' + '\n  '.join(
+            ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))

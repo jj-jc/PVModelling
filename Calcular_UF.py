@@ -14,7 +14,7 @@ import pvlib
 pio.renderers.default='browser'
 AOILIMIT=55.0
 # VALOR_NORMALIZAR=0.0009180248205304829
-VALOR_NORMALIZAR=0.001
+VALOR_NORMALIZAR=0.0008938270669770386
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv')
 df_iam=pd.read_csv("C://Users/juanj/OneDrive/Escritorio/TFG/IAM.csv")
 df_iam=df_iam.set_index(df_iam['Unnamed: 0'].values)
@@ -48,30 +48,30 @@ plt.legend()
 #%%AHORA SE ESTUDIAN LAS TENDENCIAS PAR EVITAR LA INFLUENCIA DEL AIRMASS
 
 
-# Incremento=1
-# Max_temp=math.ceil(filt_df['airmass_relative'].max())*10
-# Min_temp=math.floor(filt_df['airmass_relative'].min())*10
-# fig=go.Figure()
-# for i in range(Min_temp,Max_temp,Incremento):
-#     AUX=filt_df[(filt_df['airmass_relative']>=float(i/10))]
-#     AUX=AUX[((AUX['airmass_relative'])<(i+Incremento)/10)]    
+Incremento=1
+Max_temp=math.ceil(filt_df['airmass_relative'].max())*10
+Min_temp=math.floor(filt_df['airmass_relative'].min())*10
+fig=go.Figure()
+for i in range(Min_temp,Max_temp,Incremento):
+    AUX=filt_df[(filt_df['airmass_relative']>=float(i/10))]
+    AUX=AUX[((AUX['airmass_relative'])<(i+Incremento)/10)]    
 
-#     fig.add_trace(go.Scatter(
-#     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
-#     x=AUX['T_Amb (°C)'],
-#     mode='markers',
-#     visible=True,
-#     showlegend=True,
-#     name='airmass '+ str(i/10)
-#     ))
-# fig.update_layout(
-#     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
-#     xaxis_title="Ángulo de incidencia (°)",
-#     yaxis_title="ISC_IIIV/DII (A m2/W)",
-# )
+    fig.add_trace(go.Scatter(
+    y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
+    x=AUX['T_Amb (°C)'],
+    mode='markers',
+    visible=True,
+    showlegend=True,
+    name='airmass '+ str(i/10)
+    ))
+fig.update_layout(
+    title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
+    xaxis_title="Ángulo de incidencia (°)",
+    yaxis_title="ISC_IIIV/DII (A m2/W)",
+)
 
 
-# fig.show()
+fig.show()
 
 #%%Cálculo del UF_temp
 
@@ -126,8 +126,8 @@ plt.legend()
 filt_df_temp=filt_df
 
 
-filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']>=0.9)]
-filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']<1.0)]
+filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']>=1.0)]
+filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']<1.1)]
 # filt_x=filt_df_temp['T_Amb (°C)'].values
 # filt_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values
 

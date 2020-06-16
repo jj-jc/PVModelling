@@ -16,8 +16,8 @@ pio.renderers.default='browser'
 
 #AOILIMIT
 AOILIMIT=55.0
-Valor_normalizar=0.00091802
-VALOR_NORMALIZAR=0.00096
+# Valor_normalizar=0.00091802
+# VALOR_NORMALIZAR=0.00096
 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
 
@@ -265,58 +265,58 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 
 #%% Estudiamos el iam añadiendo importancia a la velocidad del viento, ya que se observa que la eficiencia
 # depende de esta variable.
-Incremento=.1
-Max_temp=math.ceil(filt_df2['Wind Speed (m/s)'].max())
-Min_temp=math.floor(filt_df2['Wind Speed (m/s)'].min())
-fig=go.Figure()
-contador=np.arange(Min_temp,Max_temp,Incremento)
-for i in contador:
-    AUX=filt_df2[(filt_df2['Wind Speed (m/s)']>=float(i))]
-    AUX=AUX[((AUX['Wind Speed (m/s)'])<i+Incremento)]    
+# Incremento=.1
+# Max_temp=math.ceil(filt_df2['Wind Speed (m/s)'].max())
+# Min_temp=math.floor(filt_df2['Wind Speed (m/s)'].min())
+# fig=go.Figure()
+# contador=np.arange(Min_temp,Max_temp,Incremento)
+# for i in contador:
+#     AUX=filt_df2[(filt_df2['Wind Speed (m/s)']>=float(i))]
+#     AUX=AUX[((AUX['Wind Speed (m/s)'])<i+Incremento)]    
 
-    fig.add_trace(go.Scatter(
-    y=AUX['ISC_IIIV/DII (A m2/W)'],
-    x=AUX['aoi'],
-    mode='markers',
-    visible=True,
-    showlegend=True,
-    name='Velocidad '+ str(i)
-    ))
-fig.update_layout(
-    title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-    xaxis_title="Ángulo de incidencia (°)",
-    yaxis_title="ISC_IIIV/DII (A m2/W)",
-)
+#     fig.add_trace(go.Scatter(
+#     y=AUX['ISC_IIIV/DII (A m2/W)'],
+#     x=AUX['aoi'],
+#     mode='markers',
+#     visible=True,
+#     showlegend=True,
+#     name='Velocidad '+ str(i)
+#     ))
+# fig.update_layout(
+#     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
+#     xaxis_title="Ángulo de incidencia (°)",
+#     yaxis_title="ISC_IIIV/DII (A m2/W)",
+# )
 
-fig.show()
-
-
+# fig.show()
 
 
-Incremento=10
-Max_temp=math.ceil(filt_df2['Wind Dir. (m/s)'].max())
-Min_temp=math.floor(filt_df2['Wind Dir. (m/s)'].min())
-fig=go.Figure()
-contador=np.arange(Min_temp,Max_temp,Incremento)
-for i in contador:
-    AUX=filt_df2[(filt_df2['Wind Dir. (m/s)']>=float(i))]
-    AUX=AUX[((AUX['Wind Dir. (m/s)'])<i+Incremento)]    
 
-    fig.add_trace(go.Scatter(
-    y=AUX['ISC_IIIV/DII (A m2/W)'],
-    x=AUX['aoi'],
-    mode='markers',
-    visible=True,
-    showlegend=True,
-    name='Dirección'+ str(i)
-    ))
-fig.update_layout(
-    title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de dirección del viento",
-    xaxis_title="Ángulo de incidencia (°)",
-    yaxis_title="ISC_IIIV/DII (A m2/W)",
-)
 
-fig.show()
+# Incremento=10
+# Max_temp=math.ceil(filt_df2['Wind Dir. (m/s)'].max())
+# Min_temp=math.floor(filt_df2['Wind Dir. (m/s)'].min())
+# fig=go.Figure()
+# contador=np.arange(Min_temp,Max_temp,Incremento)
+# for i in contador:
+#     AUX=filt_df2[(filt_df2['Wind Dir. (m/s)']>=float(i))]
+#     AUX=AUX[((AUX['Wind Dir. (m/s)'])<i+Incremento)]    
+
+#     fig.add_trace(go.Scatter(
+#     y=AUX['ISC_IIIV/DII (A m2/W)'],
+#     x=AUX['aoi'],
+#     mode='markers',
+#     visible=True,
+#     showlegend=True,
+#     name='Dirección'+ str(i)
+#     ))
+# fig.update_layout(
+#     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de dirección del viento",
+#     xaxis_title="Ángulo de incidencia (°)",
+#     yaxis_title="ISC_IIIV/DII (A m2/W)",
+# )
+
+# fig.show()
 
 
 
@@ -541,7 +541,7 @@ filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']<28]
 
 df_extrapola=filt_cuadro2
 df_extrapola=df_extrapola[df_extrapola['aoi']>=10.0]
-df_extrapola=df_extrapola[df_extrapola['aoi']<20]
+df_extrapola=df_extrapola[df_extrapola['aoi']<30]
 yr_extrapola, RR_extrapola, a_s_extrapola, b_extrapola=Error.regresion_polinomica(df_extrapola['aoi'].values, df_extrapola['ISC_IIIV/DII (A m2/W)'].values, 1)
 x_añadir=np.arange(0,12,.5)
 y_añadir=x_añadir*a_s_extrapola[1]+b_extrapola
@@ -595,6 +595,10 @@ for i in aux:
 y_poli2,RR_poli2,a_s2,b2=Error.regresion_polinomica(filt_regresion['aoi'].values,filt_regresion['ISC_IIIV/DII (A m2/W)'].values,2)
 #-----poli3
 y_poli3,RR_poli3,a_s3,b3=Error.regresion_polinomica(filt_regresion['aoi'].values,filt_regresion['ISC_IIIV/DII (A m2/W)'].values,3)
+
+VALOR_NORMALIZAR=y_poli3.max()
+
+
 #-----poli1
 filt_df_low=filt_regresion[filt_regresion['aoi']<=thld]
 filt_df_high=filt_regresion[filt_regresion['aoi']>thld]
