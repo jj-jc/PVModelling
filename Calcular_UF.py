@@ -121,7 +121,7 @@ fig.show()
 #se aprecia claramente la influencia del airmass, para poder modelar la temperatura es necesario escoger un intervalo fijo
 #de am para poder estudiar la influencia de la temperatura.
 #%%
-#He decidido observar llo que pasa con las condiciones estandart
+#
 
 filt_df_temp=filt_df
 
@@ -468,7 +468,7 @@ print('El coeficiente de determinación es de: ', str(RR))
 #%%UN CÓDIGO PARA buscar el más óptimo del airmass
 x=filt_df_am['airmass_relative'].values
 
-RR_max_high=-1
+
 RR_max=-1
 thld=0
 a_final_high=0
@@ -478,7 +478,7 @@ b_final_low=0
 thlds=np.arange(x.min(),x.max(),0.001)
 
 for j in thlds:
-    
+    RR_max_high=-1
     filt_df_low=filt_df_am[filt_df_am['airmass_relative']<=j]
     filt_df_high=filt_df_am[filt_df_am['airmass_relative']>j]
     
@@ -492,7 +492,7 @@ for j in thlds:
     y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR  
     
     #y_regresion=mx+b donde la b=y_max
-    m=np.arange(-1,0,0.001)
+    m=np.arange(-1,0.001,0.001)
     # yr_high=pd.DataFrame({'x_desplazado': x_desplazado})
     for i in range(len(m)):
         yr_high=x_desplazado*m[i]+y_max
@@ -573,7 +573,6 @@ for i in range(len(x)):
 
 fig=plt.figure(figsize=(30,15))
 plt.plot(x,UF_am,'o',markersize=4,label='Datos primera parte')
-#%%
 
 
 
@@ -588,7 +587,7 @@ UF=pd.DataFrame(columns={'UF_am_low','UF_am_high','UF_temp'},index=['a','thld','
 
 UF['UF_am_low']=[a_final_low,thld,RR_max]
 UF['UF_am_high']=[a_final_high,thld,RR_max]
-UF['UF_temp']=[a_temp,0,RR_temp]
+UF['UF_temp']=[a_temp,thld_temp,RR_temp]
 
 
 

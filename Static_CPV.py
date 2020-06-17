@@ -176,7 +176,7 @@ CPV['ISC_IIIV/DII_efectiva_primer_grado (W/m2)']=CPV['ISC_measured_IIIV (A)']/CP
 # df=df[(df['T_Amb (°C)']>=Min_temp)]
 # df=df[((df['T_Amb (°C)'])<=Max_temp)] 
 
-#------ parámetros de MArcos
+#------ parámetros
 module_parameters_IIIV={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
                 'I_o_ref': 0.00000000017,'R_sh_ref': 5226, 'R_sh_0':21000,
                 'R_sh_exp': 5.50,'R_s': 0.01,'alpha_sc':0.00,'EgRef':3.91,
@@ -325,6 +325,7 @@ a_am_low=UF.loc['a']['UF_am_low']
 a_am_high=UF.loc['a']['UF_am_high']
 
 UF_am=[]
+
 for i in range(len(x_am)):
     if x_am[i]<=thld_am:
         UF_am.append(1 + ( x_am[i]- thld_am) * (a_am_low))
@@ -343,8 +344,10 @@ a_temp=UF.loc['a']['UF_temp']
 
 UF_temp=[]
 for i in range(len(x_temp)):
-    UF_temp.append(1 + ( x_temp[i]- thld_temp) * (a_temp))
-
+    if x_temp[i]>thld_temp:
+        UF_temp.append(1 + ( x_temp[i]- thld_temp) * (a_temp))
+    else:
+        UF_temp.append(1)
         
         
 UF_temp=np.array(UF_temp)
@@ -568,22 +571,6 @@ plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
 print('El error cuadrático medio de las estimaciones es de: ' + str(RMSE))
 
-#%% Probamos la clase creada.
-Mi_CPV=CPVClass.CPVSystem(surface_tilt=0, surface_azimuth=180,
-                 albedo=None, surface_type=None,
-                 module=None, module_type='glass_polymer',
-                 module_parameters=None,
-                 temperature_model_parameters='open_rack_glass_glass',
-                 modules_per_string=1, strings_per_inverter=1,
-                 inverter=None, inverter_parameters=None,
-                 racking_model='open_rack', losses_parameters=None, name=None,
-                 iam_parameters=None)
-
-
-Mi_CPV.iam_parameters={'a3':-8.315977512579898e-06,'a2':0.00039212250547851236,
-                       'a1':-0.006006260890940105,'b':1.0}
-
-IAM=Mi_CPV.get_iam(aoi=CPV['aoi'],iam_model='tercer grado')
 
 #%%CÓDIGO PARA CUANDO AOI>AOILIMIT ,no corre prisa es mas importante el silicio
 

@@ -13,7 +13,7 @@ from pvlib.tools import _build_kwargs
 from pvlib.location import Location
 import numpy as np
 import pandas as pd
-from pvlib import (atmosphere, iam, irradiance)
+from pvlib import (atmosphere, iam, irradiance,temperature)
 from pvlib._deprecation import pvlibDeprecationWarning            
 from pvlib import pvsystem
 import warnings
@@ -47,7 +47,143 @@ def _combine_localized_attributes(pvsystem=None, location=None, **kwargs):
         list(pv_dict.items()) + list(loc_dict.items()) + list(kwargs.items())
     )
     return new_kwargs
+def calcparams_pvsyst(effective_irradiance, temp_cell,
+                      alpha_sc, gamma_ref, mu_gamma,
+                      I_L_ref, I_o_ref,
+                      R_sh_ref, R_sh_0, R_s,
+                      cells_in_series,
+                      R_sh_exp=5.5,
+                      EgRef=1.121,
+                      irrad_ref=1000, temp_ref=25):
+    '''
+    Calculates five parameter values for the single diode equation at
+    effective irradiance and cell temperature using the PVsyst v6
+    model.  The PVsyst v6 model is described in [1]_, [2]_, [3]_.
+    The five values returned by calcparams_pvsyst can be used by singlediode
+    to calculate an IV curve.
 
+    Parameters
+    ----------
+    effective_irradiance : numeric
+        The irradiance (W/m2) that is converted to photocurrent.
+
+    temp_cell : numeric
+        The average cell temperature of cells within a module in C.
+
+    alpha_sc : float
+        The short-circuit current temperature coefficient of the
+        module in units of A/C.
+
+    gamma_ref : float
+        The diode ideality factor
+
+    mu_gamma : float
+        The temperature coefficient for the diode ideality factor, 1/K
+
+    I_L_ref : float
+        The light-generated current (or photocurrent) at reference conditions,
+        in amperes.
+
+    I_o_ref : float
+        The dark or diode reverse saturation current at reference conditions,
+        in amperes.
+
+    R_sh_ref : float
+        The shunt resistance at reference conditions, in ohms.
+
+    R_sh_0 : float
+        The shunt resistance at zero irradiance conditions, in ohms.
+
+    R_s : float
+        The series resistance at reference conditions, in ohms.
+
+    cells_in_series : integer
+        The number of cells connected in series.
+
+    R_sh_exp : float
+        The exponent in the equation for shunt resistance, unitless. Defaults
+        to 5.5.
+
+    EgRef : float
+        The energy bandgap at reference temperature in units of eV.
+        1.121 eV for crystalline silicon. EgRef must be >0.
+
+    irrad_ref : float (optional, default=1000)
+        Reference irradiance in W/m^2.
+
+    temp_ref : float (optional, default=25)
+        Reference cell temperature in C.
+
+    Returns
+    -------
+    Tuple of the following results:
+
+    photocurrent : numeric
+        Light-generated current in amperes
+
+    saturation_current : numeric
+        Diode saturation current in amperes
+
+    resistance_series : float
+        Series resistance in ohms
+
+    resistance_shunt : numeric
+        Shunt resistance in ohms
+
+    nNsVth : numeric
+        The product of the usual diode ideality factor (n, unitless),
+        number of cells in series (Ns), and cell thermal voltage at
+        specified effective irradiance and cell temperature.
+
+    References
+    ----------
+    .. [1] K. Sauer, T. Roessler, C. W. Hansen, Modeling the Irradiance and
+       Temperature Dependence of Photovoltaic Modules in PVsyst,
+       IEEE Journal of Photovoltaics v5(1), January 2015.
+
+    .. [2] A. Mermoud, PV modules modelling, Presentation at the 2nd PV
+       Performance Modeling Workshop, Santa Clara, CA, May 2013
+
+    .. [3] A. Mermoud, T. Lejeune, Performance Assessment of a Simulation Model
+       for PV modules of any available technology, 25th European Photovoltaic
+       Solar Energy Conference, Valencia, Spain, Sept. 2010
+
+    See Also
+    --------
+    calcparams_desoto
+    singlediode
+
+    '''
+
+    # Boltzmann constant in J/K
+    k = 1.38064852e-23
+
+    # elementary charge in coulomb
+    q = 1.6021766e-19
+
+    # reference temperature
+    Tref_K = temp_ref + 273.15
+    Tcell_K = temp_cell + 273.15
+
+    gamma = gamma_ref + mu_gamma * (Tcell_K - Tref_K)
+    nNsVth = gamma * k / q * cells_in_series * Tcell_K
+
+    IL = effective_irradiance / irrad_ref * \
+        (I_L_ref + alpha_sc * (Tcell_K - Tref_K))
+
+    I0 = I_o_ref * ((Tcell_K / Tref_K) ** 3) * \
+        (np.exp((q * EgRef) / (k * gamma) * (1 / Tref_K - 1 / Tcell_K)))
+
+    Rsh_tmp = \
+        (R_sh_ref - R_sh_0 * np.exp(-R_sh_exp)) / (1.0 - np.exp(-R_sh_exp))
+    Rsh_base = np.maximum(0.0, Rsh_tmp)
+
+    Rsh = Rsh_base + (R_sh_0 - Rsh_base) * \
+        np.exp(-R_sh_exp * effective_irradiance / irrad_ref)
+
+    Rs = R_s
+
+    return IL, I0, Rs, Rsh, nNsVth
 class CPVSystem(object):
     
     
@@ -60,7 +196,7 @@ class CPVSystem(object):
                  modules_per_string=1, strings_per_inverter=1,
                  inverter=None, inverter_parameters=None,
                  racking_model='open_rack', losses_parameters=None, name=None,
-                 iam_parameters=None, aoi_limit=55.0,**kwargs):
+                 iam_parameters=None, uf_parameters=None, aoi_limit=55.0,**kwargs):
                  
                  
 
@@ -81,25 +217,26 @@ class CPVSystem(object):
 
         self.module_type = module_type
         self.racking_model = racking_model
-        
-        if temperature_model_parameters is None:
-            self.temperature_model_parameters = \
-                self._infer_temperature_model_params()
-        else:
-            self.temperature_model_parameters = temperature_model_parameters
+        #este código será implementado más adelante cuando determine los valores del modelo que quiero uilizar
+        # if temperature_model_parameters is None:
+        #     self.temperature_model_parameters = \
+        #         self._infer_temperature_model_params()
+        # else:
+        #     self.temperature_model_parameters = temperature_model_parameters
+        self.temperature_model_parameters = {}
 
-        if not any(self.temperature_model_parameters):
-            warnings.warn(
-                'Required temperature_model_parameters is not specified '
-                'and parameters are not inferred from racking_model and '
-                'module_type. Reverting to deprecated default: SAPM cell '
-                'temperature model parameters for a glass/glass module in '
-                'open racking. In the future '
-                'PVSystem.temperature_model_parameters will be required',
-                pvlibDeprecationWarning)
-            params = temperature._temperature_model_params(
-                'sapm', 'open_rack_glass_glass')
-            self.temperature_model_parameters = params
+        # if not any(self.temperature_model_parameters):
+        #     warnings.warn(
+        #         'Required temperature_model_parameters is not specified '
+        #         'and parameters are not inferred from racking_model and '
+        #         'module_type. Reverting to deprecated default: SAPM cell '
+        #         'temperature model parameters for a glass/glass module in '
+        #         'open racking. In the future '
+        #         'PVSystem.temperature_model_parameters will be required',
+        #         pvlibDeprecationWarning)
+        #     params = temperature._temperature_model_params(
+        #         'sapm', 'open_rack_glass_glass')
+        #     self.temperature_model_parameters = params
 
         self.modules_per_string = modules_per_string
         self.strings_per_inverter = strings_per_inverter
@@ -116,10 +253,18 @@ class CPVSystem(object):
             self.losses_parameters = losses_parameters
 
         self.name = name
+        
         if iam_parameters is None:
             self.iam_parameters = {}
         else:
             self.iam_parameters = iam_parameters
+            
+        if uf_parameters is None:
+            self.uf_parameters = {'m1_am':0, 'thld_am':0 ,'m2_am':0,
+                                  'm_temp':0, 'thld_temp':0,
+                                  'w_am':0,'w_temp': 0}
+        else:
+            self.uf_parameters = uf_parameters
 
     def __repr__(self):
         attrs = ['name', 'surface_tilt', 'surface_azimuth', 'module',
@@ -152,19 +297,19 @@ class CPVSystem(object):
         model = iam_model.lower()
         if (model=='primer grado'):
             if (len(self.iam_parameters)==2):           
-                return aoi*self.iam_parameters['a1']+self.iam_parameters['b']
+                return aoi*self.iam_parameters['a1']+1
             else:
                 raise ValueError('the lenth of iam_parameters does not match with the chosen model')
                 
         elif model=='segundo grado':
             if len(self.iam_parameters)==3:
        
-                return aoi*self.iam_parameters['a2']**2+aoi*self.iam_parameters['a1']+self.iam_parameters['b']
+                return (aoi**2)*self.iam_parameters['a2']+aoi*self.iam_parameters['a1']+1
             else:
                 raise ValueError('the lenth of iam_parameters does not match with the chosen model')
         elif (model=='tercer grado'):
             if (len(self.iam_parameters)==4):
-                return aoi*self.iam_parameters['a3']**3+aoi*self.iam_parameters['a2']**2+aoi*self.iam_parameters['a1']+self.iam_parameters['b']  
+                return (aoi**3)*self.iam_parameters['a3']+(aoi**2)*self.iam_parameters['a2']+aoi*self.iam_parameters['a1']+1 
             else:
                 raise ValueError('the lenth of iam_parameters does not match with the chosen model')
         elif model in ['ashrae', 'physical', 'martin_ruiz']:
@@ -329,8 +474,81 @@ class CPVSystem(object):
         return pvsystem.singlediode(photocurrent, saturation_current,
                            resistance_series, resistance_shunt, nNsVth,
                            ivcurve_pnts=ivcurve_pnts)
+
+    def get_uf(self, airmass, ambient_temperature):
+        return self.get_uf_am(airmass)+self.get_uf_temp(ambient_temperature)
+   
+    def get_uf_am(self,airmass):
+        thld_am=self.uf_parameters['thld_am']
+        a_am_low=self.uf_parameters['m1_am']
+        a_am_high=self.uf_parameters['m2_am']
+        w_am=self.uf_parameters['w_am']
+        UF_am=[]
+        for i in range(len(airmass)):
+            if airmass[i]<=thld_am:
+                UF_am.append(1 + ( airmass[i]- thld_am) * (a_am_low))
+            else:
+                UF_am.append(1 + ( airmass[i]- thld_am) * (a_am_high))
+        UF_am=np.array(UF_am)
+        UF_am=UF_am*w_am
+        return UF_am
     
+    def get_uf_temp(self, ambient_temperature):
+        a_temp=self.uf_parameters['m_temp']
+        thld_temp=self.uf_parameters['thld_temp']
+        w_temp=self.uf_parameters['w_temp']
+        UF_temp=w_temp*(1 + (ambient_temperature - thld_temp) * (a_temp))
+        return UF_temp
+    def generate_uf_am_params(self,airmass,values):
+        '''Para poder generar UF es necesario que se tengan los 
+        parámetros del iam para conocer el valor para normalizar
+        
+        '''
+        
+        RR_max=-1
+        thld=0
+        a_final_high=0
+
+        a_final_low=0
+        thlds=np.arange(airmass.min(),airmass.max(),0.001)
+        
+        for j in thlds:
+            RR_max_high=-1
+            airmass_low=airmass[airmass<=j]
+            values_low=values[airmass<=j]/(self.iam_parameters['b'])
+            
+            airmass_high=airmass[airmass>j]
+            values_high=values[airmass>j]/(self.iam_parameters['b'])
+                      
+            yr_low, RR_low, a_s_low, b_low=Error.regresion_polinomica(airmass_low, values_low, 1)
+            y_max=float(yr_low[np.where(yr_low==yr_low.max())])
+            
+
+            x_desplazado=airmass_high-thld
+            
+            #y_regresion=mx+b donde la b=y_max
+            m=np.arange(-1,-0.0001,0.001)
+            # yr_high=pd.DataFrame({'x_desplazado': x_desplazado})
+            for i in range(len(m)):
+                yr_high=x_desplazado*m[i]+y_max                
+                RR_high=Error.Determination_coefficient(values_high,yr_high)  
+               
+                if RR_max_high < RR_high:
+                    RR_max_high=RR_high           
+                    y=np.concatenate((values_low,values_high))
+                    y_regre=np.concatenate((yr_low,yr_high))
+                    RR=Error.Determination_coefficient(y,y_regre)
+                    if RR_max < RR:
+                        RR_max=RR
+                        thld=j
+                        a_final_high=m[i]
+                        a_final_low=a_s_low[1]
+        self.uf_parameters['m1_am']=a_final_low
+        self.uf_parameters['m2_am']=a_final_high
+        self.uf_parameters['thld_am']=thld
     
+                      
+       
 class LocalizedCVSystem(CPVSystem, Location):
     """
     The LocalizedPVSystem class defines a standard set of installed PV
