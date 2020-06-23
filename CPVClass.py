@@ -293,7 +293,7 @@ class CPVSystem(object):
         return aoi
     def get_iam(self, aoi,iam_model='tercer grado'):
         
-        aoi=np.array(aoi)
+        
         model = iam_model.lower()
         if (model=='primer grado'):
             if (len(self.iam_parameters)==2):           
@@ -500,22 +500,17 @@ class CPVSystem(object):
         UF_temp=w_temp*(1 + (ambient_temperature - thld_temp) * (a_temp))
         return UF_temp
     def generate_uf_am_params(self,airmass,values):
-        '''Para poder generar UF es necesario que se tengan los 
-        parámetros del iam para conocer el valor para normalizar
-        
-        '''
-        
+        '''it is absolutely necessary iam_paramters['b'] 
+        has a valu, in order to be able to normlize the 
+        values given
+               
+        '''      
         RR_max=-1
-        thld=0
-        a_final_high=0
-
-        a_final_low=0
-        thlds=np.arange(airmass.min(),airmass.max(),0.001)
-        
+        thlds=np.arange(airmass.min(),airmass.max(),0.1)       
         for j in thlds:
             RR_max_high=-1
             airmass_low=airmass[airmass<=j]
-            values_low=values[airmass<=j]/(self.iam_parameters['b'])
+            values_low=(values[airmass<=j])/(self.iam_parameters['b'])
             
             airmass_high=airmass[airmass>j]
             values_high=values[airmass>j]/(self.iam_parameters['b'])
@@ -524,10 +519,10 @@ class CPVSystem(object):
             y_max=float(yr_low[np.where(yr_low==yr_low.max())])
             
 
-            x_desplazado=airmass_high-thld
+            x_desplazado=airmass_high-j
             
             #y_regresion=mx+b donde la b=y_max
-            m=np.arange(-1,-0.0001,0.001)
+            m=np.arange(-1,-0.1,0.1)
             # yr_high=pd.DataFrame({'x_desplazado': x_desplazado})
             for i in range(len(m)):
                 yr_high=x_desplazado*m[i]+y_max                
@@ -540,15 +535,14 @@ class CPVSystem(object):
                     RR=Error.Determination_coefficient(y,y_regre)
                     if RR_max < RR:
                         RR_max=RR
-                        thld=j
-                        a_final_high=m[i]
-                        a_final_low=a_s_low[1]
-        self.uf_parameters['m1_am']=a_final_low
-        self.uf_parameters['m2_am']=a_final_high
-        self.uf_parameters['thld_am']=thld
+                        self.uf_parameters['m1_am']=m[i]
+                        self.uf_parameters['m2_am']=a_s_low[1]
+                        self.uf_parameters['thld_am']=j
     
-                      
-       
+    def generate_uf_temp_params(self,temperature,values):             
+       y1_regre,RR_temp,a_s,b=Error.regresion_polinomica(temperature,values,1)
+       self.uf_parameters['m_temp']=a_s[1]
+       self.uf_parameters['thld_temp']=temperature[np.where(y1_regre==y1_regre.max())]
 class LocalizedCVSystem(CPVSystem, Location):
     """
     The LocalizedPVSystem class defines a standard set of installed PV

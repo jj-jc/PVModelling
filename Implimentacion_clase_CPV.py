@@ -108,10 +108,26 @@ plt.ylabel('Potencia (III-V)(W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()
 
+df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv')
 
 
 
-Mi_CPV.generate_uf_am_params(filt_df_am['airmass_relative'].values,filt_df_am['airmass_relative'].values):
+
+filt_df=df[df['aoi']<=AOILIMIT]
+filt_df['DII_efectiva (W/m2)']=filt_df['DII (W/m2)']*E.calc_iam(filt_df['aoi'].values,'Tercer grado')
+filt_df['ISC_IIIV/DII_efectiva (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII_efectiva (W/m2)']
+filt_x=filt_df['T_Amb (°C)'].values
+filt_y=filt_df['ISC_IIIV/DII_efectiva (A m2/W)'].values
+
+
+filt_df_am=filt_df
+filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']>=0.9]
+filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']<1.1]
+filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=20]
+filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28]
+
+
+Mi_CPV.generate_uf_am_params(filt_df_am['airmass_relative'].values,filt_df_am['airmass_relative'].values)
 
 
 

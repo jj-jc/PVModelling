@@ -48,30 +48,30 @@ plt.legend()
 #%%AHORA SE ESTUDIAN LAS TENDENCIAS PAR EVITAR LA INFLUENCIA DEL AIRMASS
 
 
-Incremento=1
-Max_temp=math.ceil(filt_df['airmass_relative'].max())*10
-Min_temp=math.floor(filt_df['airmass_relative'].min())*10
-fig=go.Figure()
-for i in range(Min_temp,Max_temp,Incremento):
-    AUX=filt_df[(filt_df['airmass_relative']>=float(i/10))]
-    AUX=AUX[((AUX['airmass_relative'])<(i+Incremento)/10)]    
+# Incremento=1
+# Max_temp=math.ceil(filt_df['airmass_relative'].max())*10
+# Min_temp=math.floor(filt_df['airmass_relative'].min())*10
+# fig=go.Figure()
+# for i in range(Min_temp,Max_temp,Incremento):
+#     AUX=filt_df[(filt_df['airmass_relative']>=float(i/10))]
+#     AUX=AUX[((AUX['airmass_relative'])<(i+Incremento)/10)]    
 
-    fig.add_trace(go.Scatter(
-    y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
-    x=AUX['T_Amb (°C)'],
-    mode='markers',
-    visible=True,
-    showlegend=True,
-    name='airmass '+ str(i/10)
-    ))
-fig.update_layout(
-    title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
-    xaxis_title="Ángulo de incidencia (°)",
-    yaxis_title="ISC_IIIV/DII (A m2/W)",
-)
+#     fig.add_trace(go.Scatter(
+#     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
+#     x=AUX['T_Amb (°C)'],
+#     mode='markers',
+#     visible=True,
+#     showlegend=True,
+#     name='airmass '+ str(i/10)
+#     ))
+# fig.update_layout(
+#     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
+#     xaxis_title="Ángulo de incidencia (°)",
+#     yaxis_title="ISC_IIIV/DII (A m2/W)",
+# )
 
 
-fig.show()
+# fig.show()
 
 #%%Cálculo del UF_temp
 
@@ -297,7 +297,7 @@ filt_y=filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
 
 #%%
-
+filt_df_am=filt_df
 filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']>=0.9]
 filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']<1.1]
 filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=20]
@@ -488,7 +488,7 @@ for j in thlds:
     y_max=float(yr_low[np.where(yr_low==yr_low.max())])
     
     x_high=filt_df_high['airmass_relative'].values
-    x_desplazado=filt_df_high['airmass_relative'].values-thld
+    x_desplazado=filt_df_high['airmass_relative'].values-j
     y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR  
     
     #y_regresion=mx+b donde la b=y_max
