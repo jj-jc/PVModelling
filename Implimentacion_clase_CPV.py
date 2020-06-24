@@ -39,7 +39,7 @@ for i in range(n_intervalos):
 
 
 #%% Probamos la clase creada.
-Mi_CPV=CPVClass.CPVSystem(surface_tilt=0, surface_azimuth=180,
+Mi_CPV=CPVClass.CPVSystem(surface_tilt=30, surface_azimuth=180,
                  albedo=None, surface_type=None,
                  module=None, module_type='glass_polymer',
                  module_parameters=None,
@@ -60,7 +60,7 @@ Mi_CPV.temperature_model_parameters={'u_c': 29,
 
 
 Mi_CPV.iam_parameters={'a3':-8.315977512579898e-06,'a2':0.00039212250547851236,
-                        'a1':-0.006006260890940105,'b':1.0}
+                        'a1':-0.006006260890940105,'valor_norm':0.0008938270669770386}
 
 Mi_CPV.uf_parameters={'m1_am':0.167973, 'thld_am':1.284187 ,'m2_am':-0.396000,
                       'm_temp':-0.006439, 'thld_temp':15.18,
@@ -108,26 +108,46 @@ plt.ylabel('Potencia (III-V)(W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()
 
-df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv')
+
+
+#%%   COMPROBAR LAS FUNCIONES DE LA CLASE
+# df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Prueba.csv')
+# filt_df_temp_imple=df
+# filt_df_temp_imple=filt_df_temp_imple[(filt_df_temp_imple['airmass_relative']>=1.0)]
+# filt_df_temp_imple=filt_df_temp_imple[(filt_df_temp_imple['airmass_relative']<1.1)]
+
+# Mi_CPV.generate_uf_temp_params(filt_df_temp_imple['T_Amb (°C)'].values,filt_df_temp_imple['ISC_IIIV/DII_efectiva (A m2/W)'].values)
+
+
+# filt_df_am=df
+# filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']>=0.9]
+# filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']<1.1]
+# filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=20]
+# filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28]
+
+# Mi_CPV.generate_uf_am_params(filt_df_am['airmass_relative'].values,filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values)
+#%%  COMPROBAR LA CLASE LOCALIZEDcpvsystem
+lat=40.453
+lon=-3.727
+alt=667
+tz='Europe/Berlin'
+#orientación
+surface_tilt=30
+surface_azimuth=180
+#localizamos el sistema
+CPV_location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
+
+Mi_LocalizedCPV=CPVClass.LocalizedCVSystem(Mi_CPV,CPV_location)
+
+
+#%%
 
 
 
 
-filt_df=df[df['aoi']<=AOILIMIT]
-filt_df['DII_efectiva (W/m2)']=filt_df['DII (W/m2)']*E.calc_iam(filt_df['aoi'].values,'Tercer grado')
-filt_df['ISC_IIIV/DII_efectiva (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII_efectiva (W/m2)']
-filt_x=filt_df['T_Amb (°C)'].values
-filt_y=filt_df['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
 
-filt_df_am=filt_df
-filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']>=0.9]
-filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']<1.1]
-filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=20]
-filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28]
 
-
-Mi_CPV.generate_uf_am_params(filt_df_am['airmass_relative'].values,filt_df_am['airmass_relative'].values)
 
 
 

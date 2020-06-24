@@ -196,7 +196,7 @@ class CPVSystem(object):
                  modules_per_string=1, strings_per_inverter=1,
                  inverter=None, inverter_parameters=None,
                  racking_model='open_rack', losses_parameters=None, name=None,
-                 iam_parameters=None, uf_parameters=None, aoi_limit=55.0,**kwargs):
+                 iam_parameters=None, uf_parameters=None, AOILIMIT=55.0,**kwargs):
                  
                  
 
@@ -269,7 +269,7 @@ class CPVSystem(object):
     def __repr__(self):
         attrs = ['name', 'surface_tilt', 'surface_azimuth', 'module',
                  'inverter', 'albedo', 'racking_model']
-        return ('PVSystem: \n  ' + '\n  '.join(
+        return ('CPVSystem: \n  ' + '\n  '.join(
             ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))
         
     def get_aoi(self, solar_zenith, solar_azimuth):
@@ -329,16 +329,16 @@ class CPVSystem(object):
         y_,RR,a_s,b=Error.regresion_polinomica(aoi,values,grado)
         if grado==3:
             self.iam_parameters={'a3':a_s[3]/b, 'a2':a_s[2]/b,
-                                 'a1':a_s[1]/b,'b':b}
+                                 'a1':a_s[1]/b,'valor_norm':b}
         elif grado==2:
-            self.iam_parameters={'a2':a_s[2]/b,'a1':a_s[1]/b,'b':b}            
+            self.iam_parameters={'a2':a_s[2]/b,'a1':a_s[1]/b,'valor_norm':b}            
         elif grado==1:
             self.iam_parameters={'a2':a_s[2]/b,
-                                 'a1':a_s[1]/b,'b':b} 
+                                 'a1':a_s[1]/b,'valor_norm':b} 
         print('iam_parameters have been generated with an RR of: '+str(RR))
         return a_s,b
 
-    def get_total_irradiance(surface_tilt, surface_azimuth,
+    def get_total_irradiance(self, surface_tilt, surface_azimuth,
                              solar_zenith, solar_azimuth,
                              dni, ghi, dhi, dni_extra=None, airmass=None,
                              albedo=.25, surface_type=None,
@@ -395,14 +395,18 @@ class CPVSystem(object):
             Contains keys/columns ``'poa_global', 'poa_direct', 'poa_diffuse',
             'poa_sky_diffuse', 'poa_ground_diffuse'``.
         """
-        poa_sky_diffuse = irradiance.get_sky_diffuse(
-            surface_tilt, surface_azimuth, solar_zenith, solar_azimuth,
-            dni, ghi, dhi, dni_extra=dni_extra, airmass=airmass, model=model,
-            model_perez=model_perez)
+        
+        poa_sky_diffuse = irradiance.get_sky_diffuse(surface_tilt, surface_azimuth, 
+                                                     solar_zenith, solar_azimuth, 
+                                                     dni, 
+                                                     ghi, dhi, dni_extra=dni_extra, 
+                                                     airmass=airmass, model=model, model_perez=model_perez)
     
-        poa_ground_diffuse = irradiance.get_ground_diffuse(surface_tilt, ghi, albedo,
-                                                surface_type)
-        aoi_ = irradiance.aoi(surface_tilt, surface_azimuth, solar_zenith, solar_azimuth)
+        poa_ground_diffuse = irradiance.get_ground_diffuse(surface_tilt, 
+                                                           ghi, albedo,
+                                                           surface_type)
+        aoi_ = irradiance.aoi(surface_tilt, surface_azimuth,
+                              solar_zenith, solar_azimuth)
         irrads = irradiance.poa_components(aoi_, dni, poa_sky_diffuse, poa_ground_diffuse)
         return irrads
 
@@ -506,14 +510,14 @@ class CPVSystem(object):
                
         '''      
         RR_max=-1
-        thlds=np.arange(airmass.min(),airmass.max(),0.1)       
+        thlds=np.arange(airmass.min(),airmass.max(),0.001)       
         for j in thlds:
             RR_max_high=-1
             airmass_low=airmass[airmass<=j]
-            values_low=(values[airmass<=j])/(self.iam_parameters['b'])
+            values_low=(values[airmass<=j])/(self.iam_parameters['valor_norm'])
             
             airmass_high=airmass[airmass>j]
-            values_high=values[airmass>j]/(self.iam_parameters['b'])
+            values_high=values[airmass>j]/(self.iam_parameters['valor_norm'])
                       
             yr_low, RR_low, a_s_low, b_low=Error.regresion_polinomica(airmass_low, values_low, 1)
             y_max=float(yr_low[np.where(yr_low==yr_low.max())])
@@ -522,7 +526,7 @@ class CPVSystem(object):
             x_desplazado=airmass_high-j
             
             #y_regresion=mx+b donde la b=y_max
-            m=np.arange(-1,-0.1,0.1)
+            m=np.arange(-1,-0.001,0.001)
             # yr_high=pd.DataFrame({'x_desplazado': x_desplazado})
             for i in range(len(m)):
                 yr_high=x_desplazado*m[i]+y_max                
@@ -535,14 +539,72 @@ class CPVSystem(object):
                     RR=Error.Determination_coefficient(y,y_regre)
                     if RR_max < RR:
                         RR_max=RR
-                        self.uf_parameters['m1_am']=m[i]
-                        self.uf_parameters['m2_am']=a_s_low[1]
+                        self.uf_parameters['m1_am']=a_s_low[1]
+                        self.uf_parameters['m2_am']=m[i]
                         self.uf_parameters['thld_am']=j
     
-    def generate_uf_temp_params(self,temperature,values):             
-       y1_regre,RR_temp,a_s,b=Error.regresion_polinomica(temperature,values,1)
-       self.uf_parameters['m_temp']=a_s[1]
-       self.uf_parameters['thld_temp']=temperature[np.where(y1_regre==y1_regre.max())]
+    def generate_uf_temp_params(self,temperature,values): 
+        '''it is absolutely necessary iam_paramters['b'] 
+        has a valu, in order to be able to normlize the 
+        values given
+               
+        '''    
+        
+        values=values/self.iam_parameters['valor_norm']
+        y1_regre,RR_temp,a_s,b=Error.regresion_polinomica(temperature,values,1)
+        self.uf_parameters['m_temp']=a_s[1]
+        self.uf_parameters['thld_temp']=temperature[np.where(y1_regre==y1_regre.max())][0]
+
+    def generate_weights(self, dataframe):
+        x_am=dataframe['airmass_relative'].values
+        x_temp=dataframe['T_Amb (°C)'].values
+        
+
+        
+        UF_am=[]
+        for i in range(len(x_am)):
+            if x_am[i]<=self.uf_parameters['thld_am']:
+                UF_am.append(1 + ( x_am[i]- self.uf_parameters['thld_am']) * (self.uf_parameters['m1_am']))
+            else:
+                UF_am.append(1 + ( x_am[i]- self.uf_parameters['thld_am']) * (self.uf_parameters['m2_am']))
+        UF_am=np.array(UF_am)
+        
+        
+        UF_temp=[]
+        for i in range(len(x_temp)):
+            if x_temp[i]>self.uf_parameters['thld_temp']:
+                UF_temp.append(1 + ( x_temp[i]- self.uf_parameters['thld_temp']) * (self.uf_parameters['m_temp']))
+            else:
+                UF_temp.append(1)
+
+
+        
+        # w_am=0.5
+        # w_temp=0.5
+        
+        # Estimated_W=pd.DataFrame(columns=['Potencias_estimadas (W)', 'RMSE'])
+        # datos_potencia=CPV['PMP_estimated_IIIV (W)'].values
+        # aux=np.arange(0,1,0.001)
+        # for i in aux:
+        #     w_am=i
+        #     w_temp=1-w_am    
+        #     UF_total=w_am*UF_am+w_temp*UF_temp 
+        #     estimacion=Curvas_3['p_mp']*UF_total
+        #     Juntos=[estimacion,estimacion-datos_potencia,E.RMSE(datos_potencia,estimacion)]    
+        #     Potencias_estimadas.loc['w_am='+str(i)]=Juntos
+    
+
+   
+        # index=Potencias_estimadas[Potencias_estimadas['RMSE']==Potencias_estimadas['RMSE'].min()].index[0]
+        # w_am=float(index[5:])
+        # w_temp=1-w_am
+                
+        
+        
+        
+        
+        
+
 class LocalizedCVSystem(CPVSystem, Location):
     """
     The LocalizedPVSystem class defines a standard set of installed PV
@@ -571,10 +633,13 @@ class LocalizedCVSystem(CPVSystem, Location):
         attrs = ['name', 'latitude', 'longitude', 'altitude', 'tz',
                  'surface_tilt', 'surface_azimuth', 'module', 'inverter',
                  'albedo', 'racking_model']
-        return ('LocalizedPVSystem: \n  ' + '\n  '.join(
+        return ('LocalizedCPVSystem: \n  ' + '\n  '.join(
             ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))
-    
-    
+
+# class 
+
+
+# class HybridSystem(CPVSystem):
     
     
     

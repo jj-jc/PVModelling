@@ -5,8 +5,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import Error as E
-from cpvtopvlib import uf_preprocessing
+import Error as E rocessing
 import plotly.graph_objects as go
 import plotly.io as pio
 import math
@@ -40,7 +39,7 @@ plt.legend()
 
 
 
-
+filt_df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Prueba.csv")
 
 
 

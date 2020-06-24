@@ -354,7 +354,7 @@ UF_temp=np.array(UF_temp)
 fig=plt.figure(figsize=(30,15))
 plt.plot(x_temp,UF_temp,'o',markersize=4,label='Datos primera parte')
 
-#%%COMPARACION CON EL METODO DE REGRESION POLINOMICA DE GRADO 3
+#%% COMPARACION CON EL METODO DE REGRESION POLINOMICA DE GRADO 3
 
 #Ahora hay que buscar los pesos que mejor describan las potencias.
 w_am=0.5
@@ -411,6 +411,73 @@ plt.legend()
 print('El error cuadrático medio de las estimación es de: ' + str(Potencias_estimadas['RMSE'][index]))
 print('Los valores de los pesos son: ')
 print('w_am= '+ str(w_am) + 'y '+ str(w_temp))
+#%% mejora de los pesos para el METODO DE REGRESION POLINOMICA DE GRADO 3
+
+#Ahora hay que buscar los pesos que mejor describan las potencias.
+
+
+w_am=np.arange(0,1,0.001)
+w_temp=np.arange(0,1,0.001)
+election=pd.DataFrame(columns=w_am, index=w_temp)
+
+datos_potencia=CPV['PMP_estimated_IIIV (W)'].values
+
+
+
+best_RMSE=1000
+best_w_am=0
+best_w_temp=0
+for i in w_am:
+    for j in w_temp:
+        if (i+j)<=1:
+            UF_total=i*UF_am+j*UF_temp 
+            estimacion=Curvas_3['p_mp']*UF_total
+            RMSE=E.RMSE(datos_potencia,estimacion) 
+            if (best_RMSE>RMSE):
+                best_RMSE=RMSE               
+                best_w_am=i
+                best_w_temp=j
+                
+UF_total= UF_total=best_w_am*UF_am+best_w_temp*UF_temp
+
+
+#%% represenation de lo obtenido
+   
+
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['aoi'],Curvas_3['p_mp'],'o',markersize=2,label='sin UF')
+plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'][index],'o',markersize=2,label='Con UF')
+plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
+plt.legend()
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['aoi'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Residuos de las potencias calculadas con los datos estimados')
+plt.legend()
+
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['T_Amb (°C)'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('Temperatura ambiente (°C)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Residuos de las potencias calculadas con los datos estimados')
+plt.legend()
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['airmass_relative'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('airmass (n.d.)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Residuos de las potencias calculadas con los datos estimados')
+plt.legend()
+print('El error cuadrático medio de las estimación es de: ' + str(Potencias_estimadas['RMSE'][index]))
+print('Los valores de los pesos son: ')
+print('w_am= '+ str(best_w_am) + 'y '+ str(best_w_temp))
 
 #%%COMPARACION CON LA REGRESION POLINOMICA DE GRADO 1
 
