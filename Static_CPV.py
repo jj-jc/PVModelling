@@ -438,7 +438,7 @@ for i in w_am:
                 best_w_am=i
                 best_w_temp=j
                 
-UF_total= UF_total=best_w_am*UF_am+best_w_temp*UF_temp
+UF_total=best_w_am*UF_am+best_w_temp*UF_temp
 
 
 #%% represenation de lo obtenido

@@ -64,7 +64,7 @@ Mi_CPV.iam_parameters={'a3':-8.315977512579898e-06,'a2':0.00039212250547851236,
 
 Mi_CPV.uf_parameters={'m1_am':0.167973, 'thld_am':1.284187 ,'m2_am':-0.396000,
                       'm_temp':-0.006439, 'thld_temp':15.18,
-                      'w_am':0.031,'w_temp': 0.969}
+                      'w_am':0,'w_temp': 0}
 
 IAM=Mi_CPV.get_iam(aoi=CPV['aoi'],iam_model='tercer grado')
 
@@ -85,47 +85,98 @@ Curvas=Mi_CPV.singlediode(photocurrent=Five_parameters[0], saturation_current=Fi
                                   nNsVth=Five_parameters[4],ivcurve_pnts=100)
 
 
-plt.figure(figsize=(30,15))
-plt.plot(Curvas['v'][165],Curvas['i'][165],'--',markersize=2,label='Sin IAM')
-plt.plot()
-plt.xlabel('Voltaje (III-V) (V)')
-plt.ylabel('Corriente (III-V) (A)')
-plt.title('Curvas I-V para validar el proceso anterior')
-plt.legend()
+# plt.figure(figsize=(30,15))
+# plt.plot(Curvas['v'][165],Curvas['i'][165],'--',markersize=2,label='Sin IAM')
+# plt.plot()
+# plt.xlabel('Voltaje (III-V) (V)')
+# plt.ylabel('Corriente (III-V) (A)')
+# plt.title('Curvas I-V para validar el proceso anterior')
+# plt.legend()
 
 
-UF=Mi_CPV.get_uf(CPV['airmass_relative'].values, CPV['T_Amb (°C)'].values)
+# UF=Mi_CPV.get_uf(CPV['airmass_relative'].values, CPV['T_Amb (°C)'].values)
 
-Potencias_estimadas=Curvas['p_mp']*UF
+# Potencias_estimadas=Curvas['p_mp']*UF
 
 
-plt.figure(figsize=(30,15))
-plt.plot(CPV['aoi'],Curvas['p_mp'],'o',markersize=2,label='sin UF')
-plt.plot(CPV['aoi'],Potencias_estimadas,'o',markersize=2,label='Con UF')
-plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
-plt.xlabel('Ángulo de incidencia (°)')
-plt.ylabel('Potencia (III-V)(W)')
-plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
-plt.legend()
+# plt.figure(figsize=(30,15))
+# plt.plot(CPV['aoi'],Curvas['p_mp'],'o',markersize=2,label='sin UF')
+# plt.plot(CPV['aoi'],Potencias_estimadas,'o',markersize=2,label='Con UF')
+# plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
+# plt.xlabel('Ángulo de incidencia (°)')
+# plt.ylabel('Potencia (III-V)(W)')
+# plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
+# plt.legend()
 
 
 
 #%%   COMPROBAR LAS FUNCIONES DE LA CLASE
-# df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Prueba.csv')
-# filt_df_temp_imple=df
-# filt_df_temp_imple=filt_df_temp_imple[(filt_df_temp_imple['airmass_relative']>=1.0)]
-# filt_df_temp_imple=filt_df_temp_imple[(filt_df_temp_imple['airmass_relative']<1.1)]
+df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Prueba.csv')
+filt_df_temp_imple=df
+filt_df_temp_imple=filt_df_temp_imple[(filt_df_temp_imple['airmass_relative']>=1.0)]
+filt_df_temp_imple=filt_df_temp_imple[(filt_df_temp_imple['airmass_relative']<1.1)]
 
-# Mi_CPV.generate_uf_temp_params(filt_df_temp_imple['T_Amb (°C)'].values,filt_df_temp_imple['ISC_IIIV/DII_efectiva (A m2/W)'].values)
+Mi_CPV.generate_uf_temp_params(filt_df_temp_imple['T_Amb (°C)'].values,filt_df_temp_imple['ISC_IIIV/DII_efectiva (A m2/W)'].values)
 
 
-# filt_df_am=df
-# filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']>=0.9]
-# filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']<1.1]
-# filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=20]
-# filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28]
+filt_df_am=df
+filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']>=0.9]
+filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']<1.1]
+filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=20]
+filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28]
 
-# Mi_CPV.generate_uf_am_params(filt_df_am['airmass_relative'].values,filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values)
+Mi_CPV.generate_uf_am_params(filt_df_am['airmass_relative'].values,filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values)
+
+#%% CElda212
+df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
+
+#SE filtran los datos que no correspondan a una tendencia clara de la potencia.
+CPV=df[(df['aoi']<=AOILIMIT)]
+Fecha=pd.DatetimeIndex(CPV['Date Time'])
+CPV=CPV.set_index(Fecha)
+CPV=CPV.drop(['Date Time'],axis=1)
+
+limSup=CPV['aoi'].max()
+limInf=CPV['aoi'].min()
+Rango=limSup-limInf
+n_intervalos=100
+porcent_mediana=20
+incremento=Rango/n_intervalos
+for i in range(n_intervalos):
+    AUX=CPV[CPV['aoi']>limInf+i*incremento]
+    AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
+    Mediana=E.mediana(AUX['PMP_estimated_IIIV (W)'].values)
+    DEBAJO=AUX[AUX['PMP_estimated_IIIV (W)']<(Mediana*(1-porcent_mediana/100))]   
+    CPV=CPV.drop(DEBAJO.index[:],axis=0)
+    ENCIMA=AUX[AUX['PMP_estimated_IIIV (W)']>(Mediana*(1+porcent_mediana/100))]
+    CPV=CPV.drop(ENCIMA.index[:],axis=0)
+    
+CPV['DII_efectiva_tercer_grado (W/m2)']=CPV['DII (W/m2)']*Mi_CPV.get_iam(CPV['aoi'].values,'Tercer grado')
+
+temp_cell_3=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII_efectiva_tercer_grado (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'])
+
+Five_parameters_3=Mi_CPV.calcparams_pvsyst(CPV['DII_efectiva_tercer_grado (W/m2)'], temp_cell_3)
+
+Curvas_3=Mi_CPV.singlediode(photocurrent=Five_parameters_3[0], saturation_current=Five_parameters_3[1],
+                                  resistance_series=Five_parameters_3[2],resistance_shunt=Five_parameters_3[3], 
+                                  nNsVth=Five_parameters_3[4],ivcurve_pnts=100, method='lambertw')
+
+UF_total=Mi_CPV.calculate_UF(CPV['airmass_relative'], CPV['T_Amb (°C)'], Curvas_3['p_mp'], CPV['PMP_estimated_IIIV (W)'])
+
+
+
+Potencia_Corregida=Curvas_3['p_mp']*UF_total
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
+plt.plot(CPV['aoi'],Curvas_3['p_mp'],'o',markersize=2,label='IAM_tercer_grado')
+plt.plot(CPV['aoi'],Potencia_Corregida,'o',markersize=2,label='Con UF')
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('Puntos de máxima potencia (W)')
+plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del iam')
+plt.legend()
+
+
 #%%  COMPROBAR LA CLASE LOCALIZEDcpvsystem
 lat=40.453
 lon=-3.727

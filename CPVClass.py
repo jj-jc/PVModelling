@@ -267,7 +267,7 @@ class CPVSystem(object):
             self.uf_parameters = uf_parameters
 
     def __repr__(self):
-        attrs = ['name', 'surface_tilt', 'surface_azimuth', 'module',
+        attrs = ['name', 'AOILIMIT', 'surface_tilt', 'surface_azimuth', 'module',
                  'inverter', 'albedo', 'racking_model']
         return ('CPVSystem: \n  ' + '\n  '.join(
             ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))
@@ -337,6 +337,7 @@ class CPVSystem(object):
                                  'a1':a_s[1]/b,'valor_norm':b} 
         print('iam_parameters have been generated with an RR of: '+str(RR))
         return a_s,b
+    
 
     def get_total_irradiance(self, surface_tilt, surface_azimuth,
                              solar_zenith, solar_azimuth,
@@ -464,7 +465,7 @@ class CPVSystem(object):
 
     def singlediode(self, photocurrent, saturation_current,
                     resistance_series, resistance_shunt, nNsVth,
-                    ivcurve_pnts=None):
+                    ivcurve_pnts=None,method='lambertw'):
         """Wrapper around the :py:func:`singlediode` function.
 
         Parameters
@@ -477,7 +478,7 @@ class CPVSystem(object):
         """
         return pvsystem.singlediode(photocurrent, saturation_current,
                            resistance_series, resistance_shunt, nNsVth,
-                           ivcurve_pnts=ivcurve_pnts)
+                           ivcurve_pnts=ivcurve_pnts,method=method)
 
     def get_uf(self, airmass, ambient_temperature):
         return self.get_uf_am(airmass)+self.get_uf_temp(ambient_temperature)
@@ -503,6 +504,13 @@ class CPVSystem(object):
         w_temp=self.uf_parameters['w_temp']
         UF_temp=w_temp*(1 + (ambient_temperature - thld_temp) * (a_temp))
         return UF_temp
+    
+    def get_uf(self, airmass, ambient_temperature):
+        
+        UF_am=self.get_uf_am(airmass)
+        UF_temp=self.get_uf_temp(ambient_temperature)
+        return UF_am,UF_temp
+        
     def generate_uf_am_params(self,airmass,values):
         '''it is absolutely necessary iam_paramters['b'] 
         has a valu, in order to be able to normlize the 
@@ -554,56 +562,89 @@ class CPVSystem(object):
         y1_regre,RR_temp,a_s,b=Error.regresion_polinomica(temperature,values,1)
         self.uf_parameters['m_temp']=a_s[1]
         self.uf_parameters['thld_temp']=temperature[np.where(y1_regre==y1_regre.max())][0]
+    def generate_uf_parameters(self, airmass, values_airmass, temperature, values_temperature):
+        self.generate_uf_am_parameters(airmass, values_airmass)
+        self.generate_uf_temp_parameters(temperature, values_temperature)
 
-    def generate_weights(self, dataframe):
-        x_am=dataframe['airmass_relative'].values
-        x_temp=dataframe['T_Amb (°C)'].values
-        
-
-        
+    def calculate_UF(self, airmass, temperature, PMP_calculated=None, PMP=None):        
         UF_am=[]
-        for i in range(len(x_am)):
-            if x_am[i]<=self.uf_parameters['thld_am']:
-                UF_am.append(1 + ( x_am[i]- self.uf_parameters['thld_am']) * (self.uf_parameters['m1_am']))
+        for i in range(len(airmass)):
+            if airmass[i]<=self.uf_parameters['thld_am']:
+                UF_am.append(1 + ( airmass[i]- self.uf_parameters['thld_am']) * (self.uf_parameters['m1_am']))
             else:
-                UF_am.append(1 + ( x_am[i]- self.uf_parameters['thld_am']) * (self.uf_parameters['m2_am']))
+                UF_am.append(1 + ( airmass[i]- self.uf_parameters['thld_am']) * (self.uf_parameters['m2_am']))
         UF_am=np.array(UF_am)
         
         
         UF_temp=[]
-        for i in range(len(x_temp)):
-            if x_temp[i]>self.uf_parameters['thld_temp']:
-                UF_temp.append(1 + ( x_temp[i]- self.uf_parameters['thld_temp']) * (self.uf_parameters['m_temp']))
+        for i in range(len(temperature)):
+            if temperature[i]>self.uf_parameters['thld_temp']:
+                UF_temp.append(1 + ( temperature[i]- self.uf_parameters['thld_temp']) * (self.uf_parameters['m_temp']))
             else:
                 UF_temp.append(1)
+        UF_temp=np.array(UF_temp)
+        if ((self.uf_parameters['w_am']==0) & (self.uf_parameters['w_temp']==0)):
+            w_am=np.arange(0,1,0.001)
+            w_temp=np.arange(0,1,0.001)       
+            best_RMSE=1000
+            best_w_am=0
+            best_w_temp=0
+            for i in w_am:
+                for j in w_temp:
+                    if ((i+j)<=1):
+                        UF_total=i*UF_am+j*UF_temp 
+                        estimacion=PMP_calculated*UF_total
+                        RMSE=Error.RMSE(PMP,estimacion) 
+                        if (best_RMSE>RMSE):
+                            best_RMSE=RMSE               
+                            best_w_am=i
+                            best_w_temp=j
+            self.uf_parameters['w_temp']=best_w_temp
+            self.uf_parameters['w_am']=best_w_am 
+        return (self.uf_parameters['w_am']*UF_am+self.uf_parameters['w_temp']*UF_temp)          
+    def pvwatts_dc(self, g_poa_effective, temp_cell):
+        """
+        Calcuates DC power according to the PVWatts model using
+        :py:func:`pvwatts_dc`, `self.module_parameters['pdc0']`, and
+        `self.module_parameters['gamma_pdc']`.
 
+        See :py:func:`pvwatts_dc` for details.
+        """
+        kwargs = _build_kwargs(['temp_ref'], self.module_parameters)
+
+        return pvwatts_dc(g_poa_effective, temp_cell,
+                          self.module_parameters['pdc0'],
+                          self.module_parameters['gamma_pdc'],
+                          **kwargs)
+
+    def pvwatts_losses(self):
+        """
+        Calculates DC power losses according the PVwatts model using
+        :py:func:`pvwatts_losses` and ``self.losses_parameters``.`
+
+        See :py:func:`pvwatts_losses` for details.
+        """
+        kwargs = _build_kwargs(['soiling', 'shading', 'snow', 'mismatch',
+                                'wiring', 'connections', 'lid',
+                                'nameplate_rating', 'age', 'availability'],
+                               self.losses_parameters)
+        return pvwatts_losses(**kwargs)
+
+    def pvwatts_ac(self, pdc):
+        """
+        Calculates AC power according to the PVWatts model using
+        :py:func:`pvwatts_ac`, `self.module_parameters['pdc0']`, and
+        `eta_inv_nom=self.inverter_parameters['eta_inv_nom']`.
+
+        See :py:func:`pvwatts_ac` for details.
+        """
+        kwargs = _build_kwargs(['eta_inv_nom', 'eta_inv_ref'],
+                               self.inverter_parameters)
+
+        return pvwatts_ac(pdc, self.inverter_parameters['pdc0'], **kwargs)
 
         
-        # w_am=0.5
-        # w_temp=0.5
-        
-        # Estimated_W=pd.DataFrame(columns=['Potencias_estimadas (W)', 'RMSE'])
-        # datos_potencia=CPV['PMP_estimated_IIIV (W)'].values
-        # aux=np.arange(0,1,0.001)
-        # for i in aux:
-        #     w_am=i
-        #     w_temp=1-w_am    
-        #     UF_total=w_am*UF_am+w_temp*UF_temp 
-        #     estimacion=Curvas_3['p_mp']*UF_total
-        #     Juntos=[estimacion,estimacion-datos_potencia,E.RMSE(datos_potencia,estimacion)]    
-        #     Potencias_estimadas.loc['w_am='+str(i)]=Juntos
-    
 
-   
-        # index=Potencias_estimadas[Potencias_estimadas['RMSE']==Potencias_estimadas['RMSE'].min()].index[0]
-        # w_am=float(index[5:])
-        # w_temp=1-w_am
-                
-        
-        
-        
-        
-        
 
 class LocalizedCVSystem(CPVSystem, Location):
     """
@@ -636,10 +677,96 @@ class LocalizedCVSystem(CPVSystem, Location):
         return ('LocalizedCPVSystem: \n  ' + '\n  '.join(
             ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))
 
-# class 
+# class Si_CPVSystem (object):
+#         def __init__(self,
+#                   surface_tilt=0, surface_azimuth=180,
+#                   albedo=None, surface_type=None,
+#                   module=None, module_type='glass_polymer',
+#                   module_parameters=None,
+#                   temperature_model_parameters=None,
+#                   modules_per_string=1, strings_per_inverter=1,
+#                   inverter=None, inverter_parameters=None,
+#                   racking_model='open_rack', losses_parameters=None, name=None,
+#                   iam_parameters=None, uf_parameters=None, AOILIMIT=55.0,**kwargs):
+                 
+                 
+
+#         self.surface_tilt = surface_tilt
+#         self.surface_azimuth = surface_azimuth
+#         self.surface_type = surface_type
+
+#         if albedo is None:
+#             self.albedo = irradiance.SURFACE_ALBEDOS.get(surface_type, 0.25)
+#         else:
+#             self.albedo = albedo
+
+#         self.module = module
+#         if module_parameters is None:
+#             self.module_parameters = {}
+#         else:
+#             self.module_parameters = module_parameters
+
+#         self.module_type = module_type
+#         self.racking_model = racking_model
+#         #este código será implementado más adelante cuando determine los valores del modelo que quiero uilizar
+#         # if temperature_model_parameters is None:
+#         #     self.temperature_model_parameters = \
+#         #         self._infer_temperature_model_params()
+#         # else:
+#         #     self.temperature_model_parameters = temperature_model_parameters
+#         self.temperature_model_parameters = {}
+
+#         # if not any(self.temperature_model_parameters):
+#         #     warnings.warn(
+#         #         'Required temperature_model_parameters is not specified '
+#         #         'and parameters are not inferred from racking_model and '
+#         #         'module_type. Reverting to deprecated default: SAPM cell '
+#         #         'temperature model parameters for a glass/glass module in '
+#         #         'open racking. In the future '
+#         #         'PVSystem.temperature_model_parameters will be required',
+#         #         pvlibDeprecationWarning)
+#         #     params = temperature._temperature_model_params(
+#         #         'sapm', 'open_rack_glass_glass')
+#         #     self.temperature_model_parameters = params
+
+#         self.modules_per_string = modules_per_string
+#         self.strings_per_inverter = strings_per_inverter
+
+#         self.inverter = inverter
+#         if inverter_parameters is None:
+#             self.inverter_parameters = {}
+#         else:
+#             self.inverter_parameters = inverter_parameters
+
+#         if losses_parameters is None:
+#             self.losses_parameters = {}
+#         else:
+#             self.losses_parameters = losses_parameters
+
+#         self.name = name
+        
+#         if iam_parameters is None:
+#             self.iam_parameters = {}
+#         else:
+#             self.iam_parameters = iam_parameters
+            
+#         if uf_parameters is None:
+#             self.uf_parameters = {'m1_am':0, 'thld_am':0 ,'m2_am':0,
+#                                   'm_temp':0, 'thld_temp':0,
+#                                   'w_am':0,'w_temp': 0}
+#         else:
+#             self.uf_parameters = uf_parameters
+
+#     def __repr__(self):
+#         attrs = ['name', 'AOILIMIT', 'surface_tilt', 'surface_azimuth', 'module',
+#                   'inverter', 'albedo', 'racking_model']
+#         return ('CPVSystem: \n  ' + '\n  '.join(
+#             ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))
+
+    
 
 
-# class HybridSystem(CPVSystem):
+# class HybridSystem(CPVSystem,Si_CPVSystem):
     
     
     
