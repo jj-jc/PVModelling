@@ -7,7 +7,7 @@ Created on Tue Jun 16 17:07:44 2020
 
 
 
-
+from pvlib.location import Location
 import CPVClass
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -40,7 +40,7 @@ for i in range(n_intervalos):
 
 #%% Probamos la clase creada.
 Mi_CPV=CPVClass.CPVSystem(surface_tilt=30, surface_azimuth=180,
-                 albedo=None, surface_type=None,
+                 AOILIMIT=55.0,albedo=None, surface_type=None,
                  module=None, module_type='glass_polymer',
                  module_parameters=None,
                  temperature_model_parameters=None,
@@ -53,7 +53,10 @@ Mi_CPV.module_parameters={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
                 'I_o_ref': 0.00000000017,'R_sh_ref': 5226, 'R_sh_0':21000,
                 'R_sh_exp': 5.50,'R_s': 0.01,'alpha_sc':0.00,'EgRef':3.91,
                 'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':12,
-                'eta_m':0.274, 'alpha_absorption':1}
+                'eta_m':0.274, 'alpha_absorption':1, 'pdc0': 25,'gamma_pdc':-0.005 }
+#'pdc0': 25,'gamma_pdc':-0.005 son para comprobar que fuuncionen las funcione, pero no esta correctamente seleccionado
+Mi_CPV.inverter_parameters={'pdc0': 25, 'eta_inv_nom': 0.96 ,'eta_inv_ref':0.9637}
+
 
 Mi_CPV.temperature_model_parameters={'u_c': 29,
                                      'u_v':0}
@@ -127,7 +130,7 @@ filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28]
 
 Mi_CPV.generate_uf_am_params(filt_df_am['airmass_relative'].values,filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values)
 
-#%% CElda212
+#%% COMPROBAR EL PROCESO DE OBTENCION DE LA POTENCIA 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
 
 #SE filtran los datos que no correspondan a una tendencia clara de la potencia.
@@ -155,11 +158,13 @@ CPV['DII_efectiva_tercer_grado (W/m2)']=CPV['DII (W/m2)']*Mi_CPV.get_iam(CPV['ao
 
 temp_cell_3=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII_efectiva_tercer_grado (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'])
 
-Five_parameters_3=Mi_CPV.calcparams_pvsyst(CPV['DII_efectiva_tercer_grado (W/m2)'], temp_cell_3)
+Five_parameters_3=Mi_CPV.calcparams_cpvsyst(CPV['DII_efectiva_tercer_grado (W/m2)'], temp_cell_3)
 
 Curvas_3=Mi_CPV.singlediode(photocurrent=Five_parameters_3[0], saturation_current=Five_parameters_3[1],
                                   resistance_series=Five_parameters_3[2],resistance_shunt=Five_parameters_3[3], 
                                   nNsVth=Five_parameters_3[4],ivcurve_pnts=100, method='lambertw')
+
+
 
 UF_total=Mi_CPV.calculate_UF(CPV['airmass_relative'], CPV['T_Amb (°C)'], Curvas_3['p_mp'], CPV['PMP_estimated_IIIV (W)'])
 
@@ -175,7 +180,19 @@ plt.xlabel('Ángulo de incidencia (°)')
 plt.ylabel('Puntos de máxima potencia (W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del iam')
 plt.legend()
+#%% COMPROBAR SCALE_VOLTAGE_CURRENT_TOWER
 
+# data=pd.DataFrame({'v_mp': Curvas_3['v_mp'],'v_oc': Curvas_3['v_oc'],'i_mp': Curvas_3['i_mp'],
+#                    'i_x': Curvas_3['i_x'],'i_xx': Curvas_3['i_xx'],'i_sc': Curvas_3['i_sc'],
+#                    'p_mp': Curvas_3['p_mp']})
+# scale=Mi_CPV.scale_voltage_current_power(data)
+
+
+#%%COMPROBAR PVWATTS_DC Y PVWATTS_AC
+# temp_cell_
+# dc=Mi_CPV.pvwatts_dc(g_poa_effective=CPV['DII_efectiva_tercer_grado (W/m2)'],temp_cell=temp_cell_)
+
+# ac=Mi_CPV.pvwatts_ac(dc)
 
 #%%  COMPROBAR LA CLASE LOCALIZEDcpvsystem
 lat=40.453
@@ -186,7 +203,9 @@ tz='Europe/Berlin'
 surface_tilt=30
 surface_azimuth=180
 #localizamos el sistema
-CPV_location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
+CPV_location=Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
+
+
 
 Mi_LocalizedCPV=CPVClass.LocalizedCVSystem(Mi_CPV,CPV_location)
 

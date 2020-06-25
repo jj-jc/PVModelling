@@ -28,15 +28,15 @@ _IAM_MODEL_PARAMS = {
     'interp': set([])
 }
 
-def _combine_localized_attributes(pvsystem=None, location=None, **kwargs):
+def _combine_localized_attributes(cpvsystem=None, location=None, **kwargs):
     """
     Get and combine attributes from the pvsystem and/or location
     with the rest of the kwargs.
     """
-    if pvsystem is not None:
-        pv_dict = pvsystem.__dict__
+    if cpvsystem is not None:
+        cpv_dict = cpvsystem.__dict__
     else:
-        pv_dict = {}
+        cpv_dict = {}
 
     if location is not None:
         loc_dict = location.__dict__
@@ -44,10 +44,10 @@ def _combine_localized_attributes(pvsystem=None, location=None, **kwargs):
         loc_dict = {}
 
     new_kwargs = dict(
-        list(pv_dict.items()) + list(loc_dict.items()) + list(kwargs.items())
+        list(cpv_dict.items()) + list(loc_dict.items()) + list(kwargs.items())
     )
     return new_kwargs
-def calcparams_pvsyst(effective_irradiance, temp_cell,
+def calcparams_cpvsyst(effective_irradiance, temp_cell,
                       alpha_sc, gamma_ref, mu_gamma,
                       I_L_ref, I_o_ref,
                       R_sh_ref, R_sh_0, R_s,
@@ -185,10 +185,9 @@ def calcparams_pvsyst(effective_irradiance, temp_cell,
 
     return IL, I0, Rs, Rsh, nNsVth
 class CPVSystem(object):
-    
-    
+      
     def __init__(self,
-                 surface_tilt=0, surface_azimuth=180,
+                 surface_tilt=0, surface_azimuth=180, AOILIMIT=55.0,
                  albedo=None, surface_type=None,
                  module=None, module_type='glass_polymer',
                  module_parameters=None,
@@ -196,10 +195,12 @@ class CPVSystem(object):
                  modules_per_string=1, strings_per_inverter=1,
                  inverter=None, inverter_parameters=None,
                  racking_model='open_rack', losses_parameters=None, name=None,
-                 iam_parameters=None, uf_parameters=None, AOILIMIT=55.0,**kwargs):
+                 iam_parameters=None, uf_parameters=None,**kwargs):
                  
-                 
-
+        if (AOILIMIT <=0.0 or AOILIMIT >90.0):
+            self.AOILIMIT=55.0              
+        else:
+            self.AOILIMIT=AOILIMIT
         self.surface_tilt = surface_tilt
         self.surface_azimuth = surface_azimuth
         self.surface_type = surface_type
@@ -413,7 +414,7 @@ class CPVSystem(object):
 
       
   
-    def calcparams_pvsyst(self, effective_irradiance, temp_cell):
+    def calcparams_cpvsyst(self, effective_irradiance, temp_cell):
         """
         Use the :py:func:`calcparams_pvsyst` function, the input
         parameters and ``self.module_parameters`` to calculate the
@@ -439,7 +440,7 @@ class CPVSystem(object):
                                 'cells_in_series'],
                                self.module_parameters)
 
-        return calcparams_pvsyst(effective_irradiance, temp_cell, **kwargs)
+        return calcparams_cpvsyst(effective_irradiance, temp_cell, **kwargs)
     
     
     def pvsyst_celltemp(self, poa_global, temp_air, wind_speed=1.0):
@@ -602,6 +603,35 @@ class CPVSystem(object):
             self.uf_parameters['w_temp']=best_w_temp
             self.uf_parameters['w_am']=best_w_am 
         return (self.uf_parameters['w_am']*UF_am+self.uf_parameters['w_temp']*UF_temp)          
+    
+    
+    def scale_voltage_current_power(self, data):
+        """
+        Scales the voltage, current, and power of the DataFrames
+        returned by :py:func:`singlediode` and :py:func:`sapm`
+        by `self.modules_per_string` and `self.strings_per_inverter`.
+
+        Parameters
+        ----------
+        data: DataFrame
+            Must contain columns `'v_mp', 'v_oc', 'i_mp' ,'i_x', 'i_xx',
+            'i_sc', 'p_mp'`.
+
+        Returns
+        -------
+        scaled_data: DataFrame
+            A scaled copy of the input data.
+        """
+
+        return pvsystem.scale_voltage_current_power(data,
+                                           voltage=self.modules_per_string,
+                                           current=self.strings_per_inverter)
+    
+    
+    
+    
+    
+    
     def pvwatts_dc(self, g_poa_effective, temp_cell):
         """
         Calcuates DC power according to the PVWatts model using
@@ -612,7 +642,7 @@ class CPVSystem(object):
         """
         kwargs = _build_kwargs(['temp_ref'], self.module_parameters)
 
-        return pvwatts_dc(g_poa_effective, temp_cell,
+        return pvsystem.pvwatts_dc(g_poa_effective, temp_cell,
                           self.module_parameters['pdc0'],
                           self.module_parameters['gamma_pdc'],
                           **kwargs)
@@ -628,7 +658,7 @@ class CPVSystem(object):
                                 'wiring', 'connections', 'lid',
                                 'nameplate_rating', 'age', 'availability'],
                                self.losses_parameters)
-        return pvwatts_losses(**kwargs)
+        return pvsystem.pvwatts_losses(**kwargs)
 
     def pvwatts_ac(self, pdc):
         """
@@ -641,7 +671,7 @@ class CPVSystem(object):
         kwargs = _build_kwargs(['eta_inv_nom', 'eta_inv_ref'],
                                self.inverter_parameters)
 
-        return pvwatts_ac(pdc, self.inverter_parameters['pdc0'], **kwargs)
+        return pvsystem.pvwatts_ac(pdc, self.inverter_parameters['pdc0'], **kwargs)
 
         
 
@@ -658,10 +688,10 @@ class LocalizedCVSystem(CPVSystem, Location):
     for modeling PV systems at specific locations.
     """
 
-    def __init__(self, pvsystem=None, location=None, **kwargs):
+    def __init__(self, cpvsystem=None, location=None, **kwargs):
 
         new_kwargs = _combine_localized_attributes(
-            pvsystem=pvsystem,
+            cpvsystem=cpvsystem,
             location=location,
             **kwargs,
         )
