@@ -41,11 +41,13 @@ V2=[0,31.03,35.37]
 I2=[0.6473,0.6133,0]
 #%%COMPROBAR CURVAS 3-5
 
+
 module_parameters_IIIV={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
                 'I_o_ref': 0.00000000017,'R_sh_ref': 5226, 'R_sh_0':21000,
                 'R_sh_exp': 5.50,'R_s': 0.01,'alpha_sc':0.00,'EgRef':3.91,
-                'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':12,
-                'eta_m':0.274, 'alpha_absorption':1}
+                'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':12, 
+                'cells_in_parallel': 48, 'eta': 0.32, 'alpha_absorption':0.9,
+                'Area':1.2688, 'Impo': 8.3, 'Vmpo':43.9}
 
 SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters_IIIV, 
                                       modules_per_string=1,string_per_inverter=1,
