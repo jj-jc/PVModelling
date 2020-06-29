@@ -698,13 +698,14 @@ plt.legend()
 # print('El coeficiente de determinación para la regresión de tercer grado es: '+str(RR_poli3))
 
 # estructura para el dataframe
-# [a1,a2,a3,b,thld,RR]
-iam1_low=[a_s_low[1]/VALOR_NORMALIZAR,0,0,b_low/VALOR_NORMALIZAR,thld,RR_low]
-iam1_high=[a_s_high[1]/VALOR_NORMALIZAR,0,0,b_high/VALOR_NORMALIZAR,0,RR_low]
+# [a1,a2,a3,b,thld,RR] con la peculiaridad de que, el iam es el que nos va a determinar el valor a normalizar por medio de la b, por lo qu eeste valor no se 
+#normalizará (daría 1) y además nos da la información del valor a normalizar para los factores de utilización.
+iam1_low=[a_s_low[1]/VALOR_NORMALIZAR,0,0,b_low,thld,RR_low]
+iam1_high=[a_s_high[1]/VALOR_NORMALIZAR,0,0,b_high,0,RR_low]
 
-iam2=[a_s2[1]/VALOR_NORMALIZAR,a_s2[2]/VALOR_NORMALIZAR,0,b2/VALOR_NORMALIZAR,0,RR_poli2]
+iam2=[a_s2[1]/VALOR_NORMALIZAR,a_s2[2]/VALOR_NORMALIZAR,0,b2,0,RR_poli2]
 
-iam3=[a_s3[1]/VALOR_NORMALIZAR,a_s3[2]/VALOR_NORMALIZAR,a_s3[3]/VALOR_NORMALIZAR,b3/VALOR_NORMALIZAR,0,RR_poli3]
+iam3=[a_s3[1]/VALOR_NORMALIZAR,a_s3[2]/VALOR_NORMALIZAR,a_s3[3]/VALOR_NORMALIZAR,b3,0,RR_poli3]
 
 iam_ashrae=[b_ashrae,0,0,0,0,RR_ashrae]
 iam_martin_ruiz=[a_r,0,0,0,0,RR_martin_ruiz]

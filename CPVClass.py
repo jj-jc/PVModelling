@@ -440,8 +440,8 @@ class CPVSystem(object):
                                 'cells_in_series'],
                                self.module_parameters)
 
-        return calcparams_cpvsyst(effective_irradiance, temp_cell, **kwargs)
-    
+        return pvsystem.calcparams_pvsyst(effective_irradiance, temp_cell, **kwargs)
+   
     
     def pvsyst_celltemp(self, poa_global, temp_air, wind_speed=1.0):
         """
@@ -482,8 +482,15 @@ class CPVSystem(object):
                            ivcurve_pnts=ivcurve_pnts,method=method)
 
     def get_uf(self, airmass, ambient_temperature):
-        return self.get_uf_am(airmass)+self.get_uf_temp(ambient_temperature)
-   
+        if (len(airmass)==len(ambient_temperature)):
+            UF_am=np.array(self.get_uf_am(airmass))
+            UF_temp=np.array(self.get_uf_temp(ambient_temperature))
+            UF=np.array(UF_am+UF_temp)
+            return (UF)
+        else: 
+            raise ValueError('The lenth of the values do not match')
+
+
     def get_uf_am(self,airmass):
         thld_am=self.uf_parameters['thld_am']
         a_am_low=self.uf_parameters['m1_am']
@@ -506,11 +513,7 @@ class CPVSystem(object):
         UF_temp=w_temp*(1 + (ambient_temperature - thld_temp) * (a_temp))
         return UF_temp
     
-    def get_uf(self, airmass, ambient_temperature):
-        
-        UF_am=self.get_uf_am(airmass)
-        UF_temp=self.get_uf_temp(ambient_temperature)
-        return UF_am,UF_temp
+
         
     def generate_uf_am_params(self,airmass,values):
         '''it is absolutely necessary iam_paramters['b'] 
@@ -603,7 +606,7 @@ class CPVSystem(object):
             self.uf_parameters['w_temp']=best_w_temp
             self.uf_parameters['w_am']=best_w_am 
         return (self.uf_parameters['w_am']*UF_am+self.uf_parameters['w_temp']*UF_temp)          
-    
+
     
     def scale_voltage_current_power(self, data):
         """
@@ -706,6 +709,12 @@ class LocalizedCVSystem(CPVSystem, Location):
                  'albedo', 'racking_model']
         return ('LocalizedCPVSystem: \n  ' + '\n  '.join(
             ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))
+    
+    
+    
+    
+    
+    
 
 # class Si_CPVSystem (object):
 #         def __init__(self,
@@ -717,7 +726,7 @@ class LocalizedCVSystem(CPVSystem, Location):
 #                   modules_per_string=1, strings_per_inverter=1,
 #                   inverter=None, inverter_parameters=None,
 #                   racking_model='open_rack', losses_parameters=None, name=None,
-#                   iam_parameters=None, uf_parameters=None, AOILIMIT=55.0,**kwargs):
+#                   iam_parameters=None, AOILIMIT=55.0,**kwargs):
                  
                  
 
@@ -792,9 +801,217 @@ class LocalizedCVSystem(CPVSystem, Location):
 #                   'inverter', 'albedo', 'racking_model']
 #         return ('CPVSystem: \n  ' + '\n  '.join(
 #             ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))
+    
+    
+#     def calcparams_pvsyst(self, effective_irradiance, temp_cell):
+#         """
+#         Use the :py:func:`calcparams_pvsyst` function, the input
+#         parameters and ``self.module_parameters`` to calculate the
+#         module currents and resistances.
+    
+#         Parameters
+#         ----------
+#         effective_irradiance : numeric
+#             The irradiance (W/m2) that is converted to photocurrent.
+    
+#         temp_cell : float or Series
+#             The average cell temperature of cells within a module in C.
+    
+#         Returns
+#         -------
+#         See pvsystem.calcparams_pvsyst for details
+#         """
+    
+#         kwargs = _build_kwargs(['gamma_ref', 'mu_gamma', 'I_L_ref', 'I_o_ref',
+#                                 'R_sh_ref', 'R_sh_0', 'R_sh_exp',
+#                                 'R_s', 'alpha_sc', 'EgRef',
+#                                 'irrad_ref', 'temp_ref',
+#                                 'cells_in_series'],
+#                                self.module_parameters)
+    
+#         return pvsystem.calcparams_pvsyst(effective_irradiance, temp_cell, **kwargs)
+    
+#     def get_aoi(self, solar_zenith, solar_azimuth):
+#         """Get the angle of incidence on the system.
 
+#         Parameters
+#         ----------
+#         solar_zenith : float or Series.
+#             Solar zenith angle.
+#         solar_azimuth : float or Series.
+#             Solar azimuth angle.
+
+#         Returns
+#         -------
+#         aoi : Series
+#             The angle of incidence
+#         """
+
+#         aoi = irradiance.aoi(self.surface_tilt, self.surface_azimuth,
+#                              solar_zenith, solar_azimuth)
+#         return aoi
+#     def get_iam(self, aoi,iam_model='tercer grado'):
+        
+        
+#         model = iam_model.lower()
+#         if (model=='primer grado'):
+#             if (len(self.iam_parameters)==2):           
+#                 return aoi*self.iam_parameters['a1']+1
+#             else:
+#                 raise ValueError('the lenth of iam_parameters does not match with the chosen model')
+                
+#         elif model=='segundo grado':
+#             if len(self.iam_parameters)==3:
+       
+#                 return (aoi**2)*self.iam_parameters['a2']+aoi*self.iam_parameters['a1']+1
+#             else:
+#                 raise ValueError('the lenth of iam_parameters does not match with the chosen model')
+#         elif (model=='tercer grado'):
+#             if (len(self.iam_parameters)==4):
+#                 return (aoi**3)*self.iam_parameters['a3']+(aoi**2)*self.iam_parameters['a2']+aoi*self.iam_parameters['a1']+1 
+#             else:
+#                 raise ValueError('the lenth of iam_parameters does not match with the chosen model')
+#                 #Estas sentencias evaluavan los tres procedimientos actuales para obtener el iam, pero la parte de Silicio del sistema que queremos modelar
+#                 #no se comporta como definen estas funciones, salvo la physical que sería capaz de modelarlo.
+#         # elif model in ['ashrae', 'physical', 'martin_ruiz']:
+#         #     param_names =_IAM_MODEL_PARAMS[model]
+#         #     kwargs = _build_kwargs(param_names, self.module_parameters)
+#         #     func = getattr(iam, model)
+#         #     return func(aoi, **kwargs)
+#         # elif model == 'sapm':
+#         #     return iam.sapm(aoi, self.module_parameters)
+#         # elif model == 'interp':
+#         #     raise ValueError(model + ' is not implemented as an IAM model'
+#         #                      'option for PVSystem')
+#         else:
+#             raise ValueError(model + ' is not a valid IAM model')
+#     def generate_iam_parameters(self, aoi,values,grado=3):
+#         aoi=np.array(aoi)
+#         y_,RR,a_s,b=Error.regresion_polinomica(aoi,values,grado)
+#         if grado==3:
+#             self.iam_parameters={'a3':a_s[3]/b, 'a2':a_s[2]/b,
+#                                  'a1':a_s[1]/b,'valor_norm':b}
+#         elif grado==2:
+#             self.iam_parameters={'a2':a_s[2]/b,'a1':a_s[1]/b,'valor_norm':b}            
+#         elif grado==1:
+#             self.iam_parameters={'a2':a_s[2]/b,
+#                                  'a1':a_s[1]/b,'valor_norm':b} 
+#         print('iam_parameters have been generated with an RR of: '+str(RR))
+#         return a_s,b
     
 
+#     def get_total_irradiance(self, surface_tilt, surface_azimuth,
+#                              solar_zenith, solar_azimuth,
+#                              dni, ghi, dhi, dni_extra=None, airmass=None,
+#                              albedo=.25, surface_type=None,
+#                              model='isotropic',
+#                              model_perez='allsitescomposite1990', **kwargs):
+#         r"""
+#         Determine total in-plane irradiance and its beam, sky diffuse and ground
+#         reflected components, using the specified sky diffuse irradiance model.
+    
+#         .. math::
+    
+#            I_{tot} = I_{beam} + I_{sky diffuse} + I_{ground}
+    
+#         Sky diffuse models include:
+#             * isotropic (default)
+#             * klucher
+#             * haydavies
+#             * reindl
+#             * king
+#             * perez
+    
+#         Parameters
+#         ----------
+#         surface_tilt : numeric
+#             Panel tilt from horizontal.
+#         surface_azimuth : numeric
+#             Panel azimuth from north.
+#         solar_zenith : numeric
+#             Solar zenith angle.
+#         solar_azimuth : numeric
+#             Solar azimuth angle.
+#         dni : numeric
+#             Direct Normal Irradiance
+#         ghi : numeric
+#             Global horizontal irradiance
+#         dhi : numeric
+#             Diffuse horizontal irradiance
+#         dni_extra : None or numeric, default None
+#             Extraterrestrial direct normal irradiance
+#         airmass : None or numeric, default None
+#             Airmass
+#         albedo : numeric, default 0.25
+#             Surface albedo
+#         surface_type : None or String, default None
+#             Surface type. See grounddiffuse.
+#         model : String, default 'isotropic'
+#             Irradiance model.
+#         model_perez : String, default 'allsitescomposite1990'
+#             Used only if model='perez'. See :py:func:`perez`.
+    
+#         Returns
+#         -------
+#         total_irrad : OrderedDict or DataFrame
+#             Contains keys/columns ``'poa_global', 'poa_direct', 'poa_diffuse',
+#             'poa_sky_diffuse', 'poa_ground_diffuse'``.
+#         """
+        
+#         poa_sky_diffuse = irradiance.get_sky_diffuse(surface_tilt, surface_azimuth, 
+#                                                      solar_zenith, solar_azimuth, 
+#                                                      dni, 
+#                                                      ghi, dhi, dni_extra=dni_extra, 
+#                                                      airmass=airmass, model=model, model_perez=model_perez)
+    
+#         poa_ground_diffuse = irradiance.get_ground_diffuse(surface_tilt, 
+#                                                            ghi, albedo,
+#                                                            surface_type)
+#         aoi_ = irradiance.aoi(surface_tilt, surface_azimuth,
+#                               solar_zenith, solar_azimuth)
+#         irrads = irradiance.poa_components(aoi_, dni, poa_sky_diffuse, poa_ground_diffuse)
+#         return irrads
+
+      
+
+    
+#     def pvsyst_celltemp(self, poa_global, temp_air, wind_speed=1.0):
+#         """
+#         Uses :py:func:`pvsystem.pvsyst_celltemp` to calculate module
+#         temperatures based on ``self.racking_model`` and the input parameters.
+
+#         Parameters
+#         ----------
+#         See pvsystem.pvsyst_celltemp for details
+
+#         Returns
+#         -------
+#         See pvsystem.pvsyst_celltemp for details
+#         """
+
+#         kwargs = _build_kwargs(['eta_m', 'alpha_absorption'],
+#                                self.module_parameters)
+#         kwargs.update(_build_kwargs(['u_c', 'u_v'],
+#                                     self.temperature_model_parameters))
+#         return temperature.pvsyst_cell(poa_global, temp_air, wind_speed,
+#                                        **kwargs)
+
+#     def singlediode(self, photocurrent, saturation_current,
+#                     resistance_series, resistance_shunt, nNsVth,
+#                     ivcurve_pnts=None,method='lambertw'):
+#         """Wrapper around the :py:func:`singlediode` function.
+
+#         Parameters
+#         ----------
+#         See pvsystem.singlediode for details
+
+#         Returns
+#         -------
+#         See pvsystem.singlediode for details
+#         """
+#         return pvsystem.singlediode(photocurrent, saturation_current,
+#                            resistance_series, resistance_shunt, nNsVth,
+#                            ivcurve_pnts=ivcurve_pnts,method=method)
 
 # class HybridSystem(CPVSystem,Si_CPVSystem):
     

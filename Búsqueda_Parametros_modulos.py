@@ -103,7 +103,7 @@ segundo_I=[0.0, segundo['Imp (A)'],segundo['Isc (A)']]
 temp_cell1_2=pvlib.temperature.pvsyst_cell(poa_global=644, 
                                         temp_air=segundo['Tair (°C)'],
                                         wind_speed=1.069, 
-                                        u_c=4.5, u_v=0.0, 
+                                        u_c=10.0, u_v=0.0, 
                                         eta_m=0.32, alpha_absorption=0.9)
 
 

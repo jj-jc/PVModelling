@@ -238,12 +238,12 @@ def calc_iam(datos,tipo):
         a1=df_iam['Tercer grado']['a1']
         a2=df_iam['Tercer grado']['a2']
         a3=df_iam['Tercer grado']['a3']
-        b=df_iam['Tercer grado']['b']
+        b=1
         IAM=a1*datos+a2*datos**2+a3*datos**3+b   
     elif tipo=='Segundo grado':
         a1=df_iam['Segundo grado']['a1']
         a2=df_iam['Segundo grado']['a2']
-        b=df_iam['Segundo grado']['b']
+        b=1
         IAM=a1*datos+a2*datos**2+b
     elif tipo=='Primer grado':
         thld=df_iam['Primer grado low']['thld']
