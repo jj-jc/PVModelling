@@ -7,13 +7,11 @@ Created on Fri Jun 26 09:35:03 2020
 
 
 import pvlib
-import numpy as np
+
 import pandas as pd
 import matplotlib.pyplot as plt
-from cpvtopvlib import cpvsystem
-import Error as E
-import datetime
-import CPVClass
+
+
 
 tz='Europe/Berlin'
 
