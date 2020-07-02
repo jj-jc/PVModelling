@@ -15,11 +15,26 @@ import Error as E
 import datetime
 
 
+#Datos:
+#localización
+lat=40.453
+lon=-3.727
+alt=667
+tz='Europe/Berlin'
+#orientación
+surface_tilt=30
+surface_azimuth=180
+#AOILIMIT
+AOILIMIT=55.0
+
+
+
+
 
 #Se construye el objeto Si_CPVSystem
 
-Mi_Si_CPV=CPVClass.Si_CPVSystem(surface_tilt=30, surface_azimuth=180,
-                 AOILIMIT=55.0,albedo=None, surface_type=None,
+Mi_Si_CPV=CPVClass.Flat_CPVSystem(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
+                 AOILIMIT=AOILIMIT,albedo=None, surface_type=None,
                  module=None, module_type='glass_polymer',
                  module_parameters=None,
                  temperature_model_parameters=None,
@@ -36,27 +51,30 @@ Mi_Si_CPV.module_parameters_Si={'gamma_ref': 2.13, 'mu_gamma': 0.002, 'I_L_ref':
 
 Mi_Si_CPV.temperature_model_parameters={'u_c': 29.0,'u_v':0}
 
-Mi_Si_CPV.iam_parameters={'a3':-8.315977512579898e-06,'a2':0.00039212250547851236,
-                        'a1':-0.006006260890940105,'valor_norm':0.0008938270669770386}
+Mi_Si_CPV.iam_parameters={'a3':0.000121,'a2':-0.023926,
+                        'a1':1.539450,'b': 0.03,'valor_norm':0.0008938270669770386}
+
+
+Flat_location=Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
 
 
 
-# Mi_Si_CPV.uf_parameters={'m1_am':0.172793, 'thld_am':1.285187 ,'m2_am':-0.408000,
-#                       'm_temp':-0.006439, 'thld_temp':15.18,
-#                       'w_am':0,'w_temp': 0}
+Localized_Mi_Si_CPV=CPVClass.LocalizedFlat_CVSystem(Mi_Si_CPV,Flat_location)
 
+
+Hola=Localized_Mi_Si_CPV.get_aoi(solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'])
+
+#%%
 #'pdc0': 25,'gamma_pdc':-0.005 son para comprobar que fuuncionen las funcione, pero no esta correctamente seleccionado
 # Mi_CPV.inverter_parameters={'pdc0': 25, 'eta_inv_nom': 0.96 ,'eta_inv_ref':0.9637}
 
 
 tz='Europe/Berlin'
-
-#AOILIMIT
-AOILIMIT=55.0
 pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
 
 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_Si.csv',encoding='utf-8')
+
 
 #SE filtran los datos que no correspondan a una tendencia clara de la potencia.
 Si=df[(df['aoi']>=AOILIMIT)]
@@ -83,6 +101,8 @@ for i in range(n_intervalos):
 
 
 
+#%%%
+
 
 # CPV['DII_efectiva_tercer_grado (W/m2)']=CPV['DII (W/m2)']*E.calc_iam(CPV['aoi'].values,'Tercer grado')
 # CPV['DII_efectiva_segundo_grado (W/m2)']=CPV['DII (W/m2)']*E.calc_iam(CPV['aoi'].values,'Segundo grado')
@@ -92,7 +112,7 @@ for i in range(n_intervalos):
 # CPV['ISC_IIIV/DII_efectiva_primer_grado (W/m2)']=CPV['ISC_measured_IIIV (A)']/CPV['DII_efectiva_primer_grado (W/m2)']
 
 
-Si['Irra_vista_efectiva (W/m2)']=((Si['Irra_vista (W/m2)'].values)*Mi_Si_CPV.get_iam(Si['aoi'],iam_model='Tercer grado')
+Si['Irra_vista_efectiva (W/m2)']=((Si['Irra_vista (W/m2)'].values)*Mi_Si_CPV.get_iam(Si['aoi'],iam_model='Tercer grado'))
 Si['ISC_Si/Irra_vista_efectiva (A m2/W)']=((Si['ISC_measured_Si (A)'].values)/(Si['Irra_vista_efectiva (W/m2)'].values))
 # filt_x=df_filt_Si['T_Amb (°C)'].values
 # filt_y=df_filt_Si['ISC_Si/Irra_vista_efectiva (A m2/W)'].values

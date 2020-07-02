@@ -324,7 +324,7 @@ x_temp=filt_df2['T_Amb (°C)']
 x_AM=filt_df2['airmass_relative']
 #
 #Para ver las irradiancias tras el filtrado
-
+#%%
 date=np.array(['2019-05-30'])
 for i in range(0,len(filt_df.index[:])):
     if(i==0):
@@ -355,7 +355,7 @@ for i in date:
 
 
 
-
+#%%
 
 
 #AOI

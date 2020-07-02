@@ -125,10 +125,13 @@ filt_df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Prueba.csv")
 filt_df_temp=filt_df
 
 
+
 filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']>=1.0)]
 filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']<1.1)]
 # filt_x=filt_df_temp['T_Amb (°C)'].values
 # filt_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values
+
+datos_guardar=pd.DataFrame({'T_Amb (°C)':filt_df_temp['T_Amb (°C)'].values,'ISC_IIIV/DII_efectiva (A m2/W)':filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values})
 
 filt_df_temp_x=filt_df_temp['T_Amb (°C)'].values
 filt_df_temp_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR
@@ -164,6 +167,11 @@ UF_temp=simple_uf
 thld_temp=thld[0]
 
 
+
+
+
+
+
 #dando como resultado tras el normalizado
 #  1+(Temp-thld)*(m/Normalizar)
 # thld=14.67
@@ -172,50 +180,50 @@ thld_temp=thld[0]
 
 #%%Cálculo del UF_am 
 
-filt_df_am=filt_df
+# filt_df_am=filt_df
 
 
-# filt_df_am=filt_df_am[filt_df_am['Wind Dir. (m/s)']>=133.0]
-# filt_df_am=filt_df_am[filt_df_am['Wind Dir. (m/s)']<143]
-# filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']>=1.4]
-# filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']<2.5]
-
-
-
-
-
-# Incremento=1
-# Max_temp=math.ceil(filt_df_am['T_Amb (°C)'].max())
-# Min_temp=math.floor(filt_df_am['T_Amb (°C)'].min())
-# contador=np.arange(Min_temp,Max_temp,Incremento)
-# fig=go.Figure()
-# for i in contador:
-#     AUX=filt_df_am[(filt_df_am['T_Amb (°C)']>=float(i))]
-#     AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
-
-#     fig.add_trace(go.Scatter(
-#     y=AUX['ISC_IIIV/DII (A m2/W)'],
-#     x=AUX['airmass_relative'],
-#     mode='markers',
-#     visible=True,
-#     showlegend=True,
-#     name='Temperatura '+ str(i)
-#     ))
-# fig.update_layout(
-#     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-#     xaxis_title="Ángulo de incidencia (°)",
-#     yaxis_title="ISC_IIIV/DII (A m2/W)",
-# )
-
-# fig.show()
+# # filt_df_am=filt_df_am[filt_df_am['Wind Dir. (m/s)']>=133.0]
+# # filt_df_am=filt_df_am[filt_df_am['Wind Dir. (m/s)']<143]
+# # filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']>=1.4]
+# # filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']<2.5]
 
 
 
-# filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=26.0]
-# filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28.0]
 
-filt_x=filt_df_am['airmass_relative'].values
-filt_y=filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values
+
+# # Incremento=1
+# # Max_temp=math.ceil(filt_df_am['T_Amb (°C)'].max())
+# # Min_temp=math.floor(filt_df_am['T_Amb (°C)'].min())
+# # contador=np.arange(Min_temp,Max_temp,Incremento)
+# # fig=go.Figure()
+# # for i in contador:
+# #     AUX=filt_df_am[(filt_df_am['T_Amb (°C)']>=float(i))]
+# #     AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
+
+# #     fig.add_trace(go.Scatter(
+# #     y=AUX['ISC_IIIV/DII (A m2/W)'],
+# #     x=AUX['airmass_relative'],
+# #     mode='markers',
+# #     visible=True,
+# #     showlegend=True,
+# #     name='Temperatura '+ str(i)
+# #     ))
+# # fig.update_layout(
+# #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
+# #     xaxis_title="Ángulo de incidencia (°)",
+# #     yaxis_title="ISC_IIIV/DII (A m2/W)",
+# # )
+
+# # fig.show()
+
+
+
+# # filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=26.0]
+# # filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28.0]
+
+# filt_x=filt_df_am['airmass_relative'].values
+# filt_y=filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
 
 

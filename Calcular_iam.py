@@ -537,7 +537,7 @@ filt_prueba=filt_cuadro2
 filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']>=26.0]
 filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']<28]
 
-#%%ANTES ES NECESARIO AÑADIR UNOS VALORES SINTÉTICOS PARA LIMITAR LAS LIBERTADES DE LAS REGRESIONES POLINÓMICAS
+#%%ANTES ES NECESARIO AÑADIR UNOS VALORES SINTÉTICOS PARA LIMITAR LAS LIBERTADES DE LAS REGRESIONES POLINÓMICAS ya que los datos no llegan a 0 grados de aoi
 
 df_extrapola=filt_cuadro2
 df_extrapola=df_extrapola[df_extrapola['aoi']>=10.0]
@@ -556,10 +556,12 @@ plt.plot(x_regresion,y_regresion,'o',markersize=4,label='Datos escogidos')
 plt.plot(filt_cuadro2['aoi'].values,filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values,'o',markersize=4,label='Datos')
 
 
-#%%
+#%% RECOGEMOS LOS DATOS IMPORTANTES Y LOS GUARDAMOS EN UN EXCEL PARA MANTENERLOS Y PORDE ENVIARSELOS A LA CLASE
 
-#ESTE PROGRAMA ES PARA AVERIGUAR CUAL ES EL MEJOR THLDS  PARA EL AOI 
+
 filt_regresion=pd.DataFrame({'aoi':x_regresion,'ISC_IIIV/DII (A m2/W)':y_regresion})
+
+
 
 
 #%%
@@ -589,12 +591,20 @@ for i in aux:
         RR_max=RR
         thld=i
 
-
+x_RR=filt_cuadro2['aoi'].values
+y_RR=filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values
 #ahora buscamos las mejores regresiones
 #----poli2
 y_poli2,RR_poli2,a_s2,b2=Error.regresion_polinomica(filt_regresion['aoi'].values,filt_regresion['ISC_IIIV/DII (A m2/W)'].values,2)
+y_p2=a_s2[2]*x_RR**2+a_s2[1]*x_RR+b2
+RR_poli2=Error.Determination_coefficient(y_RR,y_p2)
+print('MI ERROR ES DE :'+ str(RR_poli2))
 #-----poli3
 y_poli3,RR_poli3,a_s3,b3=Error.regresion_polinomica(filt_regresion['aoi'].values,filt_regresion['ISC_IIIV/DII (A m2/W)'].values,3)
+y_p3=a_s3[3]*x_RR**3+a_s3[2]*x_RR**2+a_s3[1]*x_RR+b3
+RR_poli3=Error.Determination_coefficient(y_RR,y_p3)
+print('MI ERROR ES DE :'+ str(RR_poli3))
+
 
 VALOR_NORMALIZAR=y_poli3.max()
 

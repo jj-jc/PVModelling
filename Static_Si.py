@@ -29,46 +29,7 @@ df_filt_Si=df[(df['aoi']>AOILIMIT)]
 
 
 
-# df_iv=pd.merge(df_iv,df_iv_)
-#%%Comprobación curvas obtenidas
 
-# module_parameters_Si={'gamma_ref': 4.514, 'mu_gamma': 0.44, 'I_L_ref':1.802,
-#                 'I_o_ref': 0.002309,'R_sh_ref': 3200, 'R_sh_0':128000,
-#                 'R_sh_exp': 5.5,'R_s': 0.22,'alpha_sc':0.04,'EgRef':1.121,
-#                 'irrad_ref': 306,'temp_ref':40, 'cells_in_series':4,
-#                 'eta_m':0.1, 'alpha_absorption':1}
-
-
-
-
-# temp_cell=pvlib.temperature.pvsyst_cell(poa_global=306, 
-#                                         temp_air=11.413,
-#                                         wind_speed=1.191, 
-#                                         u_c=10.0, u_v=0.0, 
-#                                         eta_m=0.1, alpha_absorption=1)
-
-
-# Five_parameters1=pvlib.pvsystem.calcparams_pvsyst(306, temp_cell, alpha_sc=module_parameters_Si['alpha_sc'],
-#                                  gamma_ref=module_parameters_Si['gamma_ref'], mu_gamma=module_parameters_Si['mu_gamma'],
-#                                  I_L_ref=module_parameters_Si['I_L_ref'], I_o_ref=module_parameters_Si['I_o_ref'],
-#                                  R_sh_ref=module_parameters_Si['R_sh_ref'], R_sh_0=module_parameters_Si['R_sh_0'], 
-#                                  R_s=module_parameters_Si['R_s'], cells_in_series=module_parameters_Si['cells_in_series'], 
-#                                  R_sh_exp=module_parameters_Si['R_sh_exp'], EgRef=module_parameters_Si['EgRef'], 
-#                                  irrad_ref=module_parameters_Si['irrad_ref'], temp_ref=temp_cell)
-
-# Curvas=pvlib.pvsystem.singlediode(photocurrent=Five_parameters1[0], saturation_current=Five_parameters1[1],
-#                                   resistance_series=Five_parameters1[2],resistance_shunt=Five_parameters1[3], 
-#                                   nNsVth=Five_parameters1[4],ivcurve_pnts=100, method='lambertw')
-
-# plt.figure(figsize=(30,15))
-# # plt.plot(Curvas1['v'],Curvas1['i'],'--',markersize=2,label='300')
-# plt.plot(Curvas['v'],Curvas['i'],'--',markersize=2,label='306 con temp_cell')
-# plt.plot(df_iv['V[V]'],df_iv['I[A]'],'--',markersize=2,label='Datos_300')
-# # plt.plot(df_iv_['V[V]'],df_iv_['I[A]'],'--',markersize=2,label='Datos_190')
-# plt.title('Comparación de las curvas obtenidas con los datos')
-# plt.xlabel('V[V]')
-# plt.ylabel('I[A]')
-# plt.legend()
 
 #%%
 # Max_temp=27.0

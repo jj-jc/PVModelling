@@ -63,6 +63,8 @@ pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DI
 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
 
+
+
 #SE filtran los datos que no correspondan a una tendencia clara de la potencia.
 CPV=df[(df['aoi']<=AOILIMIT)]
 Fecha=pd.DatetimeIndex(CPV['Date Time'])
@@ -96,7 +98,7 @@ for i in range(n_intervalos):
 # CPV['ISC_IIIV/DII_efectiva_segundo_grado (W/m2)']=CPV['ISC_measured_IIIV (A)']/CPV['DII_efectiva_segundo_grado (W/m2)']
 # CPV['ISC_IIIV/DII_efectiva_primer_grado (W/m2)']=CPV['ISC_measured_IIIV (A)']/CPV['DII_efectiva_primer_grado (W/m2)']
 
-
+''' lo he comentado para poder ejecutar todo sin tner que ejectuar todo , luego hay que descomentarlo------------------------------------------------ 
 CPV['DII_efectiva_tercer_grado (W/m2)']=CPV['DII (W/m2)']*Mi_CPV.get_iam(CPV['aoi'],iam_model='Tercer grado')
 
 
@@ -160,10 +162,68 @@ plt.xlabel('Ángulo de incidencia (°)')
 plt.ylabel('Puntos de máxima potencia (W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del iam')
 plt.legend()
+--------------------------------------------------------------------------------------------------------------------'''
+
+#%% COMPROBAMOS SI FUNCIONAN LOS MÉTODOS
+
+Data_iam=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/datos_para_calcular.xlsx',sheet_name='Cálculo_iam_CPV',encoding='utf-8')
+Data_am=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/datos_para_calcular.xlsx',sheet_name='Cálculo_uf_am_CPV',encoding='utf-8')
+Data_temp=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/datos_para_calcular.xlsx',sheet_name='Cálculo_uf_temp_CPV',encoding='utf-8')
+
+
+
+Mi_CPV.generate_iam_parameters(Data_iam['aoi'].values, Data_iam['ISC_IIIV/DII (A m2/W)'].values)
+CPV['DII_efectiva_tercer_grado (W/m2)']=CPV['DII (W/m2)']*Mi_CPV.get_iam(CPV['aoi'],iam_model='Tercer grado')
+
+temp_cell=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII_efectiva_tercer_grado (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)']) 
+temp_cell_=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'])
+
+Five_parameters=Mi_CPV.calcparams_cpvsyst(CPV['DII_efectiva_tercer_grado (W/m2)'], temp_cell)
+Five_parameters_=Mi_CPV.calcparams_cpvsyst(CPV['DII (W/m2)'], temp_cell_)
+
+Curvas=Mi_CPV.singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
+                                  resistance_series=Five_parameters[2],resistance_shunt=Five_parameters[3], 
+                                  nNsVth=Five_parameters[4],ivcurve_pnts=100, method='lambertw')
+Curvas_=Mi_CPV.singlediode(photocurrent=Five_parameters_[0], saturation_current=Five_parameters_[1],
+                                  resistance_series=Five_parameters_[2],resistance_shunt=Five_parameters_[3], 
+                                  nNsVth=Five_parameters_[4],ivcurve_pnts=100, method='lambertw')
+
+Mi_CPV.generate_uf_temp_parameters(Data_temp['T_Amb (°C)'].values, Data_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values)
+
+# Mi_CPV.generate_uf_am_parameters(Data_am['airmass'].values, Data_am['ISC_IIIV/DII_efectiva (A m2/W)'].values)
+Mi_CPV.generate_uf_am_parameters2(Data_am['airmass'].values, Data_am['ISC_IIIV/DII_efectiva (A m2/W)'].values)
+
+
+Mi_CPV.calculate_UF(CPV['airmass_relative'].values, CPV['T_Amb (°C)'].values, Curvas['p_mp'], CPV['PMP_estimated_IIIV (W)'].values)
+
+
+Potencia=Curvas['p_mp']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (°C)'].values)
+Intensidad=Curvas['i_sc']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (°C)'].values)
 
 
 
 
+
+
+
+
+
+#%% LOCALIZED SYSTEM
+# #Datos:
+# #localización
+# lat=40.453
+# lon=-3.727
+# alt=667
+# tz='Europe/Berlin'
+
+# CPV_location=Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
+
+
+
+# localized_Mi_CPV=PVClass.LocalizedCVSystem(Mi_CPV,CPV_location)
+# Hola=localized_Mi_CPV.get_iam(CPV['aoi'],iam_model='Tercer grado')
+
+# Hola=localized_Mi_CPV.get_aoi(solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'])
 
 
 

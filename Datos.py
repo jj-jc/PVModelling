@@ -5,7 +5,7 @@ import numpy as np
 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/InsolightMay2019.csv',encoding= 'unicode_escape')
 
-#%%
+
 #df=df.loc[:, ['Date Time','DNI (W/m2)','T_Amb (°C)']]
 #Datos del módulo CPV
 #localización
