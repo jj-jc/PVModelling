@@ -631,11 +631,10 @@ class CPVSystem(object):
                         estimacion=PMP_calculated*UF_total
                         RMSE=Error.RMSE(PMP,estimacion) 
                         if (best_RMSE>RMSE):
-                            best_RMSE=RMSE		
-                             				             
+                            best_RMSE=RMSE		                             				             
                             best_w_am=i
                             best_w_temp=j
-            print(RMSE) 
+            print('the weights have been calculated with an error of: '+str(RMSE) )
             self.uf_parameters['w_temp']=best_w_temp
             self.uf_parameters['w_am']=best_w_am 
         return (self.uf_parameters['w_am']*UF_am+self.uf_parameters['w_temp']*UF_temp)          
@@ -712,7 +711,7 @@ class CPVSystem(object):
         
 
 
-class LocalizedCVSystem(CPVSystem, Location):
+class LocalizedCPVSystem(CPVSystem, Location):
     """
     The LocalizedPVSystem class defines a standard set of installed PV
     system attributes and modeling functions. This class combines the
@@ -749,19 +748,17 @@ class LocalizedCVSystem(CPVSystem, Location):
     
     
 
-class flat_CPVSystem (object):
+class Flat_CPVSystem (object):
     def __init__(self,
-              surface_tilt=0, surface_azimuth=180,
-              albedo=None, surface_type=None,
-              module=None, module_type='glass_polymer',
-              # '''module_parameters=None,'''
-              temperature_model_parameters=None,
-              modules_per_string=1, strings_per_inverter=1,
-              inverter=None, inverter_parameters=None,
-              # '''racking_model='open_rack',''' 
-              losses_parameters=None, name=None,
-              iam_parameters=None, AOILIMIT=55.0,**kwargs):
-                 
+                 surface_tilt=0, surface_azimuth=180, AOILIMIT=55.0,
+                 albedo=None, surface_type=None,
+                 module=None, module_type='glass_polymer',
+                 module_parameters=None,
+                 temperature_model_parameters=None,
+                 modules_per_string=1, strings_per_inverter=1,
+                 inverter=None, inverter_parameters=None, 
+                 losses_parameters=None, name=None,
+                 iam_parameters=None, uf_parameters=None,**kwargs):
                  
         if (AOILIMIT <=0.0 or AOILIMIT >90.0):
             self.AOILIMIT=55.0              
@@ -1054,7 +1051,8 @@ class flat_CPVSystem (object):
 #                            resistance_series, resistance_shunt, nNsVth,
 #                            ivcurve_pnts=ivcurve_pnts,method=method)
 
-class Localizedflat_CPVSystem(flat_CPVSystem, Location):
+
+class LocalizedFlat_CPVSystem(Flat_CPVSystem, Location):
     """
     The LocalizedPVSystem class defines a standard set of installed PV
     system attributes and modeling functions. This class combines the
@@ -1066,29 +1064,29 @@ class Localizedflat_CPVSystem(flat_CPVSystem, Location):
     for modeling PV systems at specific locations.
     """
 
-    def __init__(self, flat_CPVSystem=None, location=None, **kwargs):
+    def __init__(self, cpvsystem=None, location=None, **kwargs):
 
         new_kwargs = _combine_localized_attributes(
-            flat_CPVSystem=flat_CPVSystem,
+            cpvsystem=cpvsystem,
             location=location,
             **kwargs,
         )
 
-        flat_CPVSystem.__init__(self, **new_kwargs)
+        Flat_CPVSystem.__init__(self, **new_kwargs)
         Location.__init__(self, **new_kwargs)
 
 
     def __repr__(self):
         attrs = ['name','AOILIMIT' ,'latitude', 'longitude', 'altitude', 'tz',
                  'surface_tilt', 'surface_azimuth', 'module', 'inverter',
-                 'albedo', 'racking_model']
-        return ('LocalizedPVSystem: \n  ' + '\n  '.join(
+                 'albedo']
+        return ('LocalizedCPVSystem: \n  ' + '\n  '.join(
             ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))
 
 
 
 
-# class HybridSystem(CPVSystem,Si_CPVSystem):
+#class HybridSystem(CPVSystem,Si_CPVSystem):
     
     
     

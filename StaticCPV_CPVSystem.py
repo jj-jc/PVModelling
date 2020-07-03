@@ -191,13 +191,23 @@ Curvas_=Mi_CPV.singlediode(photocurrent=Five_parameters_[0], saturation_current=
 Mi_CPV.generate_uf_temp_parameters(Data_temp['T_Amb (°C)'].values, Data_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values)
 
 # Mi_CPV.generate_uf_am_parameters(Data_am['airmass'].values, Data_am['ISC_IIIV/DII_efectiva (A m2/W)'].values)
+#%%
 Mi_CPV.generate_uf_am_parameters2(Data_am['airmass'].values, Data_am['ISC_IIIV/DII_efectiva (A m2/W)'].values)
+
+
+#%%
+
+
+Mi_CPV.uf_parameters['w_am']=0
+Mi_CPV.uf_parameters['w_temp']=0
+
 
 
 Mi_CPV.calculate_UF(CPV['airmass_relative'].values, CPV['T_Amb (°C)'].values, Curvas['p_mp'], CPV['PMP_estimated_IIIV (W)'].values)
 
-
+#%%
 Potencia=Curvas['p_mp']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (°C)'].values)
+RMSE=E.RMSE(CPV['PMP_estimated_IIIV (W)'].values,Potencia)
 Intensidad=Curvas['i_sc']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (°C)'].values)
 
 

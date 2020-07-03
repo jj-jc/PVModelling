@@ -93,9 +93,9 @@ Mi_Si_CPV.iam_parameters={'a3':0.000121,'a2':-0.023926,
 
 location=Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
 
-Localized_Mi_Si_CPV=CPVClass.LocalizedFlat_CVSystem(Mi_Si_CPV,location)
-Localized_Mi_CPV=CPVClass.LocalizedCVSystem(Mi_CPV,location)
+Localized_Mi_Si_CPV=CPVClass.LocalizedFlat_CPVSystem(Mi_Si_CPV,location)
+Localized_Mi_CPV=CPVClass.LocalizedCPVSystem(Mi_CPV,location)
 
-Mi_Hybrid=CPVClass.HybridSystem(Mi_CPV,Mi_Si_CPV)
+# Mi_Hybrid=CPVClass.HybridSystem(Mi_CPV,Mi_Si_CPV)
 
 
