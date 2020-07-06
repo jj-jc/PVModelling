@@ -23,7 +23,7 @@ pio.renderers.default='browser'
 AOILIMIT=55.0
 # Valor_normalizar=0.00091802#Este valor es el valor que Marcos utiliza para normalizar 
 # VALOR_NORMALIZAR=0.00096
-VALOR_NORMALIZAR=0.006
+# VALOR_NORMALIZAR=0.006
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_Si.csv',encoding='utf-8')
 
 
@@ -186,7 +186,6 @@ smaller_AOI=smaller_AOI[smaller_AOI['Wind Speed (m/s)']<1.2]
 smaller_AOI=smaller_AOI[smaller_AOI['Wind Dir. (m/s)']>=79.0]
 smaller_AOI=smaller_AOI[smaller_AOI['Wind Dir. (m/s)']<=150.0]
 
-#OTRO TIPO DE FILTRADO (MEDIANA)
 
 
 plt.figure(figsize=(30,15))
@@ -300,6 +299,10 @@ plt.plot(prueba['aoi'].values,prueba['ISC_Si/Irra_vista (A m2/W)'].values,'o',ma
 plt.plot(x,y_2,'-',label='Segundo grado')
 plt.plot(x,y_3,'-',label='Tercer grado')
 plt.legend()
+
+
+
+
 #%%
 #COMO en la parte de cpv hace falta añadir unos puntos aritificiales
 muestra=prueba[prueba['aoi']>44.0]
@@ -523,7 +526,10 @@ plt.legend()
 print('El coeficiente de determinación para la regresión de primer grado es: '+str(RR_poli1))
 print('El coeficiente de determinación para la regresión de segundo grado es: '+str(RR_poli2))
 print('El coeficiente de determinación para la regresión de tercer grado es: '+str(RR_poli3))
+#%% ASIGNAMOS EL VALOR_NORMALIZAR
 
+VALOR_NORMALIZAR=y_2.max()
+# VALOR_NORMALIZAR=y_poli3.max()
 
 iam1_low=[a_s_low[1]/VALOR_NORMALIZAR,0,0,b_low/VALOR_NORMALIZAR,thld,RR_low]
 iam1_high=[a_s_high[1]/VALOR_NORMALIZAR,0,0,b_high/VALOR_NORMALIZAR,0,RR_low]
@@ -541,6 +547,24 @@ IAM['Tercer grado']=iam3
 
 
 IAM.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/IAM_Si.csv")
+
+#%% Necesito ver la forma de la curva.
+
+x=np.arange(55,80,1)
+
+y_Si_3=x*iam3[0]+iam3[1]*x**2+iam3[2]*x**3+iam3[3]
+# y_Si_3=(x*a_s3[1]+a_s3[2]*x**2+a_s3[3]*x**3+b3)/VALOR_NORMALIZAR
+# y_Si_2=x*iam2[0]+iam2[1]*x**2++iam3[3]
+
+fig=plt.figure(figsize=(30,15))
+plt.plot(x,y_Si_3,'o',markersize=4,label='Datos')
+# plt.plot(x,y_Si_2,'o',markersize=4,label='Datos')
+# # plt.plot(x_total,yr_total,'o',markersize=4,label='Datos')
+
+
+fig=plt.figure(figsize=(30,15))
+plt.plot(greater_AOI['aoi'].values,y_poli3/y_poli3.max(),'o',markersize=4,label='Datos')
+
 
 
 

@@ -77,7 +77,7 @@ Mi_Si_CPV=CPVClass.Flat_CPVSystem(surface_tilt=surface_tilt, surface_azimuth=sur
                  racking_model='open_rack', losses_parameters=None, name=None,
                  iam_parameters=None)
 
-Mi_Si_CPV.module_parameters_Si={'gamma_ref': 2.13, 'mu_gamma': 0.002, 'I_L_ref':2.355,
+Mi_Si_CPV.module_parameters={'gamma_ref': 2.13, 'mu_gamma': 0.002, 'I_L_ref':2.355,
                 'I_o_ref': 0.0000147,'R_sh_ref': 3000, 'R_sh_0':8000,
                 'R_sh_exp': 5.5,'R_s': 0.35,'alpha_sc':0.0,'EgRef':1.121,
                 'irrad_ref': 400,'temp_ref':25, 'cells_in_series':4,
@@ -95,7 +95,6 @@ location=Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
 
 Localized_Mi_Si_CPV=CPVClass.LocalizedFlat_CPVSystem(Mi_Si_CPV,location)
 Localized_Mi_CPV=CPVClass.LocalizedCPVSystem(Mi_CPV,location)
-
-# Mi_Hybrid=CPVClass.HybridSystem(Mi_CPV,Mi_Si_CPV)
-
+Mi_Hybrid=CPVClass.HybridSystem(Mi_CPV,Mi_Si_CPV)
+Localized_Mi_Hybrid=CPVClass.LocalizedHybridSystem(Mi_CPV,location)
 

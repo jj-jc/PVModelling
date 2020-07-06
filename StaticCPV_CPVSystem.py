@@ -188,32 +188,115 @@ Curvas_=Mi_CPV.singlediode(photocurrent=Five_parameters_[0], saturation_current=
                                   resistance_series=Five_parameters_[2],resistance_shunt=Five_parameters_[3], 
                                   nNsVth=Five_parameters_[4],ivcurve_pnts=100, method='lambertw')
 
-Mi_CPV.generate_uf_temp_parameters(Data_temp['T_Amb (°C)'].values, Data_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values)
+# Mi_CPV.generate_uf_temp_parameters(Data_temp['T_Amb (°C)'].values, Data_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values)
 
 # Mi_CPV.generate_uf_am_parameters(Data_am['airmass'].values, Data_am['ISC_IIIV/DII_efectiva (A m2/W)'].values)
 #%%
-Mi_CPV.generate_uf_am_parameters2(Data_am['airmass'].values, Data_am['ISC_IIIV/DII_efectiva (A m2/W)'].values)
+# Mi_CPV.generate_uf_am_parameters2(Data_am['airmass'].values, Data_am['ISC_IIIV/DII_efectiva (A m2/W)'].values)
 
 
 #%%
 
 
-Mi_CPV.uf_parameters['w_am']=0
-Mi_CPV.uf_parameters['w_temp']=0
+# Mi_CPV.uf_parameters['w_am']=0
+# Mi_CPV.uf_parameters['w_temp']=0
 
 
 
-Mi_CPV.calculate_UF(CPV['airmass_relative'].values, CPV['T_Amb (°C)'].values, Curvas['p_mp'], CPV['PMP_estimated_IIIV (W)'].values)
+# Mi_CPV.calculate_UF(CPV['airmass_relative'].values, CPV['T_Amb (°C)'].values, Curvas['p_mp'], CPV['PMP_estimated_IIIV (W)'].values)
+
+
+#%% YA QUE HAY DOS METODOS PARA EL UF_AM HAY QUE COMPARARLOS NO SOLO CON EL RMSE
+
+
+
+Mi_CPV.uf_parameters={'m1_am':0.172793, 'thld_am':1.285187 ,'m2_am':-0.408000,
+                      'm_temp':-0.006439, 'thld_temp':15.18,
+                      'w_am':0.422,'w_temp': 0.492}
+
+Potencia_1=Curvas['p_mp']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (°C)'].values)
+Diferencia_1=Potencia_1-CPV['PMP_estimated_IIIV (W)'].values
+RMSE_1=E.RMSE(CPV['PMP_estimated_IIIV (W)'].values,Potencia_1)
+
+Intensidad_1=Curvas['i_sc']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (°C)'].values)
+
+
+Mi_CPV.uf_parameters={'m1_am': 0.18645008054738124,
+                      'thld_am': 1.3081866727630114,
+                      'm2_am': -0.32677187580032385,
+                      'm_temp': -0.006439,
+                      'thld_temp': 15.18,
+                      'w_am': 0.161,
+                      'w_temp': 0.765}
+
+Potencia_2=Curvas['p_mp']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (°C)'].values)
+Diferencia_2=Potencia_2-CPV['PMP_estimated_IIIV (W)'].values
+RMSE_2=E.RMSE(CPV['PMP_estimated_IIIV (W)'].values,Potencia_2)
+Intensidad_2=Curvas['i_sc']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (°C)'].values)
 
 #%%
-Potencia=Curvas['p_mp']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (°C)'].values)
-RMSE=E.RMSE(CPV['PMP_estimated_IIIV (W)'].values,Potencia)
-Intensidad=Curvas['i_sc']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (°C)'].values)
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['aoi'],Curvas['p_mp'],'o',markersize=2,label='sin UF')
+plt.plot(CPV['aoi'],Potencia_1,'o',markersize=2,label='Con UF')
+plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
+plt.legend()
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['aoi'],Diferencia_1,'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Residuos de las potencias calculadas con los datos estimados')
+plt.legend()
 
 
+plt.figure(figsize=(30,15))
+plt.plot(CPV['T_Amb (°C)'],Diferencia_1,'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('Temperatura ambiente (°C)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Residuos de las potencias calculadas con los datos estimados')
+plt.legend()
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['airmass_relative'],Diferencia_1,'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('airmass (n.d.)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Residuos de las potencias calculadas con los datos estimados')
+plt.legend()
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['aoi'],Curvas['p_mp'],'o',markersize=2,label='sin UF')
+plt.plot(CPV['aoi'],Potencia_2,'o',markersize=2,label='Con UF')
+plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
+plt.legend()
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['aoi'],Diferencia_2,'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Residuos de las potencias calculadas con los datos estimados')
+plt.legend()
 
 
+plt.figure(figsize=(30,15))
+plt.plot(CPV['T_Amb (°C)'],Diferencia_2,'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('Temperatura ambiente (°C)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Residuos de las potencias calculadas con los datos estimados')
+plt.legend()
 
+plt.figure(figsize=(30,15))
+plt.plot(CPV['airmass_relative'],Diferencia_2,'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('airmass (n.d.)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Residuos de las potencias calculadas con los datos estimados')
+plt.legend()
 
 
 

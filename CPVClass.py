@@ -618,6 +618,7 @@ class CPVSystem(object):
             else:
                 UF_temp.append(1)
         UF_temp=np.array(UF_temp)
+        
         if ((self.uf_parameters['w_am']==0) & (self.uf_parameters['w_temp']==0)):
             w_am=np.arange(0,1,0.001)
             w_temp=np.arange(0,1,0.001)       
@@ -630,11 +631,11 @@ class CPVSystem(object):
                         UF_total=i*UF_am+j*UF_temp 
                         estimacion=PMP_calculated*UF_total
                         RMSE=Error.RMSE(PMP,estimacion) 
-                        if (best_RMSE>RMSE):
+                        if (best_RMSE>=RMSE):
                             best_RMSE=RMSE		                             				             
                             best_w_am=i
                             best_w_temp=j
-            print('the weights have been calculated with an error of: '+str(RMSE) )
+            print('the weights have been calculated with an error of: '+str(best_RMSE) )
             self.uf_parameters['w_temp']=best_w_temp
             self.uf_parameters['w_am']=best_w_am 
         return (self.uf_parameters['w_am']*UF_am+self.uf_parameters['w_temp']*UF_temp)          
@@ -774,10 +775,10 @@ class Flat_CPVSystem (object):
             self.albedo = albedo
 
         self.module = module
-        # if module_parameters is None:
-        #     self.module_parameters = {}
-        # else:
-        #     self.module_parameters = module_parameters
+        if module_parameters is None:
+            self.module_parameters = {}
+        else:
+            self.module_parameters = module_parameters
 
         self.module_type = module_type
         # self.racking_model = racking_model
@@ -842,33 +843,33 @@ class Flat_CPVSystem (object):
     
     
     
-#     def calcparams_pvsyst(self, effective_irradiance, temp_cell):
-#         """
-#         Use the :py:func:`calcparams_pvsyst` function, the input
-#         parameters and ``self.module_parameters`` to calculate the
-#         module currents and resistances.
+    def calcparams_pvsyst(self, effective_irradiance, temp_cell):
+        """
+        Use the :py:func:`calcparams_pvsyst` function, the input
+        parameters and ``self.module_parameters`` to calculate the
+        module currents and resistances.
     
-#         Parameters
-#         ----------
-#         effective_irradiance : numeric
-#             The irradiance (W/m2) that is converted to photocurrent.
+        Parameters
+        ----------
+        effective_irradiance : numeric
+            The irradiance (W/m2) that is converted to photocurrent.
     
-#         temp_cell : float or Series
-#             The average cell temperature of cells within a module in C.
+        temp_cell : float or Series
+            The average cell temperature of cells within a module in C.
     
-#         Returns
-#         -------
-#         See pvsystem.calcparams_pvsyst for details
-#         """
+        Returns
+        -------
+        See pvsystem.calcparams_pvsyst for details
+        """
     
-#         kwargs = _build_kwargs(['gamma_ref', 'mu_gamma', 'I_L_ref', 'I_o_ref',
-#                                 'R_sh_ref', 'R_sh_0', 'R_sh_exp',
-#                                 'R_s', 'alpha_sc', 'EgRef',
-#                                 'irrad_ref', 'temp_ref',
-#                                 'cells_in_series'],
-#                                self.module_parameters)
+        kwargs = _build_kwargs(['gamma_ref', 'mu_gamma', 'I_L_ref', 'I_o_ref',
+                                'R_sh_ref', 'R_sh_0', 'R_sh_exp',
+                                'R_s', 'alpha_sc', 'EgRef',
+                                'irrad_ref', 'temp_ref',
+                                'cells_in_series'],
+                                self.module_parameters)
     
-#         return pvsystem.calcparams_pvsyst(effective_irradiance, temp_cell, **kwargs)
+        return pvsystem.calcparams_pvsyst(effective_irradiance, temp_cell, **kwargs)
     
     def get_aoi(self, solar_zenith, solar_azimuth):
         """Get the angle of incidence on the system.
@@ -893,20 +894,20 @@ class Flat_CPVSystem (object):
         
         model = iam_model.lower()
         if (model=='primer grado'):
-            if (len(self.iam_parameters)==2):           
-                return aoi*self.iam_parameters['a1']+1
+            if (len(self.iam_parameters)==3):           
+                return aoi*self.iam_parameters['a1']+self.iam_parameters['b']
             else:
                 raise ValueError('the lenth of iam_parameters does not match with the chosen model')
                 
         elif model=='segundo grado':
-            if len(self.iam_parameters)==3:
+            if len(self.iam_parameters)==4:
        
-                return (aoi**2)*self.iam_parameters['a2']+aoi*self.iam_parameters['a1']+1
+                return (aoi**2)*self.iam_parameters['a2']+aoi*self.iam_parameters['a1']+self.iam_parameters['b']
             else:
                 raise ValueError('the lenth of iam_parameters does not match with the chosen model')
         elif (model=='tercer grado'):
-            if (len(self.iam_parameters)==4):
-                return (aoi**3)*self.iam_parameters['a3']+(aoi**2)*self.iam_parameters['a2']+aoi*self.iam_parameters['a1']+1 
+            if (len(self.iam_parameters)==5):
+                return (aoi**3)*self.iam_parameters['a3']+(aoi**2)*self.iam_parameters['a2']+aoi*self.iam_parameters['a1']+self.iam_parameters['b']
             else:
                 raise ValueError('the lenth of iam_parameters does not match with the chosen model')
                 #Estas sentencias evaluavan los tres procedimientos actuales para obtener el iam, pero la parte de Silicio del sistema que queremos modelar
@@ -1013,43 +1014,43 @@ class Flat_CPVSystem (object):
       
 
     
-#     def pvsyst_celltemp(self, poa_global, temp_air, wind_speed=1.0):
-#         """
-#         Uses :py:func:`pvsystem.pvsyst_celltemp` to calculate module
-#         temperatures based on ``self.racking_model`` and the input parameters.
+    def pvsyst_celltemp(self, poa_global, temp_air, wind_speed=1.0):
+        """
+        Uses :py:func:`pvsystem.pvsyst_celltemp` to calculate module
+        temperatures based on ``self.racking_model`` and the input parameters.
 
-#         Parameters
-#         ----------
-#         See pvsystem.pvsyst_celltemp for details
+        Parameters
+        ----------
+        See pvsystem.pvsyst_celltemp for details
 
-#         Returns
-#         -------
-#         See pvsystem.pvsyst_celltemp for details
-#         """
+        Returns
+        -------
+        See pvsystem.pvsyst_celltemp for details
+        """
 
-#         kwargs = _build_kwargs(['eta_m', 'alpha_absorption'],
-#                                self.module_parameters)
-#         kwargs.update(_build_kwargs(['u_c', 'u_v'],
-#                                     self.temperature_model_parameters))
-#         return temperature.pvsyst_cell(poa_global, temp_air, wind_speed,
-#                                        **kwargs)
+        kwargs = _build_kwargs(['eta_m', 'alpha_absorption'],
+                                self.module_parameters)
+        kwargs.update(_build_kwargs(['u_c', 'u_v'],
+                                    self.temperature_model_parameters))
+        return temperature.pvsyst_cell(poa_global, temp_air, wind_speed,
+                                        **kwargs)
 
-#     def singlediode(self, photocurrent, saturation_current,
-#                     resistance_series, resistance_shunt, nNsVth,
-#                     ivcurve_pnts=None,method='lambertw'):
-#         """Wrapper around the :py:func:`singlediode` function.
+    def singlediode(self, photocurrent, saturation_current,
+                    resistance_series, resistance_shunt, nNsVth,
+                    ivcurve_pnts=None,method='lambertw'):
+        """Wrapper around the :py:func:`singlediode` function.
 
-#         Parameters
-#         ----------
-#         See pvsystem.singlediode for details
+        Parameters
+        ----------
+        See pvsystem.singlediode for details
 
-#         Returns
-#         -------
-#         See pvsystem.singlediode for details
-#         """
-#         return pvsystem.singlediode(photocurrent, saturation_current,
-#                            resistance_series, resistance_shunt, nNsVth,
-#                            ivcurve_pnts=ivcurve_pnts,method=method)
+        Returns
+        -------
+        See pvsystem.singlediode for details
+        """
+        return pvsystem.singlediode(photocurrent, saturation_current,
+                            resistance_series, resistance_shunt, nNsVth,
+                            ivcurve_pnts=ivcurve_pnts,method=method)
 
 
 class LocalizedFlat_CPVSystem(Flat_CPVSystem, Location):
@@ -1086,11 +1087,57 @@ class LocalizedFlat_CPVSystem(Flat_CPVSystem, Location):
 
 
 
-#class HybridSystem(CPVSystem,Si_CPVSystem):
+class HybridSystem(CPVSystem,Flat_CPVSystem):
+    def __init__(self, cpvsystem=None, location=None, **kwargs):
+
+        new_kwargs = _combine_localized_attributes(
+            cpvsystem=cpvsystem,
+            location=location,
+            **kwargs,
+        )
+        CPVSystem.__init__(self, **new_kwargs)
+        Flat_CPVSystem.__init__(self, **new_kwargs)
+
+
+
+    def __repr__(self):
+        attrs = ['name', 'AOILIMIT', 'surface_tilt', 'surface_azimuth', 'module',
+                  'inverter', 'albedo' ]
+        # ''', 'racking_model''']
+        return ('Si_CPVSystem: \n  ' + '\n  '.join(
+            ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))
     
     
-    
-    
+class LocalizedHybridSystem(HybridSystem, Location):
+    """
+    The LocalizedPVSystem class defines a standard set of installed PV
+    system attributes and modeling functions. This class combines the
+    attributes and methods of the PVSystem and Location classes.
+
+    The LocalizedPVSystem may have bugs due to the difficulty of
+    robustly implementing multiple inheritance. See
+    :py:class:`~pvlib.modelchain.ModelChain` for an alternative paradigm
+    for modeling PV systems at specific locations.
+    """
+
+    def __init__(self, cpvsystem=None, location=None, **kwargs):
+
+        new_kwargs = _combine_localized_attributes(
+            cpvsystem=cpvsystem,
+            location=location,
+            **kwargs,
+        )
+
+        HybridSystem.__init__(self, **new_kwargs)
+        Location.__init__(self, **new_kwargs)
+
+
+    def __repr__(self):
+        attrs = ['name','AOILIMIT' ,'latitude', 'longitude', 'altitude', 'tz',
+                 'surface_tilt', 'surface_azimuth', 'module', 'inverter',
+                 'albedo']
+        return ('LocalizedHybridSystem: \n  ' + '\n  '.join(
+            ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))  
     
     
     

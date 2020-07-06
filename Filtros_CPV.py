@@ -23,6 +23,10 @@ AOILIMIT=55.0
 # Valor_normalizar=0.00091802
 # VALOR_NORMALIZAR=0.00096
 
+
+
+
+#%% PARA LOS CPV
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
 
 df=df[(df['aoi']<AOILIMIT)]
@@ -77,6 +81,14 @@ Data_UF_am=Data_UF_am[Data_UF_am['T_Amb (°C)']<28]
 
 UF_am=pd.DataFrame({'airmass':Data_UF_am['airmass_relative'].values,'ISC_IIIV/DII_efectiva (A m2/W)':Data_UF_am['ISC_IIIV/DII_efectiva (A m2/W)'].values})
 
+
+#%% PARA LOS de silicio
+
+df_si=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_Si.csv',encoding='utf-8')
+
+greater_AOI=df_si[(df_si['aoi']>AOILIMIT)]
+
+#%% IAM
 
 
 
