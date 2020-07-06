@@ -47,6 +47,34 @@ def _combine_localized_attributes(cpvsystem=None, location=None, **kwargs):
         list(cpv_dict.items()) + list(loc_dict.items()) + list(kwargs.items())
     )
     return new_kwargs
+
+
+def _combine_system_attributes(cpvsystem=None, flat_cpvsystem=None, **kwargs):
+    
+    if cpvsystem is not None:    
+        cpv_dict = cpvsystem.__dict__
+    else:
+        cpv_dict = {}
+        
+    if flat_cpvsystem is not None:
+        flat_dict = flat_cpvsystem.__dict__
+    else:
+        flat_dict = {}
+        
+    new_kwargs = dict(
+        list(cpv_dict.items()) + list(flat_dict.items()) + list(kwargs.items())
+    )     
+
+
+    return new_kwargs
+    
+    
+    
+    
+    
+    
+    
+    
 def calcparams_cpvsyst(effective_irradiance, temp_cell,
                       alpha_sc, gamma_ref, mu_gamma,
                       I_L_ref, I_o_ref,
@@ -190,12 +218,12 @@ class CPVSystem(object):
                  surface_tilt=0, surface_azimuth=180, AOILIMIT=55.0,
                  albedo=None, surface_type=None,
                  module=None, module_type='glass_polymer',
-                 module_parameters=None,
-                 temperature_model_parameters=None,
+                 module_CPV_parameters=None,
+                 temperature_model_CPV_parameters=None,
                  modules_per_string=1, strings_per_inverter=1,
                  inverter=None, inverter_parameters=None,
                  racking_model='open_rack', losses_parameters=None, name=None,
-                 iam_parameters=None, uf_parameters=None,**kwargs):
+                 iam_CPV_parameters=None, uf_parameters=None,**kwargs):
                  
         if (AOILIMIT <=0.0 or AOILIMIT >90.0):
             self.AOILIMIT=55.0              
@@ -211,36 +239,36 @@ class CPVSystem(object):
             self.albedo = albedo
 
         self.module = module
-        if module_parameters is None:
-            self.module_parameters = {}
+        if module_CPV_parameters is None:
+            self.module_CPV_parameters = {}
         else:
-            self.module_parameters = module_parameters
+            self.module_CPV_parameters = module_CPV_parameters
 
         self.module_type = module_type
         self.racking_model = racking_model
         #este código será implementado más adelante cuando determine los valores del modelo que quiero uilizar
-        # if temperature_model_parameters is None:
-        #     self.temperature_model_parameters = \
+        # if temperature_model_CPV_parameters is None:
+        #     self.temperature_model_CPV_parameters = \
         #         self._infer_temperature_model_params()
         # else:
-        #     self.temperature_model_parameters = temperature_model_parameters
-        if temperature_model_parameters is None:
-            self.temperature_model_parameters = {}
+        #     self.temperature_model_CPV_parameters = temperature_model_CPV_parameters
+        if temperature_model_CPV_parameters is None:
+            self.temperature_model_CPV_parameters = {}
         else: 
-            self.temperature_model_parameters = temperature_model_parameters
+            self.temperature_model_CPV_parameters = temperature_model_CPV_parameters
 
-        # if not any(self.temperature_model_parameters):
+        # if not any(self.temperature_model_CPV_parameters):
         #     warnings.warn(
-        #         'Required temperature_model_parameters is not specified '
+        #         'Required temperature_model_CPV_parameters is not specified '
         #         'and parameters are not inferred from racking_model and '
         #         'module_type. Reverting to deprecated default: SAPM cell '
         #         'temperature model parameters for a glass/glass module in '
         #         'open racking. In the future '
-        #         'PVSystem.temperature_model_parameters will be required',
+        #         'PVSystem.temperature_model_CPV_parameters will be required',
         #         pvlibDeprecationWarning)
         #     params = temperature._temperature_model_params(
         #         'sapm', 'open_rack_glass_glass')
-        #     self.temperature_model_parameters = params
+        #     self.temperature_model_CPV_parameters = params
 
         self.modules_per_string = modules_per_string
         self.strings_per_inverter = strings_per_inverter
@@ -258,10 +286,10 @@ class CPVSystem(object):
 
         self.name = name
         
-        if iam_parameters is None:
-            self.iam_parameters = {}
+        if iam_CPV_parameters is None:
+            self.iam_CPV_parameters = {}
         else:
-            self.iam_parameters = iam_parameters
+            self.iam_CPV_parameters = iam_CPV_parameters
             
         if uf_parameters is None:
             self.uf_parameters = {'m1_am':0, 'thld_am':0 ,'m2_am':0,
@@ -300,29 +328,29 @@ class CPVSystem(object):
         
         model = iam_model.lower()
         if (model=='primer grado'):
-            if (len(self.iam_parameters)==2):           
-                return aoi*self.iam_parameters['a1']+1
+            if (len(self.iam_CPV_parameters)==2):           
+                return aoi*self.iam_CPV_parameters['a1']+1
             else:
-                raise ValueError('the lenth of iam_parameters does not match with the chosen model')
+                raise ValueError('the lenth of iam_CPV_parameters does not match with the chosen model')
                 
         elif model=='segundo grado':
-            if len(self.iam_parameters)==3:
+            if len(self.iam_CPV_parameters)==3:
        
-                return (aoi**2)*self.iam_parameters['a2']+aoi*self.iam_parameters['a1']+1
+                return (aoi**2)*self.iam_CPV_parameters['a2']+aoi*self.iam_CPV_parameters['a1']+1
             else:
-                raise ValueError('the lenth of iam_parameters does not match with the chosen model')
+                raise ValueError('the lenth of iam_CPV_parameters does not match with the chosen model')
         elif (model=='tercer grado'):
-            if (len(self.iam_parameters)==4):
-                return (aoi**3)*self.iam_parameters['a3']+(aoi**2)*self.iam_parameters['a2']+aoi*self.iam_parameters['a1']+1 
+            if (len(self.iam_CPV_parameters)==4):
+                return (aoi**3)*self.iam_CPV_parameters['a3']+(aoi**2)*self.iam_CPV_parameters['a2']+aoi*self.iam_CPV_parameters['a1']+1 
             else:
-                raise ValueError('the lenth of iam_parameters does not match with the chosen model')
+                raise ValueError('the lenth of iam_CPV_parameters does not match with the chosen model')
         elif model in ['ashrae', 'physical', 'martin_ruiz']:
             param_names =_IAM_MODEL_PARAMS[model]
-            kwargs = _build_kwargs(param_names, self.module_parameters)
+            kwargs = _build_kwargs(param_names, self.module_CPV_parameters)
             func = getattr(iam, model)
             return func(aoi, **kwargs)
         elif model == 'sapm':
-            return iam.sapm(aoi, self.module_parameters)
+            return iam.sapm(aoi, self.module_CPV_parameters)
         elif model == 'interp':
             raise ValueError(model + ' is not implemented as an IAM model'
                              'option for PVSystem')
@@ -334,14 +362,14 @@ class CPVSystem(object):
         aoi=np.array(aoi)
         y_,RR,a_s,b=Error.regresion_polinomica(aoi,values,grado)
         if grado==3:
-            self.iam_parameters={'a3':a_s[3]/b, 'a2':a_s[2]/b,
+            self.iam_CPV_parameters={'a3':a_s[3]/b, 'a2':a_s[2]/b,
                                  'a1':a_s[1]/b,'valor_norm':b}
         elif grado==2:
-            self.iam_parameters={'a2':a_s[2]/b,'a1':a_s[1]/b,'valor_norm':b}            
+            self.iam_CPV_parameters={'a2':a_s[2]/b,'a1':a_s[1]/b,'valor_norm':b}            
         elif grado==1:
-            self.iam_parameters={'a2':a_s[2]/b,
+            self.iam_CPV_parameters={'a2':a_s[2]/b,
                                  'a1':a_s[1]/b,'valor_norm':b} 
-        print('iam_parameters have been generated with an RR of: '+str(RR))
+        print('iam_CPV_parameters have been generated with an RR of: '+str(RR))
 		
         return a_s,b
     
@@ -423,7 +451,7 @@ class CPVSystem(object):
     def calcparams_cpvsyst(self, effective_irradiance, temp_cell):
         """
         Use the :py:func:`calcparams_pvsyst` function, the input
-        parameters and ``self.module_parameters`` to calculate the
+        parameters and ``self.module_CPV_parameters`` to calculate the
         module currents and resistances.
 
         Parameters
@@ -444,7 +472,7 @@ class CPVSystem(object):
                                 'R_s', 'alpha_sc', 'EgRef',
                                 'irrad_ref', 'temp_ref',
                                 'cells_in_series'],
-                               self.module_parameters)
+                               self.module_CPV_parameters)
 
         return pvsystem.calcparams_pvsyst(effective_irradiance, temp_cell, **kwargs)
    
@@ -464,9 +492,9 @@ class CPVSystem(object):
         """
 
         kwargs = _build_kwargs(['eta_m', 'alpha_absorption'],
-                               self.module_parameters)
+                               self.module_CPV_parameters)
         kwargs.update(_build_kwargs(['u_c', 'u_v'],
-                                    self.temperature_model_parameters))
+                                    self.temperature_model_CPV_parameters))
         return temperature.pvsyst_cell(poa_global, temp_air, wind_speed,
                                        **kwargs)
 
@@ -532,10 +560,10 @@ class CPVSystem(object):
         for j in thlds:
             RR_max_high=-1
             airmass_low=airmass[airmass<=j]
-            values_low=(values[airmass<=j])/(self.iam_parameters['valor_norm'])
+            values_low=(values[airmass<=j])/(self.iam_CPV_parameters['valor_norm'])
             
             airmass_high=airmass[airmass>j]
-            values_high=values[airmass>j]/(self.iam_parameters['valor_norm'])
+            values_high=values[airmass>j]/(self.iam_CPV_parameters['valor_norm'])
                       
             yr_low, RR_low, a_s_low, b_low=Error.regresion_polinomica(airmass_low, values_low, 1)
             y_max=float(yr_low[np.where(yr_low==yr_low.max())])
@@ -566,10 +594,10 @@ class CPVSystem(object):
         RR_max=0.01
         for i in aux:
             airmass_low=airmass[airmass<=i]
-            values_low=(values[airmass<=i])/(self.iam_parameters['valor_norm'])
+            values_low=(values[airmass<=i])/(self.iam_CPV_parameters['valor_norm'])
             
             airmass_high=airmass[airmass>i]
-            values_high=values[airmass>i]/(self.iam_parameters['valor_norm'])
+            values_high=values[airmass>i]/(self.iam_CPV_parameters['valor_norm'])
                       
             yr_low, RR_low, a_s_low, b_low=Error.regresion_polinomica(airmass_low, values_low, 1)           
             yr_high, RR_high, a_s_high, b_high=Error.regresion_polinomica(airmass_high, values_high, 1)
@@ -593,7 +621,7 @@ class CPVSystem(object):
                
         '''    
         
-        values=values/self.iam_parameters['valor_norm']
+        values=values/self.iam_CPV_parameters['valor_norm']
         y1_regre,RR_temp,a_s,b=Error.regresion_polinomica(temperature,values,1)
         self.uf_parameters['m_temp']=a_s[1]
         self.uf_parameters['thld_temp']=temperature[np.where(y1_regre==y1_regre.max())][0]
@@ -671,16 +699,16 @@ class CPVSystem(object):
     def pvwatts_dc(self, g_poa_effective, temp_cell):
         """
         Calcuates DC power according to the PVWatts model using
-        :py:func:`pvwatts_dc`, `self.module_parameters['pdc0']`, and
-        `self.module_parameters['gamma_pdc']`.
+        :py:func:`pvwatts_dc`, `self.module_CPV_parameters['pdc0']`, and
+        `self.module_CPV_parameters['gamma_pdc']`.
 
         See :py:func:`pvwatts_dc` for details.
         """
-        kwargs = _build_kwargs(['temp_ref'], self.module_parameters)
+        kwargs = _build_kwargs(['temp_ref'], self.module_CPV_parameters)
 
         return pvsystem.pvwatts_dc(g_poa_effective, temp_cell,
-                          self.module_parameters['pdc0'],
-                          self.module_parameters['gamma_pdc'],
+                          self.module_CPV_parameters['pdc0'],
+                          self.module_CPV_parameters['gamma_pdc'],
                           **kwargs)
 
     def pvwatts_losses(self):
@@ -699,7 +727,7 @@ class CPVSystem(object):
     def pvwatts_ac(self, pdc):
         """
         Calculates AC power according to the PVWatts model using
-        :py:func:`pvwatts_ac`, `self.module_parameters['pdc0']`, and
+        :py:func:`pvwatts_ac`, `self.module_CPV_parameters['pdc0']`, and
         `eta_inv_nom=self.inverter_parameters['eta_inv_nom']`.
 
         See :py:func:`pvwatts_ac` for details.
@@ -754,12 +782,12 @@ class Flat_CPVSystem (object):
                  surface_tilt=0, surface_azimuth=180, AOILIMIT=55.0,
                  albedo=None, surface_type=None,
                  module=None, module_type='glass_polymer',
-                 module_parameters=None,
-                 temperature_model_parameters=None,
+                 module_Flat_parameters=None,
+                 temperature_model_Flat_parameters=None,
                  modules_per_string=1, strings_per_inverter=1,
                  inverter=None, inverter_parameters=None, 
                  losses_parameters=None, name=None,
-                 iam_parameters=None, uf_parameters=None,**kwargs):
+                 iam_Flat_parameters=None, uf_parameters=None,**kwargs):
                  
         if (AOILIMIT <=0.0 or AOILIMIT >90.0):
             self.AOILIMIT=55.0              
@@ -775,38 +803,38 @@ class Flat_CPVSystem (object):
             self.albedo = albedo
 
         self.module = module
-        if module_parameters is None:
-            self.module_parameters = {}
+        if module_Flat_parameters is None:
+            self.module_Flat_parameters = {}
         else:
-            self.module_parameters = module_parameters
+            self.module_Flat_parameters = module_Flat_parameters
 
         self.module_type = module_type
         # self.racking_model = racking_model
         #·este código será implementado más adelante cuando determine los valores del modelo que quiero uilizar
-        # if temperature_model_parameters is None:
-        #     self.temperature_model_parameters = \
+        # if temperature_model_Flat_parameters is None:
+        #     self.temperature_model_Flat_parameters = \
         #         self._infer_temperature_model_params()
         # else:
-        #     self.temperature_model_parameters = temperature_model_parameters
-        # self.temperature_model_parameters = {}
+        #     self.temperature_model_Flat_parameters = temperature_model_Flat_parameters
+        # self.temperature_model_Flat_parameters = {}
 
-        # if not any(self.temperature_model_parameters):
+        # if not any(self.temperature_model_Flat_parameters):
         #     warnings.warn(
-        #         'Required temperature_model_parameters is not specified '
+        #         'Required temperature_model_Flat_parameters is not specified '
         #         'and parameters are not inferred from racking_model and '
         #         'module_type. Reverting to deprecated default: SAPM cell '
         #         'temperature model parameters for a glass/glass module in '
         #         'open racking. In the future '
-        #         'PVSystem.temperature_model_parameters will be required',
+        #         'PVSystem.temperature_model_Flat_parameters will be required',
         #         pvlibDeprecationWarning)
         #     params = temperature._temperature_model_params(
         #         'sapm', 'open_rack_glass_glass')
-        #     self.temperature_model_parameters = params
+        #     self.temperature_model_Flat_parameters = params
         
-        if temperature_model_parameters is None:
-            self.temperature_model_parameters = {}
+        if temperature_model_Flat_parameters is None:
+            self.temperature_model_Flat_parameters = {}
         else: 
-            self.temperature_model_parameters = temperature_model_parameters
+            self.temperature_model_Flat_parameters = temperature_model_Flat_parameters
 
         self.modules_per_string = modules_per_string
         self.strings_per_inverter = strings_per_inverter
@@ -824,10 +852,10 @@ class Flat_CPVSystem (object):
 
         self.name = name
         
-        if iam_parameters is None:
-            self.iam_parameters = {}
+        if iam_Flat_parameters is None:
+            self.iam_Flat_parameters = {}
         else:
-            self.iam_parameters = iam_parameters
+            self.iam_Flat_parameters = iam_Flat_parameters
         
             
 
@@ -846,7 +874,7 @@ class Flat_CPVSystem (object):
     def calcparams_pvsyst(self, effective_irradiance, temp_cell):
         """
         Use the :py:func:`calcparams_pvsyst` function, the input
-        parameters and ``self.module_parameters`` to calculate the
+        parameters and ``self.module_Flat_parameters`` to calculate the
         module currents and resistances.
     
         Parameters
@@ -867,7 +895,7 @@ class Flat_CPVSystem (object):
                                 'R_s', 'alpha_sc', 'EgRef',
                                 'irrad_ref', 'temp_ref',
                                 'cells_in_series'],
-                                self.module_parameters)
+                                self.module_Flat_parameters)
     
         return pvsystem.calcparams_pvsyst(effective_irradiance, temp_cell, **kwargs)
     
@@ -894,31 +922,31 @@ class Flat_CPVSystem (object):
         
         model = iam_model.lower()
         if (model=='primer grado'):
-            if (len(self.iam_parameters)==3):           
-                return aoi*self.iam_parameters['a1']+self.iam_parameters['b']
+            if (len(self.iam_Flat_parameters)==3):           
+                return aoi*self.iam_Flat_parameters['a1']+self.iam_Flat_parameters['b']
             else:
-                raise ValueError('the lenth of iam_parameters does not match with the chosen model')
+                raise ValueError('the lenth of iam_Flat_parameters does not match with the chosen model')
                 
         elif model=='segundo grado':
-            if len(self.iam_parameters)==4:
+            if len(self.iam_Flat_parameters)==4:
        
-                return (aoi**2)*self.iam_parameters['a2']+aoi*self.iam_parameters['a1']+self.iam_parameters['b']
+                return (aoi**2)*self.iam_Flat_parameters['a2']+aoi*self.iam_Flat_parameters['a1']+self.iam_Flat_parameters['b']
             else:
-                raise ValueError('the lenth of iam_parameters does not match with the chosen model')
+                raise ValueError('the lenth of iam_Flat_parameters does not match with the chosen model')
         elif (model=='tercer grado'):
-            if (len(self.iam_parameters)==5):
-                return (aoi**3)*self.iam_parameters['a3']+(aoi**2)*self.iam_parameters['a2']+aoi*self.iam_parameters['a1']+self.iam_parameters['b']
+            if (len(self.iam_Flat_parameters)==5):
+                return (aoi**3)*self.iam_Flat_parameters['a3']+(aoi**2)*self.iam_Flat_parameters['a2']+aoi*self.iam_Flat_parameters['a1']+self.iam_Flat_parameters['b']
             else:
-                raise ValueError('the lenth of iam_parameters does not match with the chosen model')
+                raise ValueError('the lenth of iam_Flat_parameters does not match with the chosen model')
                 #Estas sentencias evaluavan los tres procedimientos actuales para obtener el iam, pero la parte de Silicio del sistema que queremos modelar
                 #no se comporta como definen estas funciones, salvo la physical que sería capaz de modelarlo.
         # elif model in ['ashrae', 'physical', 'martin_ruiz']:
         #     param_names =_IAM_MODEL_PARAMS[model]
-        #     kwargs = _build_kwargs(param_names, self.module_parameters)
+        #     kwargs = _build_kwargs(param_names, self.module_Flat_parameters)
         #     func = getattr(iam, model)
         #     return func(aoi, **kwargs)
         # elif model == 'sapm':
-        #     return iam.sapm(aoi, self.module_parameters)
+        #     return iam.sapm(aoi, self.module_Flat_parameters)
         # elif model == 'interp':
         #     raise ValueError(model + ' is not implemented as an IAM model'
         #                      'option for PVSystem')
@@ -928,14 +956,14 @@ class Flat_CPVSystem (object):
 #         aoi=np.array(aoi)
 #         y_,RR,a_s,b=Error.regresion_polinomica(aoi,values,grado)
 #         if grado==3:
-#             self.iam_parameters={'a3':a_s[3]/b, 'a2':a_s[2]/b,
+#             self.iam_Flat_parameters={'a3':a_s[3]/b, 'a2':a_s[2]/b,
 #                                  'a1':a_s[1]/b,'valor_norm':b}
 #         elif grado==2:
-#             self.iam_parameters={'a2':a_s[2]/b,'a1':a_s[1]/b,'valor_norm':b}            
+#             self.iam_Flat_parameters={'a2':a_s[2]/b,'a1':a_s[1]/b,'valor_norm':b}            
 #         elif grado==1:
-#             self.iam_parameters={'a2':a_s[2]/b,
+#             self.iam_Flat_parameters={'a2':a_s[2]/b,
 #                                  'a1':a_s[1]/b,'valor_norm':b} 
-#         print('iam_parameters have been generated with an RR of: '+str(RR))
+#         print('iam_Flat_parameters have been generated with an RR of: '+str(RR))
 #         return a_s,b
     
 
@@ -1029,9 +1057,9 @@ class Flat_CPVSystem (object):
         """
 
         kwargs = _build_kwargs(['eta_m', 'alpha_absorption'],
-                                self.module_parameters)
+                                self.module_Flat_parameters)
         kwargs.update(_build_kwargs(['u_c', 'u_v'],
-                                    self.temperature_model_parameters))
+                                    self.temperature_model_Flat_parameters))
         return temperature.pvsyst_cell(poa_global, temp_air, wind_speed,
                                         **kwargs)
 
@@ -1088,23 +1116,23 @@ class LocalizedFlat_CPVSystem(Flat_CPVSystem, Location):
 
 
 class HybridSystem(CPVSystem,Flat_CPVSystem):
-    def __init__(self, cpvsystem=None, location=None, **kwargs):
+    def __init__(self, cpvsystem=None, flat_cpvsystem=None, **kwargs):
 
-        new_kwargs = _combine_localized_attributes(
+        new_kwargs = _combine_system_attributes(
             cpvsystem=cpvsystem,
-            location=location,
+            flat_cpvsystem=flat_cpvsystem,
             **kwargs,
         )
         CPVSystem.__init__(self, **new_kwargs)
         Flat_CPVSystem.__init__(self, **new_kwargs)
-
+        
 
 
     def __repr__(self):
         attrs = ['name', 'AOILIMIT', 'surface_tilt', 'surface_azimuth', 'module',
                   'inverter', 'albedo' ]
         # ''', 'racking_model''']
-        return ('Si_CPVSystem: \n  ' + '\n  '.join(
+        return ('HybridSystem: \n  ' + '\n  '.join(
             ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))
     
     
@@ -1130,6 +1158,7 @@ class LocalizedHybridSystem(HybridSystem, Location):
 
         HybridSystem.__init__(self, **new_kwargs)
         Location.__init__(self, **new_kwargs)
+        
 
 
     def __repr__(self):
