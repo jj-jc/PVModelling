@@ -287,7 +287,21 @@ def calc_iam_Si(datos,tipo):
             else:
                 IAM.append(a1_high*datos[i]+b_high)
     return IAM
-
+def mediana_filter(data,colum_intervals,columna_filter,n_intervalos, porcent_mediana):
+    limSup=data[colum_intervals].max()
+    limInf=data[colum_intervals].min()
+    Rango=limSup-limInf
+    incremento=Rango/n_intervalos    
+    for i in range(n_intervalos):
+        AUX=data[data[colum_intervals]>limInf+i*incremento]
+        AUX=AUX[AUX[colum_intervals]<=limInf+incremento*(1+i)]
+        Mediana=mediana(AUX[columna_filter].values)
+        DEBAJO=AUX[AUX[columna_filter]<(Mediana*(1-porcent_mediana/100))]   
+        data=data.drop(DEBAJO.index[:],axis=0)
+        ENCIMA=AUX[AUX[columna_filter]>(Mediana*(1+porcent_mediana/100))]
+        data=data.drop(ENCIMA.index[:],axis=0)
+    return data
+        
 # def obtencion_dii_efectiva(datos):
 #     a1=-9.79645026e-03
 #     a2=5.17456391e-04

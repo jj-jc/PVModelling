@@ -16,46 +16,14 @@ import CPVClass
 import pandas as pd
 import numpy as np
 import pvlib
-# AOILIMIT=55.0
-# df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
-
-#Datos:
-#localización
-lat=40.453
-lon=-3.727
-alt=667
-tz='Europe/Berlin'
-#orientación
-surface_tilt=30
-surface_azimuth=180
-#AOILIMIT
-AOILIMIT=55.0
-
-Mi_PV=pvlib.pvsystem.PVSystem(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
-                 AOILIMIT=AOILIMIT,albedo=None, surface_type=None,
-                 module=None, module_type='glass_polymer',
-                 module_parameters=None,
-                 temperature_model_parameters=None,
-                 modules_per_string=1, strings_per_inverter=1,
-                 inverter=None, inverter_parameters=None,
-                 racking_model='open_rack', losses_parameters=None, name=None,
-                 iam_parameters=None)
-
-location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
-Localized_Mi_PV=pvlib.pvsystem.LocalizedPVSystem(Mi_PV,location)
+df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
+df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Entradas.csv',encoding='utf-8')
 
 
-Mi_CPV=CPVClass.CPVSystem(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
-                 AOILIMIT=AOILIMIT,albedo=None, surface_type=None,
-                 module=None, module_type='glass_polymer',
-                 module_parameters=None,
-                 temperature_model_parameters=None,
-                 modules_per_string=1, strings_per_inverter=1,
-                 inverter=None, inverter_parameters=None,
-                 racking_model='open_rack', losses_parameters=None, name=None,
-                 iam_parameters=None)
+plt.figure(figsize=(30,15))
+plt.plot(df['aoi'],df['PMP_estimated_IIIV (W)'],'o',markersize=2,label='sin UF')
 
-
-Localized_Mi_PV=CPVClass.LocalizedCVSystem(Mi_PV,location)
-
-
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
+plt.legend()

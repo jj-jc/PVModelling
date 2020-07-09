@@ -29,7 +29,7 @@ Mi_CPV=CPVClass.CPVSystem(surface_tilt=30, surface_azimuth=180,
                  racking_model='open_rack', losses_parameters=None, name=None,
                  iam_parameters=None)
 
-Mi_CPV.module_parameters={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
+Mi_CPV.module_CPV_parameters={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
                 'I_o_ref': 0.00000000017,'R_sh_ref': 5226, 'R_sh_0':21000,
                 'R_sh_exp': 5.50,'R_s': 0.01,'alpha_sc':0.00,'EgRef':3.91,
                 'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':12,
@@ -37,7 +37,7 @@ Mi_CPV.module_parameters={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
 
 Mi_CPV.temperature_model_parameters={'u_c': 10.0,'u_v':0}
 
-Mi_CPV.iam_parameters={'a3':-8.315977512579898e-06,'a2':0.00039212250547851236,
+Mi_CPV.iam_CPV_parameters={'a3':-8.315977512579898e-06,'a2':0.00039212250547851236,
                         'a1':-0.006006260890940105,'valor_norm':0.0008938270669770386}
 
 
@@ -70,7 +70,7 @@ CPV=df[(df['aoi']<=AOILIMIT)]
 Fecha=pd.DatetimeIndex(CPV['Date Time'])
 CPV=CPV.set_index(Fecha)
 CPV=CPV.drop(['Date Time'],axis=1)
-
+CPV_=CPV
 #Se limpian un poco los datos de potencia por medio de la mediana 
 limSup=CPV['aoi'].max()
 limInf=CPV['aoi'].min()
@@ -87,9 +87,24 @@ for i in range(n_intervalos):
     ENCIMA=AUX[AUX['PMP_estimated_IIIV (W)']>(Mediana*(1+porcent_mediana/100))]
     CPV=CPV.drop(ENCIMA.index[:],axis=0)
 
+plt.figure(figsize=(30,15))
+plt.plot(CPV_['aoi'],CPV_['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos')
+plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos filtrados con mediana')
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Visualizar los datos filtrados por la mediana')
+plt.legend()
 
 
+CPV=E.mediana_filter(data=CPV,colum_intervals='aoi',columna_filter='DII (W/m2)',n_intervalos=20,porcent_mediana=10)
 
+plt.figure(figsize=(30,15))
+plt.plot(CPV['aoi'],CPV['DII (W/m2)'],'o',markersize=2,label='Datos ')
+plt.plot(CPV['aoi'],CPV['DII (W/m2)'],'o',markersize=2,label='Datos filtrado con mediana de DII')
+plt.xlabel('Ángulo de incidencia (°)')
+plt.ylabel('Potencia (III-V)(W)')
+plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
+plt.legend()
 
 # CPV['DII_efectiva_tercer_grado (W/m2)']=CPV['DII (W/m2)']*E.calc_iam(CPV['aoi'].values,'Tercer grado')
 # CPV['DII_efectiva_segundo_grado (W/m2)']=CPV['DII (W/m2)']*E.calc_iam(CPV['aoi'].values,'Segundo grado')
