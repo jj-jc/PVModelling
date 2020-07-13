@@ -52,10 +52,49 @@ filt_df=E.mediana_filter(data=filt_df,colum_intervals='aoi',
 filt_df=E.mediana_filter(data=filt_df,colum_intervals='aoi',
                          columna_filter='ISC_measured_Si (A)',
                          n_intervalos=50,porcent_mediana=10)
-filt_df=E.mediana_filter(data=filt_df,colum_intervals='aoi',
-                         columna_filter='ISC_Si/Irra_vista (A m2/W)',
-                         n_intervalos=10,porcent_mediana=10)
 
+'''Debido a que quiero cambair los límites de los intervalos es necesario desarrollar la función'''
+Datos_filtrados=filt_df
+
+
+limSup=AOILIMIT
+limInf=filt_df['aoi'].min()
+Rango=limSup-limInf
+n_intervalos=2
+porcent_mediana=20
+incremento=Rango/n_intervalos
+for i in range(n_intervalos):
+    AUX=filt_df[filt_df['aoi']>limInf+i*incremento]
+    AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
+    Mediana=E.mediana(AUX['ISC_Si/Irra_vista (A m2/W)'])
+    DEBAJO=AUX[AUX['ISC_Si/Irra_vista (A m2/W)']<Mediana*(1-porcent_mediana/100)]   
+    Datos_filtrados=Datos_filtrados.drop(DEBAJO.index[:],axis=0)
+    ENCIMA=AUX[AUX['ISC_Si/Irra_vista (A m2/W)']>Mediana*(1+porcent_mediana/100)]
+    Datos_filtrados=Datos_filtrados.drop(ENCIMA.index[:],axis=0)
+       
+smaller_AOI=filt_df[filt_df['aoi']<AOILIMIT]
+filt_smaller_AOI=Datos_filtrados[Datos_filtrados['aoi']<AOILIMIT]
+
+
+
+
+limSup=Datos_filtrados['aoi'].max()
+limInf=AOILIMIT
+Rango=limSup-limInf
+n_intervalos=10
+porcent_mediana=10
+incremento=Rango/n_intervalos
+for i in range(n_intervalos):
+    AUX=filt_df[filt_df['aoi']>limInf+i*incremento]
+    AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
+    Mediana=E.mediana(AUX['ISC_Si/Irra_vista (A m2/W)'])
+    DEBAJO=AUX[AUX['ISC_Si/Irra_vista (A m2/W)']<Mediana*(1-porcent_mediana/100)]   
+    Datos_filtrados=Datos_filtrados.drop(DEBAJO.index[:],axis=0)
+    ENCIMA=AUX[AUX['ISC_Si/Irra_vista (A m2/W)']>Mediana*(1+porcent_mediana/100)]
+    Datos_filtrados=Datos_filtrados.drop(ENCIMA.index[:],axis=0)
+
+
+filt_df=Datos_filtrados
 
 
 
@@ -133,9 +172,9 @@ fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=x_aoi,y=y1,c=x_temp,cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
 #plt.ylim(0,0.0012)
 #plt.xlim(10,60)
-ax.set_xlabel('aoi (°)')
-ax.set_ylabel('ISC_Si/Irradiancia vista por el silicio (A m2/W)')
-ax.set_title("ISC_si/Irradciancia vista poe el silicio en función del ángulo de incidencia y la temperatura")
+ax.set_xlabel('Ángulo de incidencia (°)',fontsize=20)
+ax.set_ylabel('ISC_Si/Irradiancia vista por el silicio (A m2/W)',fontsize=20)
+ax.set_title("Eficiencia de instensidad del silicio en función del ángulo de incidencia y la temperatura",fontsize=30)
 (fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C)')
 plt.show()
 #representacion del airmass con el scalar mapeable
@@ -143,10 +182,10 @@ fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=x_AM,y=y1,c=x_temp, cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
 #plt.ylim(0,0.0012)
 #plt.xlim(1,2)
-ax.set_xlabel('airmass')
-ax.set_ylabel('ISC_Si/Irradiancia vista por el silicio (A m2/W)')
-ax.set_title("ISC_Si/Irradiancia vista por el silicio en función de la masa de aire y la temperatura")
-(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C) ')
+ax.set_xlabel('airmass (n.d)',fontsize=20)
+ax.set_ylabel('ISC_Si/Irradiancia vista por el silicio (A m2/W)',fontsize=20)
+ax.set_title("Eficiencia de instensidad del silicio en función de la masa de aire y la temperatura",fontsize=30)
+(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C) ',fontsize=20)
 plt.show()
 
 #representacion del airmass con el scalar mapeable
@@ -154,10 +193,10 @@ fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=x_AM,y=y1,c=x_aoi, cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
 #plt.ylim(0,0.0012)
 #plt.xlim(1,2)
-ax.set_xlabel('airmass')
-ax.set_ylabel('ISC_Si/Irradiancia vista por el silicio (A m2/W)')
-ax.set_title("ISC_Si/Irradiancia vista por el silicio en función de la masa de aire y la temperatura")
-(fig.colorbar(Mappable_aoi)).set_label('aoi ')
+ax.set_xlabel('airmass(n.d.)',fontsize=20)
+ax.set_ylabel('ISC_Si/Irradiancia vista por el silicio (A m2/W)',fontsize=20)
+ax.set_title("Eficiencia de instensidad del silicio en función de la masa de aire y la temperatura",fontsize=30)
+(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)',fontsize=20)
 plt.show()
 
 
@@ -167,10 +206,10 @@ fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=x_temp,y=y1,c=x_aoi, cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
 #plt.ylim(0,0.0012)
 #plt.xlim(1,2)
-ax.set_xlabel('Temperatura')
-ax.set_ylabel('ISC_Si/Irradiancia vista por el silicio (A m2/W)')
-ax.set_title("ISC_Si/Irradiancia vista por el silicio en función de la temperatura y el ángulo de incidencia")
-(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)')
+ax.set_xlabel('Temperatura',fontsize=20)
+ax.set_ylabel('ISC_Si/Irradiancia vista por el silicio (A m2/W)',fontsize=20)
+ax.set_title("Eficiencia de instensidad del silicio en función de la temperatura y el ángulo de incidencia",fontsize=30)
+(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)',fontsize=20)
 plt.show()
 
 
@@ -179,10 +218,10 @@ fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=x_aoi,y=y1,c=x_temp,cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
 #plt.ylim(0,0.0012)filt_df['ISC_Si/Irra_vista (A m2/W)'][i]
 #plt.xlim(10,60)
-ax.set_xlabel('aoi (°)')
-ax.set_ylabel('ISC_Si/Irradiancia vista por la célula (A m2/W)')
-ax.set_title("ISC_Si/Irradiancia vista por la célula en función del ángulo de incidencia y la temperatura")
-(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C)')
+ax.set_xlabel('Ángulo de incidencia (°)',fontsize=20)
+ax.set_ylabel('ISC_Si/Irradiancia vista por la célula (A m2/W)',fontsize=20)
+ax.set_title("Eficiencia de instensidad del silicio en función del ángulo de incidencia y la temperatura",fontsize=30)
+(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C)',fontsize=20)
 plt.show()
 
 
@@ -190,11 +229,9 @@ plt.show()
 
 
 
-# #
-# filt_df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/filt_df_Si.csv",encoding='utf-8')
-# #
-# #
-# #
+
+filt_df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/filt_df_Si.csv",encoding='utf-8')
+
 
 
 
