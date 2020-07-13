@@ -47,12 +47,12 @@ surface_azimuth=180
 My_CPV=CPVClass.CPVSystem(surface_tilt=30, surface_azimuth=180,
                  AOILIMIT=55.0,albedo=None, surface_type=None,
                  module=None, module_type='glass_polymer',
-                 module_parameters=None,
-                 temperature_model_parameters=None,
+                 module_CPV_parameters=None,
+                 temperature_model_CPV_parameters=None,
                  modules_per_string=1, strings_per_inverter=1,
                  inverter=None, inverter_parameters=None,
                  racking_model='open_rack', losses_parameters=None, name=None,
-                 iam_parameters=None)
+                 iam_CPV_parameters=None)
 
 My_CPV.module_CPV_parameters={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
                 'I_o_ref': 0.00000000017,'R_sh_ref': 5226, 'R_sh_0':21000,
@@ -60,7 +60,7 @@ My_CPV.module_CPV_parameters={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0
                 'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':12,
                 'eta_m':0.32, 'alpha_absorption':0.9, 'pdc0': 25,'gamma_pdc':-0.005 }
 
-My_CPV.temperature_model_parameters={'u_c': 10.0,'u_v':0}
+My_CPV.temperature_model_CPV_parameters={'u_c': 10.0,'u_v':0}
 
 My_CPV.iam_CPV_parameters={'a3':-8.315977512579898e-06,'a2':0.00039212250547851236,
                         'a1':-0.006006260890940105,'valor_norm':0.0008938270669770386}
@@ -105,7 +105,7 @@ df=pd.concat([df,AM['airmass_relative'],AOI],axis=1)
 
 
 #%%
-# estudiamos la parte del silicio <AOILIMIT
+# estudiamos la parte de CPV <AOILIMIT
 
 smaller_AOILIMIT=df[df['aoi']<My_CPV_local.AOILIMIT]
 

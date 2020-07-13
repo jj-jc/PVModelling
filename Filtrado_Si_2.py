@@ -12,7 +12,7 @@ import pvlib
 import Error 
 import matplotlib.colors 
 import matplotlib.cm
-
+import math
 AOILIMIT=55.0
 
 
@@ -47,7 +47,8 @@ filt_df=df[(df['PMP_estimated_IIIV (W)']>0.1)]
 #----------velocidad del viento
 filt_df=filt_df[(filt_df['Wind Speed (m/s)']<2.5)]
 #-----------temperatura
-filt_df=filt_df[(filt_df['Wind Speed (m/s)']<2.5)]
+filt_df=filt_df[(filt_df['T_Amb (°C)']>10.0)]
+
 
 filt_df=filt_df[filt_df['GII (W/m2)']>0] 
 filt_df=filt_df[filt_df['DII (W/m2)']>0] 
@@ -58,7 +59,7 @@ filt_df=filt_df[filt_df['Difusa']>0]
 
 filt_df['Irra_vista (W/m2)']=filt_df['GII (W/m2)']
 for i in range(len(filt_df.index[:])):    
-    if filt_df.iloc[i]['aoi']<AOI_LIMIT:
+    if filt_df.iloc[i]['aoi']<AOILIMIT:
         filt_df['Irra_vista (W/m2)'][i]=filt_df['Difusa'][i]
 filt_df['ISC_Si/Irra_vista (A m2/W)']=filt_df['ISC_measured_Si (A)']/filt_df['Irra_vista (W/m2)']
         

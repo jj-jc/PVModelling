@@ -77,24 +77,59 @@ df=df.drop(['Date Time'],axis=1)
 df['GHI (W/m2)']=Irradiancias['ghi']
 df['DHI (W/m2)']=Irradiancias['dhi']
 #código para identificar los dia
+
+#%%
+
+BEAM=pvlib.irradiance.beam_component(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth, 
+                                     solar_zenith=Solar_position['zenith'], 
+                                     solar_azimuth=Solar_position['azimuth'],
+                                     dni=df['DNI (W/m2)'])
+
+AOI_projection=pvlib.irradiance.aoi_projection(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth, 
+                                     solar_zenith=Solar_position['zenith'], 
+                                     solar_azimuth=Solar_position['azimuth'])
+
+
+DNI_Projection=AOI_projection*df['DNI (W/m2)']
+GHI_Projection=AOI_projection*df['GII (W/m2)']
+
+df['DII']=DNI_Projection
+df['GII']=GHI_Projection
+
+
+#%%
 POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
                                           solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'], 
                                           dni=df['DNI (W/m2)'], ghi=df['GHI (W/m2)'], dhi=df['DHI (W/m2)'],
                                           dni_extra=None, airmass=None, albedo=0.25, surface_type=None, model='isotropic', 
                                           model_perez='allsitescomposite1990')
+# diffuse_sky=pvlib.irradiance.isotropic(surface_tilt=surface_tilt, dhi)
+# POA_COMPONENTS=pvlib.irradiance.poa_components(aoi=AOI.values, dni=df['DNI (W/m2)'])
 
 df['DII_mio']=POA['poa_direct']
 df['GII_mio']=POA['poa_global']
 
 fig=plt.figure(figsize=(30,20))
 
-plt.plot(df['aoi'],df['DII_mio'],'o',markersize='4',label='dii')   
+plt.plot(df['aoi'],df['DII_mio'],'o',markersize='4',label='dii_mio')   
 plt.plot(df['aoi'],df['DII (W/m2)'],'o',markersize='2',label='dii')   
 
 
 plt.xlabel('Hora')
 plt.ylabel('Irradiancia (W/m2)')
 plt.legend()
+
+#%%
+fig=plt.figure(figsize=(30,20))
+
+plt.plot(df['aoi'],df['GII_mio'],'o',markersize='4',label='dii_mio')   
+plt.plot(df['aoi'],df['GII (W/m2)'],'o',markersize='2',label='dii')   
+
+
+plt.xlabel('Hora')
+plt.ylabel('Irradiancia (W/m2)')
+plt.legend()
+
 
 #%%
 
@@ -151,8 +186,28 @@ for i in date:
 df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Entradas.csv")
 
 
+#%%
 
+fig=plt.figure(figsize=(30,20))
+# plt.plot(df['aoi'],df['GII_mio'],'o',markersize='4',label='poa')   
+# plt.plot(df['aoi'],df['GII (W/m2)'],'o',markersize='2',label='dii') 
+plt.plot(df['aoi'],BEAM,'o',markersize='4',label='beam') 
+plt.plot(df['aoi'],DNI_Projection,'o',markersize='2',label='beam') 
+plt.xlabel('Hora')
+plt.ylabel('Irradiancia (W/m2)')
+plt.legend()
 
+fig=plt.figure(figsize=(30,20))
+# plt.plot(df['aoi'],df['GII_mio'],'o',markersize='4',label='poa')   
+# plt.plot(df['aoi'],df['GII (W/m2)'],'o',markersize='2',label='dii') 
+plt.plot(df['aoi'],df['GII (W/m2)'],'o',markersize='2',label='GII') 
+plt.plot(df['aoi'],GHI_Projection,'o',markersize='2',label='beam') 
+plt.plot(df['aoi'],df['GNI (W/m2)'],'o',markersize='2',label='beam') 
+# plt.plot(df['aoi'],GHI_Projection,'o',markersize='2',label='beam') 
+
+plt.xlabel('Hora')
+plt.ylabel('Irradiancia (W/m2)')
+plt.legend()
 
 
 

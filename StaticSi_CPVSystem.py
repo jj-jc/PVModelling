@@ -35,28 +35,29 @@ pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DI
 #Se construye el objeto Si_CPVSystem
 
 Mi_Si_CPV=CPVClass.Flat_CPVSystem(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
-                 AOILIMIT=AOILIMIT,albedo=None, surface_type=None,
+                 AOILIMIT=AOILIMIT,
+                 albedo=None, surface_type=None,
                  module=None, module_type='glass_polymer',
-                 module_parameters=None,
-                 temperature_model_parameters=None,
+                 module_Flat_parameters=None,
+                 temperature_model_Flat_parameters=None,
                  modules_per_string=1, strings_per_inverter=1,
-                 inverter=None, inverter_parameters=None,
-                 racking_model='open_rack', losses_parameters=None, name=None,
-                 iam_parameters=None)
+                 inverter=None, inverter_parameters=None, 
+                 losses_parameters=None, name=None,
+                 iam_Flat_parameters=None, uf_parameters=None)
 
-Mi_Si_CPV.module_parameters={'gamma_ref': 2.13, 'mu_gamma': 0.002, 'I_L_ref':2.355,
+Mi_Si_CPV.module_Flat_parameters={'gamma_ref': 2.13, 'mu_gamma': 0.002, 'I_L_ref':2.355,
                 'I_o_ref': 0.0000147,'R_sh_ref': 3000, 'R_sh_0':8000,
                 'R_sh_exp': 5.5,'R_s': 0.35,'alpha_sc':0.0,'EgRef':1.121,
                 'irrad_ref': 400,'temp_ref':25, 'cells_in_series':4,
                 'eta_m':0.16, 'alpha_absorption':0.9}
 
-Mi_Si_CPV.temperature_model_parameters={'u_c': 29.0,'u_v':0}
+Mi_Si_CPV.temperature_model_Flat_parameters={'u_c': 29.0,'u_v':0}
 
-Mi_Si_CPV.iam_parameters={'a3': 0.00015150050021614284,'a2':-0.02987855934621265,
-                        'a1':1.9229049866733197,'b':-39.58930494613328,'valor_norm':0.005027867032371985}
+# Mi_Si_CPV.iam_Flat_parameters={'a3': 0.00015150050021614284,'a2':-0.02987855934621265,
+#                         'a1':1.9229049866733197,'b':-39.58930494613328,'valor_norm':0.005027867032371985}
 
 
-Mi_Si_CPV.iam_parameters={'a3': 4.415712058608902e-05,'a2':-0.00870855968202769,
+Mi_Si_CPV.iam_Flat_parameters={'a3': 4.415712058608902e-05,'a2':-0.00870855968202769,
                         'a1':0.5604598483238424,'b':-11.538903897556816,'valor_norm':0.017250317962638585}
 
 

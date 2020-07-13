@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Mar 19 20:46:37 2020
+Created on Sun Jul 12 09:06:58 2020
 
 @author: juanj
 """
@@ -107,34 +107,34 @@ x_AM=filt_df2['airmass_relative']
 #
 #Para ver las irradiancias tras el filtrado
 
-# date=np.array(['2019-05-30'])
-# for i in range(0,len(filt_df.index[:])):
-#     if(i==0):
-#         date[0]=str(filt_df.index[0].date())
-#     elif(filt_df.index[i-1].date()!=filt_df.index[i].date()):
-#         date=np.append(date,str(filt_df.index[i].date()))
+date=np.array(['2019-05-30'])
+for i in range(0,len(filt_df.index[:])):
+    if(i==0):
+        date[0]=str(filt_df.index[0].date())
+    elif(filt_df.index[i-1].date()!=filt_df.index[i].date()):
+        date=np.append(date,str(filt_df.index[i].date()))
 
-# for i in date:
-#     fig=plt.figure(figsize=(30,15))
-#     fig.add_subplot(121)
-#     plt.plot(df[str(i)].index[:].time,df[str(i)]['DNI (W/m2)'], label='DNI')    
-# #    plt.plot(df[i].index[:].time,df[i]['GNI (W/m2)'],label='GHI')
-#     plt.plot(df[str(i)].index[:].time,df[str(i)]['DII (W/m2)'],label='DII')
-#     plt.plot(df[str(i)].index[:].time,df[str(i)]['GII (W/m2)'],label='GII')
+for i in date:
+    fig=plt.figure(figsize=(30,15))
+    fig.add_subplot(121)
+    plt.plot(df[str(i)].index[:].time,df[str(i)]['DNI (W/m2)'], label='DNI')    
+#    plt.plot(df[i].index[:].time,df[i]['GNI (W/m2)'],label='GHI')
+    plt.plot(df[str(i)].index[:].time,df[str(i)]['DII (W/m2)'],label='DII')
+    plt.plot(df[str(i)].index[:].time,df[str(i)]['GII (W/m2)'],label='GII')
 
-#     plt.xlabel('Hora')
-#     plt.ylabel('Irradiancia (W/m2)')
-#     plt.legend()
-#     plt.title("Datos de irradiancias "+ str(i))
-#     fig.add_subplot(122)
-#     plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['DNI (W/m2)'], label='DNI')    
-# #    plt.plot(filt_df[i].index[:].time,filt_df[i]['GNI (W/m2)'],label='GHI')
-#     plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['DII (W/m2)'],label='DII')
-#     plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['GII (W/m2)'],label='GII')
-#     plt.xlabel('Hora')
-#     plt.ylabel('Irradiancia (W/m2)')
-#     plt.legend()
-#     plt.title("Datos de irradiancias filtrados "+str(i))
+    plt.xlabel('Hora')
+    plt.ylabel('Irradiancia (W/m2)')
+    plt.legend()
+    plt.title("Datos de irradiancias "+ str(i))
+    fig.add_subplot(122)
+    plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['DNI (W/m2)'], label='DNI')    
+#    plt.plot(filt_df[i].index[:].time,filt_df[i]['GNI (W/m2)'],label='GHI')
+    plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['DII (W/m2)'],label='DII')
+    plt.plot(filt_df2[str(i)].index[:].time,filt_df2[str(i)]['GII (W/m2)'],label='GII')
+    plt.xlabel('Hora')
+    plt.ylabel('Irradiancia (W/m2)')
+    plt.legend()
+    plt.title("Datos de irradiancias filtrados "+str(i))
 
 
 
@@ -145,7 +145,7 @@ x_AM=filt_df2['airmass_relative']
 fig, ax=plt.subplots(figsize=(30,15))
 #ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
 ax.plot(x_aoi,y1,'o',markersize=2)
-plt.ylim(0,0.0015 )
+plt.ylim(0,0.0015)
 ax.set_xlabel('AOI (°)')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC_IIIV/DII en función del ángulo de incidencia",fontsize=20)
@@ -281,7 +281,7 @@ plt.show()
 
 #%%
 
-filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv",encoding='utf-8')
+filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV__.csv",encoding='utf-8')
 
 #%%
  
@@ -305,8 +305,6 @@ ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia",
 plt.show()
 
 
-
-
 fig=go.Figure(
 data=go.Scatter(
     y=filt_df2['ISC_IIIV/DII (A m2/W)'],
@@ -324,74 +322,6 @@ fig.update_layout(
 
 fig.show()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-############################################################LIMPIAR DESDE AQUÍ###########################################################3
-
-
-
-"""                                      Otro código de filtrado                           """
-
-#----------------------------------------código que filtra con media y en cada iteración vuelve a calcular la media,
-
-
-#-------------------------------------------------------
-#ErrorPercent=20
-##para limipar los valores de DII
-#filt_df3=filt_df2
-#for i in range(0,len(filt_df2.index[:])):
-#    H=filt_df2.index[i].hour
-#    Media_Hora=Media_DII.loc[H]['Medias']
-#    Cambio=abs(filt_df2.iloc[i]['DII (W/m2)']-Media_Hora)
-#    Margen=(ErrorPercent/100)*(Media_Hora)
-#    if Cambio>Margen:
-#        filt_df3=filt_df3.drop(filt_df2.index[i],axis=0)
-#        AUX.loc[H]['Grupo']=AUX.loc[H]['Grupo'].drop(filt_df2.index[i],axis=0)
-#        Media_DII.loc[H]['Medias']=AUX.loc[H]['Grupo']['DII (W/m2)'].mean()
-#        
-#        
-#    
-#
-#
-#for i in date:
-#    fig=plt.figure(figsize=(20,15))
-#    plt.plot(df[i].index[:].time,df[i]['DII (W/m2)'], label='Fecha:'+i)
-#    plt.plot(filt_df3[i].index[:].time,filt_df3[i]['DII (W/m2)'], label='Fecha:'+i)
-#    
-#    plt.xlabel('Hora')
-#    plt.ylabel('Irradiancia (W/m2)')
-#    plt.legend()
-#    plt.title("Irradiancia directa sobre plano inclinado")
-#    
-#fig=plt.figure(figsize=(20,15))
-#plt.plot(Media_DII.index,Media_DII['Medias'])
-#plt.xlabel('Hora')
-#plt.ylabel('Irradiancia (W/m2)')
-#plt.title("Media de irradiancia directa por horas")
-#
-#
-#
-#
-#
 
 
 

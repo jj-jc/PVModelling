@@ -52,12 +52,12 @@ filt_df=filt_df[(filt_df['Wind Speed (m/s)']<2.5)]
 filt_df=filt_df[filt_df['DII (W/m2)']>0] 
         
         
-Solar_position=CPV_location.get_solarposition(filt_df.index[:], pressure=None, temperature=filt_df['T_Amb (°C)'])
-POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
-                                          solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'], 
-                                          dni=filt_df['DNI (W/m2)'], ghi=filt_df['GHI (W/m2)'], dhi=filt_df['DHI (W/m2)'],
-                                          dni_extra=None, airmass=None, albedo=0.25, surface_type=None, model='isotropic', 
-                                          model_perez='allsitescomposite1990')
+# Solar_position=CPV_location.get_solarposition(filt_df.index[:], pressure=None, temperature=filt_df['T_Amb (°C)'])
+# POA=pvlib.irradiance.get_total_irradiance(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
+#                                           solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'], 
+#                                           dni=filt_df['DNI (W/m2)'], ghi=filt_df['GHI (W/m2)'], dhi=filt_df['DHI (W/m2)'],
+#                                           dni_extra=None, airmass=None, albedo=0.25, surface_type=None, model='isotropic', 
+#                                           model_perez='allsitescomposite1990')
 
 
 
@@ -81,11 +81,11 @@ plt.legend()
 ErrorPercent=10
 #de esta forma limpiamos los datos que no pertenezcan a los días claros
 filt_df2=filt_df
-for i in filt_df.index[:]:
-    # Cambio= filt_df.loc[i]['Difusa']-POA.loc[i]['poa_diffuse']
-    # if Cambio>=ErrorPercent*(POA.loc[i]['poa_diffuse']):
-    if filt_df.loc[i]['Difusa']<POA.loc[i]['poa_diffuse']:
-        filt_df2=filt_df2.drop(i,axis=0)
+# for i in filt_df.index[:]:
+#     # Cambio= filt_df.loc[i]['Difusa']-POA.loc[i]['poa_diffuse']
+#     # if Cambio>=ErrorPercent*(POA.loc[i]['poa_diffuse']):
+#     if filt_df.loc[i]['Difusa']<POA.loc[i]['poa_diffuse']:
+#         filt_df2=filt_df2.drop(i,axis=0)
     
 
 date=np.array(['2019-06-30'])
