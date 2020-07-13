@@ -6,14 +6,13 @@ Created on Mon Jul 13 11:59:44 2020
 """
 
 
-import numpy as np
+
 import pandas as pd
 import matplotlib.pyplot as plt
-import pvlib
 import Error as E
 import matplotlib.colors 
 import matplotlib.cm
-import math
+
 
 pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
 
