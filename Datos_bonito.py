@@ -9,6 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import pvlib 
 import numpy as np
+pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
 
 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/InsolightMay2019.csv',encoding= 'unicode_escape')
