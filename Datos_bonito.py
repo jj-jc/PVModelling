@@ -8,7 +8,11 @@ Created on Sun Jul 12 09:09:46 2020
 import pandas as pd
 import matplotlib.pyplot as plt
 import pvlib 
+<<<<<<< HEAD
 
+=======
+import numpy as np
+>>>>>>> 44dd62b3a9cabcb24671889f2522ef353a3f5cc1
 pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
 
 
