@@ -40,8 +40,8 @@ Data_IAM=Data_IAM[Data_IAM['Wind Dir. (m/s)']>=133.0]
 Data_IAM=Data_IAM[Data_IAM['Wind Dir. (m/s)']<143]
 Data_IAM=Data_IAM[Data_IAM['Wind Speed (m/s)']>=1.4]
 Data_IAM=Data_IAM[Data_IAM['Wind Speed (m/s)']<2.5]
-Data_IAM=Data_IAM[Data_IAM['T_Amb (°C)']>=26.0]
-Data_IAM=Data_IAM[Data_IAM['T_Amb (°C)']<28]
+Data_IAM=Data_IAM[Data_IAM['T_Amb (ºC)']>=26.0]
+Data_IAM=Data_IAM[Data_IAM['T_Amb (ºC)']<28]
 
 df_extrapola=Data_IAM
 df_extrapola=df_extrapola[df_extrapola['aoi']>=10.0]
@@ -65,10 +65,10 @@ IAM=pd.DataFrame({'aoi':x_regresion,'ISC_IIIV/DII (A m2/W)':y_regresion})
 Data_UF_temp=df
 Data_UF_temp=Data_UF_temp[(Data_UF_temp['airmass_relative']>=1.0)]
 Data_UF_temp=Data_UF_temp[(Data_UF_temp['airmass_relative']<1.1)]
-# filt_x=filt_df_temp['T_Amb (°C)'].values
+# filt_x=filt_df_temp['T_Amb (ºC)'].values
 # filt_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
-UF_temp=pd.DataFrame({'T_Amb (°C)':Data_UF_temp['T_Amb (°C)'].values,'ISC_IIIV/DII_efectiva (A m2/W)':Data_UF_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values})
+UF_temp=pd.DataFrame({'T_Amb (ºC)':Data_UF_temp['T_Amb (ºC)'].values,'ISC_IIIV/DII_efectiva (A m2/W)':Data_UF_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values})
 
 #%% La parte del uf_am
 
@@ -76,8 +76,8 @@ UF_temp=pd.DataFrame({'T_Amb (°C)':Data_UF_temp['T_Amb (°C)'].values,'ISC_IIIV
 Data_UF_am=df
 Data_UF_am=Data_UF_am[Data_UF_am['Wind Speed (m/s)']>=0.9]
 Data_UF_am=Data_UF_am[Data_UF_am['Wind Speed (m/s)']<1.1]
-Data_UF_am=Data_UF_am[Data_UF_am['T_Amb (°C)']>=20]
-Data_UF_am=Data_UF_am[Data_UF_am['T_Amb (°C)']<28]
+Data_UF_am=Data_UF_am[Data_UF_am['T_Amb (ºC)']>=20]
+Data_UF_am=Data_UF_am[Data_UF_am['T_Amb (ºC)']<28]
 
 UF_am=pd.DataFrame({'airmass':Data_UF_am['airmass_relative'].values,'ISC_IIIV/DII_efectiva (A m2/W)':Data_UF_am['ISC_IIIV/DII_efectiva (A m2/W)'].values})
 

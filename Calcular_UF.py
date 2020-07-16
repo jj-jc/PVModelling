@@ -24,7 +24,7 @@ df_iam=df_iam.drop('Unnamed: 0',axis=1)
 filt_df=df[df['aoi']<=AOILIMIT]
 filt_df['DII_efectiva (W/m2)']=filt_df['DII (W/m2)']*E.calc_iam(filt_df['aoi'].values,'Tercer grado')
 filt_df['ISC_IIIV/DII_efectiva (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII_efectiva (W/m2)']
-filt_x=filt_df['T_Amb (°C)'].values
+filt_x=filt_df['T_Amb (ºC)'].values
 filt_y=filt_df['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
 
@@ -32,7 +32,7 @@ filt_y=filt_df['ISC_IIIV/DII_efectiva (A m2/W)'].values
 fig=plt.figure(figsize=(30,15))
 plt.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=4,label='Datos por debajo de thdl')
 plt.plot(filt_df['aoi'],filt_y,'o',markersize=4,label='Datos por debajo de thdl')
-plt.ylabel('Ángulo de incidencia (°)')
+plt.ylabel('Ángulo de incidencia (º)')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
 plt.title('Eficiencia de la parte de III-V una vez corregida la irradiancia con el IAM')
 plt.legend()
@@ -57,7 +57,7 @@ filt_df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Prueba.csv")
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
-#     x=AUX['T_Amb (°C)'],
+#     x=AUX['T_Amb (ºC)'],
 #     mode='markers',
 #     visible=True,
 #     showlegend=True,
@@ -65,7 +65,7 @@ filt_df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Prueba.csv")
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
@@ -83,9 +83,9 @@ filt_df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Prueba.csv")
 
 # fig=plt.figure(figsize=(30,15))
 # # plt.plot(temp_cell,filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos por debajo de AOILIMIT')
-# plt.plot(filt_df_temp['T_Amb (°C)'].values,filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos por debajo de AOILIMIT')
+# plt.plot(filt_df_temp['T_Amb (ºC)'].values,filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values,'o',markersize=4,label='Datos por debajo de AOILIMIT')
 # # plt.ylim(0,0.002)
-# plt.xlabel('Temperatura ambiente (°C) ')
+# plt.xlabel('Temperatura ambiente (ºC) ')
 # plt.ylabel('ISC_IIIV/DII (A m2/W)')
 # plt.title('Cálculo del UF para la temperatura')
 # plt.legend()
@@ -103,7 +103,7 @@ filt_df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Prueba.csv")
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
-#     x=AUX['T_Amb (°C)'],
+#     x=AUX['T_Amb (ºC)'],
 #     mode='markers',
 #     visible=True,
 #     showlegend=True,
@@ -111,7 +111,7 @@ filt_df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Prueba.csv")
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
@@ -128,19 +128,19 @@ filt_df_temp=filt_df
 
 filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']>=1.0)]
 filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']<1.1)]
-# filt_x=filt_df_temp['T_Amb (°C)'].values
+# filt_x=filt_df_temp['T_Amb (ºC)'].values
 # filt_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
-datos_guardar=pd.DataFrame({'T_Amb (°C)':filt_df_temp['T_Amb (°C)'].values,'ISC_IIIV/DII_efectiva (A m2/W)':filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values})
+datos_guardar=pd.DataFrame({'T_Amb (ºC)':filt_df_temp['T_Amb (ºC)'].values,'ISC_IIIV/DII_efectiva (A m2/W)':filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values})
 
-filt_df_temp_x=filt_df_temp['T_Amb (°C)'].values
+filt_df_temp_x=filt_df_temp['T_Amb (ºC)'].values
 filt_df_temp_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR
 
 
 fig=plt.figure(figsize=(30,15))
-plt.plot(filt_df['T_Amb (°C)'].values,filt_df['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR,'o',markersize=4,label='Línea de regresión')
+plt.plot(filt_df['T_Amb (ºC)'].values,filt_df['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR,'o',markersize=4,label='Línea de regresión')
 plt.plot(filt_df_temp_x,filt_df_temp_y,'o',markersize=4,label='Datos por debajo de AOILIMIT')
-plt.xlabel('Temperatura ambiente (°C) ')
+plt.xlabel('Temperatura ambiente (ºC) ')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
 plt.title('Datos escogidos de la nube de puntos')
 plt.legend()
@@ -151,7 +151,7 @@ fig=plt.figure(figsize=(30,15))
 plt.plot(filt_df_temp_x,filt_df_temp_y,'o',markersize=4,label='Datos por debajo de AOILIMIT')
 plt.plot(filt_df_temp_x,y1_regre,'o',markersize=4,label='Línea de regresión')
 # plt.ylim(0,0.002)
-plt.xlabel('Temperatura ambiente (°C) ')
+plt.xlabel('Temperatura ambiente (ºC) ')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
 plt.title('Cálculo del UF para la temperatura')
 plt.legend()
@@ -193,13 +193,13 @@ thld_temp=thld[0]
 
 
 # # Incremento=1
-# # Max_temp=math.ceil(filt_df_am['T_Amb (°C)'].max())
-# # Min_temp=math.floor(filt_df_am['T_Amb (°C)'].min())
+# # Max_temp=math.ceil(filt_df_am['T_Amb (ºC)'].max())
+# # Min_temp=math.floor(filt_df_am['T_Amb (ºC)'].min())
 # # contador=np.arange(Min_temp,Max_temp,Incremento)
 # # fig=go.Figure()
 # # for i in contador:
-# #     AUX=filt_df_am[(filt_df_am['T_Amb (°C)']>=float(i))]
-# #     AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
+# #     AUX=filt_df_am[(filt_df_am['T_Amb (ºC)']>=float(i))]
+# #     AUX=AUX[((AUX['T_Amb (ºC)'])<i+Incremento)]    
 
 # #     fig.add_trace(go.Scatter(
 # #     y=AUX['ISC_IIIV/DII (A m2/W)'],
@@ -211,7 +211,7 @@ thld_temp=thld[0]
 # #     ))
 # # fig.update_layout(
 # #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-# #     xaxis_title="Ángulo de incidencia (°)",
+# #     xaxis_title="Ángulo de incidencia (º)",
 # #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # # )
 
@@ -219,8 +219,8 @@ thld_temp=thld[0]
 
 
 
-# # filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=26.0]
-# # filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28.0]
+# # filt_df_am=filt_df_am[filt_df_am['T_Amb (ºC)']>=26.0]
+# # filt_df_am=filt_df_am[filt_df_am['T_Amb (ºC)']<28.0]
 
 # filt_x=filt_df_am['airmass_relative'].values
 # filt_y=filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values
@@ -233,12 +233,12 @@ thld_temp=thld[0]
 #%%CÓDIGO PARA OBSERVAR LAS TENDENDICAS CON DIFERENTES TEMPERATURAS
 
 # Incremento=1
-# Max_temp=math.ceil(filt_df_am['T_Amb (°C)'].max())
-# Min_temp=math.floor(filt_df_am['T_Amb (°C)'].min())
+# Max_temp=math.ceil(filt_df_am['T_Amb (ºC)'].max())
+# Min_temp=math.floor(filt_df_am['T_Amb (ºC)'].min())
 # fig=go.Figure()
 # for i in range(Min_temp,Max_temp,Incremento):
-#     AUX=filt_df_am[(filt_df_am['T_Amb (°C)']>=float(i))]
-#     AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
+#     AUX=filt_df_am[(filt_df_am['T_Amb (ºC)']>=float(i))]
+#     AUX=AUX[((AUX['T_Amb (ºC)'])<i+Incremento)]    
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
@@ -250,7 +250,7 @@ thld_temp=thld[0]
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
@@ -276,7 +276,7 @@ thld_temp=thld[0]
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
@@ -307,8 +307,8 @@ thld_temp=thld[0]
 filt_df_am=filt_df
 filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']>=0.9]
 filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']<1.1]
-filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=20]
-filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28]
+filt_df_am=filt_df_am[filt_df_am['T_Amb (ºC)']>=20]
+filt_df_am=filt_df_am[filt_df_am['T_Amb (ºC)']<28]
 
 fig=plt.figure(figsize=(30,15))
 plt.plot(filt_x,filt_y,'o',markersize=4,label='Datos ISC_IIIV/DII_efectiva')

@@ -38,7 +38,7 @@ df=df.set_index(Fecha)
 df=df.drop(['Date Time'],axis=1)
 
 CPV_location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
-Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (°C)'])
+Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (ºC)'])
 
 #--------------------------------------------------------criterios de filtrado
 #Se elminan los datos NAN
@@ -46,9 +46,9 @@ df=df.where(df!='   NaN')
 df=df.dropna()
 #----------Potencia
 filt_df=df[(df['PMP_estimated_IIIV (W)']>0.1)]
-filt_df=df[(df['T_Amb (°C)']>10.0)]
+filt_df=df[(df['T_Amb (ºC)']>10.0)]
 #filt_df=df[(df['DII (W/m2)']>100)]
-#filt_df=df[(df['T_Amb (°C)']>10)]
+#filt_df=df[(df['T_Amb (ºC)']>10)]
 
 Irradiancias=CPV_location.get_clearsky(times=Fecha, model='ineichen', solar_position=Solar_position, dni_extra=None)
 
@@ -102,7 +102,7 @@ x=filt_df2['aoi']
 y1=filt_df2['ISC_IIIV/DII (A m2/W)']
 y2=filt_df2['PMP_estimated_IIIV (W)']
 x_aoi=filt_df2['aoi']
-x_temp=filt_df2['T_Amb (°C)']
+x_temp=filt_df2['T_Amb (ºC)']
 x_AM=filt_df2['airmass_relative']
 #
 #Para ver las irradiancias tras el filtrado
@@ -146,7 +146,7 @@ fig, ax=plt.subplots(figsize=(30,15))
 #ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
 ax.plot(x_aoi,y1,'o',markersize=2)
 plt.ylim(0,0.0015 )
-ax.set_xlabel('AOI (°)')
+ax.set_xlabel('AOI (º)')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC_IIIV/DII en función del ángulo de incidencia",fontsize=20)
 plt.legend()
@@ -154,7 +154,7 @@ plt.legend()
 fig, ax=plt.subplots(figsize=(30,15))
 ax.plot(x_temp,y1,'o',markersize=2)
 #plt.ylim(0,0.0015)
-ax.set_xlabel('T_Amb (°C)')
+ax.set_xlabel('T_Amb (ºC)')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC_IIIV/DII en función de la temperarua ambiente",fontsize=20)
 plt.legend()
@@ -171,7 +171,7 @@ plt.legend()
 fig, ax=plt.subplots(figsize=(30,15))
 ax.plot(x_aoi,y2,'o',markersize=2)
 #plt.ylim(0,0.0015)
-ax.set_xlabel('AOI (°)')
+ax.set_xlabel('AOI (º)')
 ax.set_ylabel('PMP_estimated_IIIV (W)')
 ax.set_title("Potencia estimada en función del aoi",fontsize=20)
 plt.legend()
@@ -181,7 +181,7 @@ plt.legend()
 
 #creamos un scalar mapeable por cada tercera variable a estudiar.
 #Temp
-norm=plt.Normalize(filt_df2['T_Amb (°C)'].min(),filt_df2['T_Amb (°C)'].max())
+norm=plt.Normalize(filt_df2['T_Amb (ºC)'].min(),filt_df2['T_Amb (ºC)'].max())
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["blue","violet","red"])
 Mappable_Temp=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 #aoi
@@ -209,23 +209,23 @@ Mappable_DirViento=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 
 #representacion del aoi con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['T_Amb (°C)'],cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
+ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['T_Amb (ºC)'],cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
 plt.ylim(0,0.0012)
 plt.xlim(10,60)
-ax.set_xlabel('aoi (°)')
+ax.set_xlabel('aoi (º)')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC/DII en función del ángulo de incidencia y la temperatura",fontsize=20)
-(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C)')
+(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (ºC)')
 plt.show()
 #representacion del airmass con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['airmass_relative'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['T_Amb (°C)'], cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
+ax.scatter(x=filt_df2['airmass_relative'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['T_Amb (ºC)'], cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
 plt.ylim(0,0.0012)
 plt.xlim(1,2)
 ax.set_xlabel('airmass')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC/DII en función de la masa de aire y la temperatura",fontsize=20)
-(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C) ')
+(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (ºC) ')
 plt.show()
 
 #representacion del airmass con el scalar mapeable
@@ -243,13 +243,13 @@ plt.show()
 
 #representamos de la temp con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df2['T_Amb (°C)'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
+ax.scatter(x=filt_df2['T_Amb (ºC)'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
 plt.ylim(0,0.0012)
 #plt.xlim(1,2)
 ax.set_xlabel('Temperatura')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia",fontsize=20)
-(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)')
+(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (º)')
 plt.show()
 
 #%%AQUÍ SE OBSERVA LA DEPENDENCIA CON LA VELOCIDAD DEL VIENTO Y CON LA DIRECION DEL VIENTO
@@ -259,7 +259,7 @@ fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['Wind Speed (m/s)'], cmap=Mappable_viento.cmap, norm=Mappable_viento.norm,s=10)
 plt.ylim(0,0.0012)
 #plt.xlim(1,2)
-ax.set_xlabel('Ángulo de incidencia (°)')
+ax.set_xlabel('Ángulo de incidencia (º)')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC/DII en función del ángulo de incidencia y la velocidad del viento",fontsize=20)
 (fig.colorbar(Mappable_viento)).set_label('Velocidad del viento (m/s)')
@@ -269,10 +269,10 @@ fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=filt_df2['aoi'],y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['Wind Dir. (m/s)'], cmap=Mappable_DirViento.cmap, norm=Mappable_DirViento.norm,s=10)
 plt.ylim(0,0.0012)
 #plt.xlim(1,2)
-ax.set_xlabel('Ángulo de incidencia (°)')
+ax.set_xlabel('Ángulo de incidencia (º)')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC/DII en función del ángulo de incidencia y la dirección del viento",fontsize=20)
-(fig.colorbar(Mappable_DirViento)).set_label('Dirección del viento (°N)')
+(fig.colorbar(Mappable_DirViento)).set_label('Dirección del viento (ºN)')
 plt.show()
 
 
@@ -292,7 +292,7 @@ filt_df2.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.cs
 
 filt_df2=filt_df2[filt_df2['aoi']<AOILIMIT]
 
-temp_cell=pvlib.temperature.pvsyst_cell(poa_global=filt_df2['GII (W/m2)'], temp_air=filt_df2['T_Amb (°C)'], wind_speed=filt_df2['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.1, alpha_absorption=0.9)
+temp_cell=pvlib.temperature.pvsyst_cell(poa_global=filt_df2['GII (W/m2)'], temp_air=filt_df2['T_Amb (ºC)'], wind_speed=filt_df2['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.1, alpha_absorption=0.9)
 
 fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=temp_cell.values,y=filt_df2['ISC_IIIV/DII (A m2/W)'],c=filt_df2['Wind Speed (m/s)'], cmap=Mappable_viento.cmap, norm=Mappable_viento.norm,s=10)
@@ -301,7 +301,7 @@ plt.ylim(0,0.0012)
 ax.set_xlabel('Temperatura')
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)')
 ax.set_title("ISC/DII en función de la temperatura y el ángulo de incidencia",fontsize=20)
-(fig.colorbar(Mappable_viento)).set_label('Ángulo de incidencia (°)')
+(fig.colorbar(Mappable_viento)).set_label('Ángulo de incidencia (º)')
 plt.show()
 
 
@@ -318,7 +318,7 @@ data=go.Scatter(
     ))
 fig.update_layout(
     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-    xaxis_title="Ángulo de incidencia (°)",
+    xaxis_title="Ángulo de incidencia (º)",
     yaxis_title="ISC_IIIV/DII (A m2/W)",
 )
 

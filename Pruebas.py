@@ -23,7 +23,7 @@ df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Entradas.csv',encoding='
 plt.figure(figsize=(30,15))
 plt.plot(df['aoi'],df['PMP_estimated_IIIV (W)'],'o',markersize=2,label='sin UF')
 
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()

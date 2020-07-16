@@ -50,14 +50,14 @@ CPV['DII_efectiva_primer_grado (W/m2)']=CPV['DII (W/m2)']*E.calc_iam(CPV['aoi'].
 CPV['ISC_IIIV/DII_efectiva_tercer_grado (W/m2)']=CPV['ISC_measured_IIIV (A)']/CPV['DII_efectiva_tercer_grado (W/m2)']
 CPV['ISC_IIIV/DII_efectiva_segundo_grado (W/m2)']=CPV['ISC_measured_IIIV (A)']/CPV['DII_efectiva_segundo_grado (W/m2)']
 CPV['ISC_IIIV/DII_efectiva_primer_grado (W/m2)']=CPV['ISC_measured_IIIV (A)']/CPV['DII_efectiva_primer_grado (W/m2)']
-# Media_temp=df['T_Amb (°C)'].mean()
-# df=df[(df['T_Amb (°C)']<Media_temp+3)]
-# df=df[(df['T_Amb (°C)']>Media_temp-3)]
+# Media_temp=df['T_Amb (ºC)'].mean()
+# df=df[(df['T_Amb (ºC)']<Media_temp+3)]
+# df=df[(df['T_Amb (ºC)']>Media_temp-3)]
 
 # Max_temp=27.0
 # Min_temp=19.0
-# df=df[(df['T_Amb (°C)']>=Min_temp)]
-# df=df[((df['T_Amb (°C)'])<=Max_temp)] 
+# df=df[(df['T_Amb (ºC)']>=Min_temp)]
+# df=df[((df['T_Amb (ºC)'])<=Max_temp)] 
 
 #------ parámetros
 
@@ -90,14 +90,14 @@ SistemaCPV=cpvsystem.StaticCPVSystem(module_parameters=module_parameters_IIIV,
 
 
 
-temp_cell_=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=4.5, u_v=0.0, eta_m=0.32, alpha_absorption=0.9)
+temp_cell_=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=4.5, u_v=0.0, eta_m=0.32, alpha_absorption=0.9)
 
 #Se pone la eficiencia obtenida según el paper de ASkins=0.274
-# temp_cell_DII2=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.274, alpha_absorption=1)
+# temp_cell_DII2=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.274, alpha_absorption=1)
 #Se pone la eficiencia obtenida según el paper de ASkins=0.274 y el coeficiente de 1 ya que no hay reflexion en los datos de DII efectiva
-temp_cell_3=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva_tercer_grado (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.274, alpha_absorption=1)
-temp_cell_2=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva_segundo_grado (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.274, alpha_absorption=1)
-temp_cell_1=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva_primer_grado (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.274, alpha_absorption=1)
+temp_cell_3=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva_tercer_grado (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.274, alpha_absorption=1)
+temp_cell_2=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva_segundo_grado (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.274, alpha_absorption=1)
+temp_cell_1=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva_primer_grado (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)'], u_c=29.0, u_v=0.0, eta_m=0.274, alpha_absorption=1)
 
 # date=np.array(['2019-05-30'])
 # for i in range(0,len(CPV.index.values)):
@@ -122,10 +122,10 @@ fig=plt.figure(figsize=(30,15))
 plt.plot(CPV.index[:].time,temp_cell_,'o',markersize=2,label='con GII')   
 # plt.plot(CPV.index[:].time,temp_cell_DII2,'o',markersize=2,label='con DII_efectiva y 0.274 de eficiencia')   
 plt.plot(CPV.index[:].time,temp_cell_3,'o',markersize=2,label='con DII_efectiva y 0.274 de eficiencia y 1 como coeficiente de absorción')   
-# plt.plot(dataIV.index[:].time,dataIV['Tlens (°C)'],'o',markersize=2,label='datos')   
+# plt.plot(dataIV.index[:].time,dataIV['Tlens (ºC)'],'o',markersize=2,label='datos')   
 
 plt.xlabel('Horas')
-plt.ylabel('Temperatura de célula (°C)')
+plt.ylabel('Temperatura de célula (ºC)')
 plt.legend()
 plt.title("Temperatura de célula a lo largo de las horas de un día ")
 
@@ -190,7 +190,7 @@ plt.plot(CPV['aoi'],Curvas_['p_mp'],'o',markersize=2,label='sin iam')
 plt.plot(CPV['aoi'],Curvas_3['p_mp'],'o',markersize=2,label='IAM_tercer_grado')
 plt.plot(CPV['aoi'],Curvas_2['p_mp'],'o',markersize=2,label='IAM_segundo_grado')
 plt.plot(CPV['aoi'],Curvas_1['p_mp'],'o',markersize=2,label='IAM_primer_grado')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Puntos de máxima potencia (W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del iam')
 plt.legend()
@@ -227,7 +227,7 @@ plt.plot(x_am,UF_am,'o',markersize=4,label='Datos primera parte')
 #%%
 
 thld_temp=UF.loc['thld']['UF_temp']
-x_temp=CPV['T_Amb (°C)'].values
+x_temp=CPV['T_Amb (ºC)'].values
 a_temp=UF.loc['a']['UF_temp']
 
 UF_temp=[]
@@ -270,22 +270,22 @@ plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],Curvas_3['p_mp'],'o',markersize=2,label='sin UF')
 plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'][index],'o',markersize=2,label='Con UF')
 plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()
 
 plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
 
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['T_Amb (°C)'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
-plt.xlabel('Temperatura ambiente (°C)')
+plt.plot(CPV['T_Amb (ºC)'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('Temperatura ambiente (ºC)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
@@ -337,22 +337,22 @@ plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],Curvas_3['p_mp'],'o',markersize=2,label='sin UF')
 plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'][index],'o',markersize=2,label='Con UF')
 plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()
 
 plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
 
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['T_Amb (°C)'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
-plt.xlabel('Temperatura ambiente (°C)')
+plt.plot(CPV['T_Amb (ºC)'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('Temperatura ambiente (ºC)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
@@ -395,22 +395,22 @@ plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],Curvas_1['p_mp'],'o',markersize=2,label='sin UF')
 plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'][index],'o',markersize=2,label='Con UF')
 plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()
 
 plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
 
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['T_Amb (°C)'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
-plt.xlabel('Temperatura ambiente (°C)')
+plt.plot(CPV['T_Amb (ºC)'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('Temperatura ambiente (ºC)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
@@ -452,22 +452,22 @@ plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],Curvas_2['p_mp'],'o',markersize=2,label='sin UF')
 plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'][index],'o',markersize=2,label='Con UF')
 plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()
 
 plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
 
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['T_Amb (°C)'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
-plt.xlabel('Temperatura ambiente (°C)')
+plt.plot(CPV['T_Amb (ºC)'],Potencias_estimadas['diferencias'][index],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('Temperatura ambiente (ºC)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
@@ -498,22 +498,22 @@ plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],Curvas_['p_mp'],'o',markersize=2,label='Previsión actual')
 # plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'],'o',markersize=2,label='Con UF')
 plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()
 
 plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],Potencias_estimadas['diferencias'],'o',markersize=4,label='Residuos de las potencias calculadas ')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
 
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['T_Amb (°C)'],Potencias_estimadas['diferencias'],'o',markersize=4,label='Residuos de las potencias calculadas ')
-plt.xlabel('Temperatura ambiente (°C)')
+plt.plot(CPV['T_Amb (ºC)'],Potencias_estimadas['diferencias'],'o',markersize=4,label='Residuos de las potencias calculadas ')
+plt.xlabel('Temperatura ambiente (ºC)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
@@ -531,7 +531,7 @@ print('El error cuadrático medio de las estimaciones es de: ' + str(RMSE))
 
 # df_filt_AOILIMIT=df[(df['aoi']>AOILIMIT)]
 # temp_cell=pvlib.temperature.pvsyst_cell(poa_global=df_filt_AOILIMIT['GII (W/m2)'], 
-#                                         temp_air=df_filt_AOILIMIT['T_Amb (°C)'], 
+#                                         temp_air=df_filt_AOILIMIT['T_Amb (ºC)'], 
 #                                         wind_speed=df_filt_AOILIMIT['Wind Speed (m/s)'], 
 #                                         u_c=29.0, u_v=0.0, eta_m=0.1, alpha_absorption=0.9)
 

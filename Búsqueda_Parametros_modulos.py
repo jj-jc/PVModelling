@@ -62,7 +62,7 @@ module_parameters_IIIV={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
 # 2018/11/23	14:39	0.871	    108.398	    11.520	   738.927	 18.989	  218.997	678.662	  755.282	746.253	   59.925	  64.570	46.106	  350.011
 #teniendo en cuenta los valores de los datos no sale, pero teniendo en cuanta el valor de DNI de la gráfica, sale correctamente
 temp_cell=pvlib.temperature.pvsyst_cell(poa_global=892, 
-                                        temp_air=primero['Tair (°C)'],
+                                        temp_air=primero['Tair (ºC)'],
                                         wind_speed=1.191, 
                                         u_c=4.5, u_v=0.0, 
                                         eta_m=0.32, alpha_absorption=0.9)
@@ -101,7 +101,7 @@ segundo_I=[0.0, segundo['Imp (A)'],segundo['Isc (A)']]
 
 #Aquí ocurre lo mismo, los datos no concuerdan con los expuestos en las gráficas, pero poniendo los de las gráficas se obtienen cosas mucho más parecidas
 temp_cell1_2=pvlib.temperature.pvsyst_cell(poa_global=644, 
-                                        temp_air=segundo['Tair (°C)'],
+                                        temp_air=segundo['Tair (ºC)'],
                                         wind_speed=1.069, 
                                         u_c=10.0, u_v=0.0, 
                                         eta_m=0.32, alpha_absorption=0.9)
@@ -199,13 +199,13 @@ module_parameters_Si={'gamma_ref': 2.13, 'mu_gamma': 0.002, 'I_L_ref':2.355,
 
 
 temp_cell=pvlib.temperature.pvsyst_cell(poa_global=644, 
-                                        temp_air=primero['Tair (°C)'],
+                                        temp_air=primero['Tair (ºC)'],
                                         wind_speed=1.191, 
                                         u_c=29.0, u_v=0.0, 
                                         eta_m=0.1, alpha_absorption=0.9)
 
 temp_cell2=pvlib.temperature.pvsyst_cell(poa_global=892, 
-                                        temp_air=segundo['Tair (°C)'],
+                                        temp_air=segundo['Tair (ºC)'],
                                         wind_speed=1.191, 
                                         u_c=29.0, u_v=0.0, 
                                         eta_m=0.1, alpha_absorption=0.9)

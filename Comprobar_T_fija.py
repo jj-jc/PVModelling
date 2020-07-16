@@ -26,15 +26,15 @@ df=df[(df['aoi']<55)]
 
 
 ##Se limita la temperatura para que esta no afecte al estudio de los datos en función del ángulo
-#Media_temp=df['T_Amb (°C)'].mean()
-#df=df[(df['T_Amb (°C)']<Media_temp+3)]
-#df=df[(df['T_Amb (°C)']>Media_temp-3)]
+#Media_temp=df['T_Amb (ºC)'].mean()
+#df=df[(df['T_Amb (ºC)']<Media_temp+3)]
+#df=df[(df['T_Amb (ºC)']>Media_temp-3)]
 #
 
 
 ###Se limita la temperatura 
-#df=df[(df['T_Amb (°C)']<21.0)]
-#df=df[(df['T_Amb (°C)']>=20.0)]
+#df=df[(df['T_Amb (ºC)']<21.0)]
+#df=df[(df['T_Amb (ºC)']>=20.0)]
 
 #df=filt_df4
 filt_df2=df
@@ -73,7 +73,7 @@ plt.plot(df['aoi'],y_physical,'o',markersize=2,label='regresion por funcion phys
 plt.plot(df['aoi'],y_ashrae,'o',markersize=2,label='regresion por función ashrae')
 plt.plot(df['aoi'],y_martin_ruiz,'o',markersize=2,label='regresión por función Martin_Ruiz')
 plt.plot(df['aoi'],y_poli,'o',markersize=2,label='regresión por función polinómica')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('IAM')
 plt.title("Regresiones de diferentes funciones para el coeficiente de utilización en función del ángulo de incidencia",fontsize=20)
 #plt.text(12, 0.35,'El coeficiente de determinación para ashrae es:  ' + str(RR_ashrae)[:str(RR_ashrae).find(".")+5], fontsize=15)
@@ -110,7 +110,7 @@ plt.plot(df['aoi'],y_physical,'o',markersize=2,label='regresion por funcion phys
 plt.plot(df['aoi'],y_ashrae,'o',markersize=2,label='regresion por función ashrae')
 plt.plot(df['aoi'],y_martin_ruiz,'o',markersize=2,label='regresión por función Martin_Ruiz')
 plt.plot(df['aoi'],y_poli,'o',markersize=2,label='regresión por función polinómica')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('IAM')
 plt.title("Regresiones de diferentes funciones para el coeficiente de utilización en función del ángulo de incidencia",fontsize=20)
 #plt.text(12, 0.35,'El coeficiente de determinación para ashrae es:  ' + str(RR_ashrae)[:str(RR_ashrae).find(".")+5], fontsize=15)
@@ -165,7 +165,7 @@ plt.plot(filt_df2['aoi'],filt_df2['IAM_aoi_'],'o',markersize=2,label='IAM(AOI)')
 plt.plot(filt_df2['aoi'],y_ashrae,'o',markersize=2,label='Ashrae')
 plt.plot(filt_df2['aoi'],y_physical,'o',markersize=2,label='Physical')
 plt.plot(filt_df2['aoi'],y_martin_ruiz,'o',markersize=2,label='Martin_Ruiz')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('IAM')
 plt.title("Diferentes funciones para el IAM en función del ángulo de incidencia con parametros obtenidos",fontsize=20)
 #plt.text(12, 0.35,'El coeficiente de determinación para ashrae es:  ' + str(RR_ashrae)[:str(RR_ashrae).find(".")+5], fontsize=15)
@@ -203,11 +203,11 @@ plt.plot(filt_df2['aoi'],y_ashrae,'o',markersize=2,label='Ashrae')
 plt.plot(filt_df2['aoi'],y_physical,'o',markersize=2,label='Physical')
 plt.plot(filt_df2['aoi'],y_martin_ruiz,'o',markersize=2,label='Martin_Ruiz')
 plt.plot(filt_df2['aoi'],y_poli,'o',markersize=2,label='regresión por función polinómica')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('IAM')
 plt.title("Diferentes Regresiones para el IAM en función del ángulo de incidencia",fontsize=20)
 
-#    plt.text(12, 0.4,'Temperaturas entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ '°C y '+ str(lim_sup)[:str(lim_sup).find(".")]+'°C', fontsize=15)
+#    plt.text(12, 0.4,'Temperaturas entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ 'ºC y '+ str(lim_sup)[:str(lim_sup).find(".")]+'ºC', fontsize=15)
 #    plt.text(12, 0.35,'El coeficiente de determinación para ashrae es:  ' + str(RR_ashrae)[:str(RR_ashrae).find(".")+5], fontsize=15)
 #    plt.text(12, 0.30,'El valor del parámetro b usado es: ' + str(b)[:str(b).find(".")+3], fontsize=15)
 #    plt.text(25, 0.35,'El coeficiente de determinación para physical es:  ' + str(RR_physical)[:str(RR_physical).find(".")+5], fontsize=15)
@@ -252,7 +252,7 @@ print('El valor del parametro b usado es:  ' + str(b_poli)[:str(b_poli).find("."
 #plt.plot(df['aoi'],y_physical,'o',markersize=2,label='funcion_physical')
 #plt.plot(df['aoi'],y_ashrae,'o',markersize=2,label='ashrae')
 #plt.plot(df['aoi'],y_Martin,'o',markersize=2,label='Martin')
-#plt.xlabel('Ángulo de incidencia (°)')
+#plt.xlabel('Ángulo de incidencia (º)')
 #plt.ylabel('Coeficiente de utilización')
 #plt.title("Regresiones de diferentes funciones para el coeficiente de utilización en función del ángulo de incidencia",fontsize=20)
 ##plt.text(12, 0.35,'El coeficiente de determinación para ashrae es:  ' + str(RR_ashrae)[:str(RR_ashrae).find(".")+5], fontsize=15)
@@ -283,9 +283,9 @@ print('El valor del parametro b usado es:  ' + str(b_poli)[:str(b_poli).find("."
 #plt.plot(df['aoi'],y_ashrae,'o',markersize=2,label='regresión por ashrae')
 #plt.plot(df['aoi'],y_physical,'o',markersize=2,label='regresión por physical')
 #plt.plot(df['aoi'],y_martin_ruiz,'o',markersize=2,label='regresión por martin_ruiz')
-#plt.xlabel('Ángulo de incidencia (°)')
+#plt.xlabel('Ángulo de incidencia (º)')
 #plt.ylabel('Factor de utilización IAM')
-##    plt.text(12, 0.4,'Temperaturas entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ '°C y '+ str(lim_sup)[:str(lim_sup).find(".")]+'°C', fontsize=15)
+##    plt.text(12, 0.4,'Temperaturas entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ 'ºC y '+ str(lim_sup)[:str(lim_sup).find(".")]+'ºC', fontsize=15)
 ##    plt.text(12, 0.35,'El coeficiente de determinación para ashrae es:  ' + str(RR_ashrae)[:str(RR_ashrae).find(".")+5], fontsize=15)
 ##    plt.text(12, 0.30,'El valor del parámetro b usado es: ' + str(b)[:str(b).find(".")+3], fontsize=15)
 ##    plt.text(25, 0.35,'El coeficiente de determinación para physical es:  ' + str(RR_physical)[:str(RR_physical).find(".")+5], fontsize=15)

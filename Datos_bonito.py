@@ -4,21 +4,16 @@ Created on Sun Jul 12 09:09:46 2020
 
 @author: juanjo
 """
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import pvlib 
-<<<<<<< HEAD
-
-=======
-import numpy as np
->>>>>>> 44dd62b3a9cabcb24671889f2522ef353a3f5cc1
 pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
-
-
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/InsolightMay2019.csv',encoding= 'unicode_escape')
-
-
+df.columns=['Date Time', 'DNI (W/m2)', 'DNI_Top (W/m2)', 'DNI_Mid (W/m2)',
+       'GNI (W/m2)', 'G(41º) (W/m2)', 'T_Amb (ºC)', 'Wind Speed (m/s)',
+       'Wind Dir. (m/s)', 'DII (W/m2)', 'GII (W/m2)', 'SMR_Top_Mid (n.d.)',
+       'ISC_measured_IIIV (A)', 'ISC_measured_Si (A)', 'T_Backplane (ºC)',
+       'PMP_estimated_IIIV (W)', 'PMP_estimated_Si (W)']
 #Datos del módulo
 #localización
 lat=40.453
@@ -28,39 +23,28 @@ tz='Europe/Berlin'
 #orientación
 surface_tilt=30
 surface_azimuth=180
-
-
 # se localiza el sistema
 CPV_location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
-
 #Se crea un DatetimeIndex para indexar posteriormente el dataFrame
 Fecha=pd.DatetimeIndex(df['Date Time'],tz=tz)
-
 Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, 
-                                              temperature=df['T_Amb (°C)'])
-
+                                              temperature=df['T_Amb (ºC)'])
 AOI=pd.DataFrame(pvlib.irradiance.aoi(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth, 
                                       solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth']))
-
 AM=CPV_location.get_airmass(times=Fecha, solar_position=Solar_position,model='simple')
-
 # Se introducen las entradas al DataFrame
 AM=AM.set_index([pd.Series(df.index)])
 AOI=AOI.set_index([pd.Series(df.index)])
 df=pd.concat([df,AM['airmass_relative'],AOI],axis=1)
 df=df.set_index(Fecha)
 df=df.drop(['Date Time'],axis=1)
-
 AOI_projection=pvlib.irradiance.aoi_projection(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth, 
                                      solar_zenith=Solar_position['zenith'], 
                                      solar_azimuth=Solar_position['azimuth'])
-
 df['DII']=AOI_projection*df['DNI (W/m2)']
 df['GII']=AOI_projection*df['GNI (W/m2)']
-
 #almaceno los datos en otro excel
 df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Entradas.csv")
-
 fig=plt.figure(figsize=(30,20))
 plt.plot(df['aoi'],df['DNI (W/m2)'],'o',markersize='2',label='DNI')   
 plt.plot(df['aoi'],df['DII (W/m2)'],'o',markersize='4',label='DII_datos') 
@@ -68,7 +52,6 @@ plt.plot(df['aoi'],df['DII'],'o',markersize='2',label='DII')
 plt.xlabel('Hora')
 plt.ylabel('Irradiancia (W/m2)')
 plt.legend()
-
 fig=plt.figure(figsize=(30,20))
 plt.plot(df['aoi'],df['GNI (W/m2)'],'o',markersize='2',label='GNI')   
 plt.plot(df['aoi'],df['GII (W/m2)'],'o',markersize='4',label='GII_datos') 
@@ -76,8 +59,6 @@ plt.plot(df['aoi'],df['GII'],'o',markersize='2',label='GII')
 plt.xlabel('Hora')
 plt.ylabel('Irradiancia (W/m2)')
 plt.legend()
-
-
 #%% PARA OBSERVAR LA DIFERENCIA LAS COMPONENTES DE LAS IRRADIANCIAS
 # date=np.array(['2019-05-30'])
 # for i in range(0,len(df.index.values)):
@@ -98,10 +79,6 @@ plt.legend()
 #     plt.ylabel('Irradiancia (W/m2)')
 #     plt.legend()
 #     plt.title("Datos de irradiancias "+str(i))
-
-
-
-
 #%%
 date='2019-06-01'
 fig=plt.figure(figsize=(15,10))

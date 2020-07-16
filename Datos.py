@@ -6,7 +6,7 @@ import numpy as np
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/InsolightMay2019.csv',encoding= 'unicode_escape')
 
 
-#df=df.loc[:, ['Date Time','DNI (W/m2)','T_Amb (°C)']]
+#df=df.loc[:, ['Date Time','DNI (W/m2)','T_Amb (ºC)']]
 #Datos del módulo CPV
 #localización
 lat=40.453
@@ -21,11 +21,11 @@ CPV_location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=a
 #Calculamos la posicion solar
 Fecha=pd.DatetimeIndex(df['Date Time'],tz=tz)
 
-Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (°C)'])
+Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (ºC)'])
 # Solar_position2=pvlib.solarposition.get_solarposition(Fecha, latitude=lat,
 #                                                       longitude=lon, altitude=alt, 
 #                                                       pressure=None, method='nrel_numpy', 
-#                                                       temperature=df['T_Amb (°C)'])
+#                                                       temperature=df['T_Amb (ºC)'])
 AOI=pd.DataFrame(pvlib.irradiance.aoi(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth, 
                                       solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth']))
 AM=CPV_location.get_airmass(times=Fecha, solar_position=Solar_position,model='simple')

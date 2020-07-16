@@ -82,7 +82,7 @@ My_CPV_local=CPVClass.LocalizedCPVSystem(My_CPV,location)
 
 Fecha=pd.DatetimeIndex(df['Date Time'],tz=tz)
 
-Solar_position=location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (°C)'])
+Solar_position=location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (ºC)'])
 
 
 
@@ -112,7 +112,7 @@ smaller_AOILIMIT=df[df['aoi']<My_CPV_local.AOILIMIT]
 
 #Filtrado de condiciones normales
 smaller_AOILIMIT=smaller_AOILIMIT[(smaller_AOILIMIT['PMP_estimated_IIIV (W)']>0.1)]
-smaller_AOILIMIT=smaller_AOILIMIT[(smaller_AOILIMIT['T_Amb (°C)']>10.0)]
+smaller_AOILIMIT=smaller_AOILIMIT[(smaller_AOILIMIT['T_Amb (ºC)']>10.0)]
 #----------velocidad del viento
 smaller_AOILIMIT=smaller_AOILIMIT[(smaller_AOILIMIT['Wind Speed (m/s)']<2.5)]
 #----------SMR
@@ -138,8 +138,8 @@ smaller_AOILIMIT=E.mediana_filter(data=smaller_AOILIMIT,colum_intervals='aoi',co
 IAM=np.array(My_CPV_local.get_iam(smaller_AOILIMIT['aoi'].values))
 smaller_AOILIMIT['DII_efective']=smaller_AOILIMIT['DII (W/m2)']*IAM
 
-temp_cell=My_CPV_local.pvsyst_celltemp(poa_global=smaller_AOILIMIT['DII_efective'], temp_air=smaller_AOILIMIT['T_Amb (°C)'], wind_speed=smaller_AOILIMIT['Wind Speed (m/s)']) 
-temp_cell_=My_CPV_local.pvsyst_celltemp(poa_global=smaller_AOILIMIT['DII (W/m2)'], temp_air=smaller_AOILIMIT['T_Amb (°C)'], wind_speed=smaller_AOILIMIT['Wind Speed (m/s)'])
+temp_cell=My_CPV_local.pvsyst_celltemp(poa_global=smaller_AOILIMIT['DII_efective'], temp_air=smaller_AOILIMIT['T_Amb (ºC)'], wind_speed=smaller_AOILIMIT['Wind Speed (m/s)']) 
+temp_cell_=My_CPV_local.pvsyst_celltemp(poa_global=smaller_AOILIMIT['DII (W/m2)'], temp_air=smaller_AOILIMIT['T_Amb (ºC)'], wind_speed=smaller_AOILIMIT['Wind Speed (m/s)'])
 
 Five_parameters=My_CPV_local.calcparams_cpvsyst(smaller_AOILIMIT['DII_efective'], temp_cell)
 Five_parameters_=My_CPV_local.calcparams_cpvsyst(smaller_AOILIMIT['DII (W/m2)'], temp_cell_)
@@ -153,7 +153,7 @@ Curvas_=My_CPV_local.singlediode(photocurrent=Five_parameters_[0], saturation_cu
 
 
 #%%
-Potencia=Curvas['p_mp']*My_CPV_local.get_uf(smaller_AOILIMIT['airmass_relative'].values,smaller_AOILIMIT['T_Amb (°C)'].values)
+Potencia=Curvas['p_mp']*My_CPV_local.get_uf(smaller_AOILIMIT['airmass_relative'].values,smaller_AOILIMIT['T_Amb (ºC)'].values)
 Diferencia=Potencia-smaller_AOILIMIT['PMP_estimated_IIIV (W)'].values
 RMSE=E.RMSE(smaller_AOILIMIT['PMP_estimated_IIIV (W)'].values,Potencia)
 
@@ -162,12 +162,12 @@ plt.plot(smaller_AOILIMIT['aoi'],Curvas['p_mp'],'o',markersize=2,label='sin UF')
 plt.plot(smaller_AOILIMIT['aoi'],Potencia,'o',markersize=2,label='Con UF')
 plt.plot(smaller_AOILIMIT['aoi'],smaller_AOILIMIT['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
 plt.plot(smaller_AOILIMIT['aoi'],smaller_AOILIMIT['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()
 
-# Intensidad_1=Curvas['i_sc']*My_CPV_local.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (°C)'].values)
+# Intensidad_1=Curvas['i_sc']*My_CPV_local.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (ºC)'].values)
 
 
 #%% SE COMPRUEBA LA INTENSIDAD
@@ -181,7 +181,7 @@ RMSE=E.RMSE(smaller_AOILIMIT['ISC_measured_IIIV (A)'].values,Intensidad)
 plt.figure(figsize=(30,15))
 plt.plot(smaller_AOILIMIT['aoi'],Intensidad,'o',markersize=2,label='Calculado')
 plt.plot(smaller_AOILIMIT['aoi'],smaller_AOILIMIT['ISC_measured_IIIV (A)'],'o',markersize=2,label='Datos')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()

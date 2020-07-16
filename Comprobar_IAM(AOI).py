@@ -46,7 +46,7 @@ plt.plot(df['aoi'],df['IAM_aoi'],'o',markersize=2,label='IAM(AOI)')
 plt.plot(df['aoi'],y_physical,'o',markersize=2,label='funcion_physical')
 plt.plot(df['aoi'],y_ashrae,'o',markersize=2,label='ashrae')
 plt.plot(df['aoi'],y_Martin,'o',markersize=2,label='Martin')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Coeficiente de utilización')
 plt.title("Regresiones de diferentes funciones para el coeficiente de utilización en función del ángulo de incidencia",fontsize=20)
 #plt.text(12, 0.35,'El coeficiente de determinación para ashrae es:  ' + str(RR_ashrae)[:str(RR_ashrae).find(".")+5], fontsize=15)
@@ -78,8 +78,8 @@ print('El valor del parámetro l usado es: ' + str(l)[:str(l).find(".")+3])
 
 
 #----------------------se pensó en hacer divisiones en función de la temperatura----------------
-limSup=df['T_Amb (°C)'].max()
-limInf=df['T_Amb (°C)'].min()
+limSup=df['T_Amb (ºC)'].max()
+limInf=df['T_Amb (ºC)'].min()
 Rango=limSup-limInf
 n_intervalos=5
 incremento=Rango/n_intervalos
@@ -90,8 +90,8 @@ y_physical=pd.DataFrame(index=aux_aoi)
 for i in range(n_intervalos):
     lim_inf=limInf+i*incremento
     lim_sup=limInf+incremento*(1+i)
-    AUX=df[df['T_Amb (°C)']>lim_inf]
-    AUX=AUX[AUX['T_Amb (°C)']<=lim_sup]
+    AUX=df[df['T_Amb (ºC)']>lim_inf]
+    AUX=AUX[AUX['T_Amb (ºC)']<=lim_sup]
     #--------------------------------------normalizamos la potencia estimada en la base de datos para comparar iams
     P_nor=np.array(AUX['PMP_estimated_IIIV (W)'])/np.array(AUX['PMP_estimated_IIIV (W)'].max())
     COS=np.cos(AUX['aoi']/180*math.pi)
@@ -105,19 +105,19 @@ for i in range(n_intervalos):
     plt.plot(AUX['aoi'],AUX['IAM_aoi'],'o',markersize=2,label='datos estudiados')
     plt.plot(aux_aoi,y_ashrae_aux,'o',markersize=2,label='regresión por ashrae')
     plt.plot(aux_aoi,y_physical_aux,'o',markersize=2,label='regresión por pysical')
-    plt.xlabel('Ángulo de incidencia (°)')
+    plt.xlabel('Ángulo de incidencia (º)')
     plt.ylabel('Factor de utilización IAM')
     plt.legend()
     plt.show()
-    print('Temperaturas entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ '°C y '+ str(lim_sup)[:str(lim_sup).find(".")]+'°C')
+    print('Temperaturas entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ 'ºC y '+ str(lim_sup)[:str(lim_sup).find(".")]+'ºC')
     print('El coeficiente de determinación para ashrae es:  ' + str(RR_ashrae)[:str(RR_ashrae).find(".")+5])
     print('El valor del parámetro b usado es: ' + str(b)[:str(b).find(".")+3])
     print('El coeficiente de determinación para physical es:  ' + str(RR_physical)[:str(RR_physical).find(".")+5])
     print('El valor del parámetro n usado es: ' + str(n)[:str(n).find(".")+3])
     print('El valor del parámetro k usado es: ' + str(k)[:str(k).find(".")+3])
     print('El valor del parámetro l usado es: ' + str(l)[:str(l).find(".")+3])
-    y_ashrae['De '+str(lim_inf)[:str(lim_inf).find(".")]+ '°C a '+ str(lim_sup)[:str(lim_sup).find(".")]+'°C']=y_ashrae_aux
-    y_physical['De '+str(lim_inf)[:str(lim_inf).find(".")]+ '°C a '+ str(lim_sup)[:str(lim_sup).find(".")]+'°C']=y_physical_aux
+    y_ashrae['De '+str(lim_inf)[:str(lim_inf).find(".")]+ 'ºC a '+ str(lim_sup)[:str(lim_sup).find(".")]+'ºC']=y_ashrae_aux
+    y_physical['De '+str(lim_inf)[:str(lim_inf).find(".")]+ 'ºC a '+ str(lim_sup)[:str(lim_sup).find(".")]+'ºC']=y_physical_aux
 
     
     
@@ -135,12 +135,12 @@ for i in range(n_intervalos):
 #    lim_sup=limInf+incremento*(1+i)
 #    AUX=df[df['aoi']>lim_inf]
 #    AUX=AUX[AUX['aoi']<=lim_sup]
-#    RR_temp,y_temp,indep,m=E.regresion_lineal(AUX['T_Amb (°C)'],AUX['IAM_aoi'])
+#    RR_temp,y_temp,indep,m=E.regresion_lineal(AUX['T_Amb (ºC)'],AUX['IAM_aoi'])
 #    plt.figure(figsize=(30,15))
-#    plt.plot(df['T_Amb (°C)'],df['IAM_aoi'],'o',markersize=2,label='todos los datos')
-#    plt.plot(AUX['T_Amb (°C)'],AUX['IAM_aoi'],'o',markersize=2,label='datos estudiados')
-#    plt.plot(AUX['T_Amb (°C)'],y_temp,'o',markersize=2,label='regresión por ashrae')
-#    plt.xlabel('Temperatura (°C)')
+#    plt.plot(df['T_Amb (ºC)'],df['IAM_aoi'],'o',markersize=2,label='todos los datos')
+#    plt.plot(AUX['T_Amb (ºC)'],AUX['IAM_aoi'],'o',markersize=2,label='datos estudiados')
+#    plt.plot(AUX['T_Amb (ºC)'],y_temp,'o',markersize=2,label='regresión por ashrae')
+#    plt.xlabel('Temperatura (ºC)')
 #    plt.ylabel('Factor de utilización IAM')
 ##    plt.text(12, 0.4,'AOI entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ ' y '+ str(lim_sup)[:str(lim_sup).find(".")], fontsize=15)
 ##    plt.text(12, 0.35,'El coeficiente de determinación para regresionlineal es:  ' + str(RR_temp)[:str(RR_temp).find(".")+5], fontsize=15)
@@ -162,8 +162,8 @@ for i in range(n_intervalos):
 #
 #
 #
-#limSup=df['T_Amb (°C)'].max()
-#limInf=df['T_Amb (°C)'].min()
+#limSup=df['T_Amb (ºC)'].max()
+#limInf=df['T_Amb (ºC)'].min()
 #Rango=limSup-limInf
 #n_intervalos=5
 #incremento=Rango/n_intervalos
@@ -171,8 +171,8 @@ for i in range(n_intervalos):
 #for i in range(n_intervalos):
 #    lim_inf=limInf+i*incremento
 #    lim_sup=limInf+incremento*(1+i)
-#    AUX=df[df['T_Amb (°C)']>lim_inf]
-#    AUX=AUX[AUX['T_Amb (°C)']<=lim_sup]
+#    AUX=df[df['T_Amb (ºC)']>lim_inf]
+#    AUX=AUX[AUX['T_Amb (ºC)']<=lim_sup]
 #    RR_am,y_am,indep,m=E.regresion_lineal(AUX['airmass_relative'],AUX['IAM_aoi'])
 #    plt.figure(figsize=(30,15))
 #    plt.plot(df['airmass_relative'],df['IAM_aoi'],'o',markersize=2,label='todos los datos')
@@ -184,7 +184,7 @@ for i in range(n_intervalos):
 ##    plt.text(12, 0.35,'El coeficiente de determinación para regresiónlineal es:  ' + str(RR_am)[:str(RR_am).find(".")+5], fontsize=15)
 #    plt.legend()
 #    plt.show()
-#    print('Temperaturas entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ '°C y '+ str(lim_sup)[:str(lim_sup).find(".")]+'°C')
+#    print('Temperaturas entre: '+ str(lim_inf)[:str(lim_inf).find(".")]+ 'ºC y '+ str(lim_sup)[:str(lim_sup).find(".")]+'ºC')
 #    print('El coeficiente de determinación para regresiónlineal es:  ' + str(RR_am)[:str(RR_am).find(".")+5])
 #
 

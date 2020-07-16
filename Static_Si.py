@@ -34,8 +34,8 @@ df_filt_Si=df[(df['aoi']>AOILIMIT)]
 #%%
 # Max_temp=27.0
 # Min_temp=19.0
-# df=df[(df['T_Amb (°C)']>=Min_temp)]
-# df=df[((df['T_Amb (°C)'])<=Max_temp)] 
+# df=df[(df['T_Amb (ºC)']>=Min_temp)]
+# df=df[((df['T_Amb (ºC)'])<=Max_temp)] 
 
 
 #------ parámetros de MArcos
@@ -63,7 +63,7 @@ df_filt_Si=df[(df['aoi']>AOILIMIT)]
 
 
 # temp_cell=pvlib.temperature.pvsyst_cell(poa_global=df_filt_Si['Irra_vista (W/m2)'], 
-#                                         temp_air=df_filt_Si['T_Amb (°C)'],
+#                                         temp_air=df_filt_Si['T_Amb (ºC)'],
 #                                         wind_speed=df_filt_Si['Wind Speed (m/s)'], 
 #                                         u_c=29.0, u_v=0.0, 
 #                                         eta_m=0.1, alpha_absorption=0.9)
@@ -163,19 +163,19 @@ df_filt_Si=df[(df['aoi']>AOILIMIT)]
 
 df_filt_Si['Irra_vista_efectiva (W/m2)']=((df_filt_Si['Irra_vista (W/m2)'].values)*Error.calc_iam_Si(df_filt_Si['aoi'].values,'Tercer grado'))
 df_filt_Si['ISC_Si/Irra_vista_efectiva (A m2/W)']=((df_filt_Si['ISC_measured_Si (A)'].values)/(df_filt_Si['Irra_vista_efectiva (W/m2)'].values))
-filt_x=df_filt_Si['T_Amb (°C)'].values
+filt_x=df_filt_Si['T_Amb (ºC)'].values
 filt_y=df_filt_Si['ISC_Si/Irra_vista_efectiva (A m2/W)'].values
 
 
 
 temp_cell=pvlib.temperature.pvsyst_cell(poa_global=df_filt_Si['Irra_vista (W/m2)'], 
-                                        temp_air=df_filt_Si['T_Amb (°C)'],
+                                        temp_air=df_filt_Si['T_Amb (ºC)'],
                                         wind_speed=df_filt_Si['Wind Speed (m/s)'], 
                                         u_c=29.0, u_v=0.0, 
                                         eta_m=0.1, alpha_absorption=1)
 
 temp_cell1=pvlib.temperature.pvsyst_cell(poa_global=df_filt_Si['Irra_vista_efectiva (W/m2)'], 
-                                        temp_air=df_filt_Si['T_Amb (°C)'],
+                                        temp_air=df_filt_Si['T_Amb (ºC)'],
                                         wind_speed=df_filt_Si['Wind Speed (m/s)'], 
                                         u_c=29.0, u_v=0.0, 
                                         eta_m=0.1, alpha_absorption=1)
@@ -189,7 +189,7 @@ plt.legend()
 plt.figure(figsize=(30,15))
 plt.plot(df_filt_Si['aoi'],temp_cell,'o',markersize=2,label='temperatura célula con irradiciancia vista')
 plt.plot(df_filt_Si['aoi'],temp_cell1,'o',markersize=2,label='temperatura célula con irradiciancia vista efectiva')
-plt.plot(df_filt_Si['aoi'],df_filt_Si['T_Amb (°C)'],'o',markersize=2,label='temperatura ambiente ')
+plt.plot(df_filt_Si['aoi'],df_filt_Si['T_Amb (ºC)'],'o',markersize=2,label='temperatura ambiente ')
 plt.legend()
 
 # y_poli,RR_poli,a_s,b=E.regresion_polinomica(df_filt_temp['aoi'].values,df_filt_temp['ISC_IIIV/DII (A m2/W)'].values,2)
@@ -262,7 +262,7 @@ print('El error cuadrático medio de la aproximación es de: ' + str(Error_iam_S
 # plt.legend()
 
 # plt.figure(figsize=(30,15))
-# plt.plot(df_filt_Si['T_Amb (°C)'],df_filt_Si['ISC_Si/Irra_vista_efectiva (A m2/W)'],'o',markersize=2,label='IAM(AOI)')
+# plt.plot(df_filt_Si['T_Amb (ºC)'],df_filt_Si['ISC_Si/Irra_vista_efectiva (A m2/W)'],'o',markersize=2,label='IAM(AOI)')
 # plt.legend()
 # #Comparamos los datos de Pmp con los calculados
 # plt.figure(figsize=(30,15))

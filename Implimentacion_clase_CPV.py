@@ -75,7 +75,7 @@ CPV['DII_efectiva']=CPV['DII (W/m2)']*IAM
 
 
 
-temp_cell_=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII_efectiva'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'])
+temp_cell_=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII_efectiva'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)'])
 
 
 
@@ -97,7 +97,7 @@ Curvas=Mi_CPV.singlediode(photocurrent=Five_parameters[0], saturation_current=Fi
 # plt.legend()
 
 
-# UF=Mi_CPV.get_uf(CPV['airmass_relative'].values, CPV['T_Amb (°C)'].values)
+# UF=Mi_CPV.get_uf(CPV['airmass_relative'].values, CPV['T_Amb (ºC)'].values)
 
 # Potencias_estimadas=Curvas['p_mp']*UF
 
@@ -106,7 +106,7 @@ Curvas=Mi_CPV.singlediode(photocurrent=Five_parameters[0], saturation_current=Fi
 # plt.plot(CPV['aoi'],Curvas['p_mp'],'o',markersize=2,label='sin UF')
 # plt.plot(CPV['aoi'],Potencias_estimadas,'o',markersize=2,label='Con UF')
 # plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
-# plt.xlabel('Ángulo de incidencia (°)')
+# plt.xlabel('Ángulo de incidencia (º)')
 # plt.ylabel('Potencia (III-V)(W)')
 # plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 # plt.legend()
@@ -119,14 +119,14 @@ filt_df_temp_imple=df
 filt_df_temp_imple=filt_df_temp_imple[(filt_df_temp_imple['airmass_relative']>=1.0)]
 filt_df_temp_imple=filt_df_temp_imple[(filt_df_temp_imple['airmass_relative']<1.1)]
 
-Mi_CPV.generate_uf_temp_params(filt_df_temp_imple['T_Amb (°C)'].values,filt_df_temp_imple['ISC_IIIV/DII_efectiva (A m2/W)'].values)
+Mi_CPV.generate_uf_temp_params(filt_df_temp_imple['T_Amb (ºC)'].values,filt_df_temp_imple['ISC_IIIV/DII_efectiva (A m2/W)'].values)
 
 
 filt_df_am=df
 filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']>=0.9]
 filt_df_am=filt_df_am[filt_df_am['Wind Speed (m/s)']<1.1]
-filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']>=20]
-filt_df_am=filt_df_am[filt_df_am['T_Amb (°C)']<28]
+filt_df_am=filt_df_am[filt_df_am['T_Amb (ºC)']>=20]
+filt_df_am=filt_df_am[filt_df_am['T_Amb (ºC)']<28]
 
 Mi_CPV.generate_uf_am_params(filt_df_am['airmass_relative'].values,filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values)
 
@@ -156,7 +156,7 @@ for i in range(n_intervalos):
     
 CPV['DII_efectiva_tercer_grado (W/m2)']=CPV['DII (W/m2)']*Mi_CPV.get_iam(CPV['aoi'].values,'Tercer grado')
 
-temp_cell_3=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII_efectiva_tercer_grado (W/m2)'], temp_air=CPV['T_Amb (°C)'], wind_speed=CPV['Wind Speed (m/s)'])
+temp_cell_3=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII_efectiva_tercer_grado (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)'])
 
 Five_parameters_3=Mi_CPV.calcparams_cpvsyst(CPV['DII_efectiva_tercer_grado (W/m2)'], temp_cell_3)
 
@@ -166,7 +166,7 @@ Curvas_3=Mi_CPV.singlediode(photocurrent=Five_parameters_3[0], saturation_curren
 
 
 
-UF_total=Mi_CPV.calculate_UF(CPV['airmass_relative'], CPV['T_Amb (°C)'], Curvas_3['p_mp'], CPV['PMP_estimated_IIIV (W)'])
+UF_total=Mi_CPV.calculate_UF(CPV['airmass_relative'], CPV['T_Amb (ºC)'], Curvas_3['p_mp'], CPV['PMP_estimated_IIIV (W)'])
 
 
 
@@ -176,7 +176,7 @@ plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
 plt.plot(CPV['aoi'],Curvas_3['p_mp'],'o',markersize=2,label='IAM_tercer_grado')
 plt.plot(CPV['aoi'],Potencia_Corregida,'o',markersize=2,label='Con UF')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Puntos de máxima potencia (W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del iam')
 plt.legend()

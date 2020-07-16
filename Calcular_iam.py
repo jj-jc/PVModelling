@@ -32,14 +32,14 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 
 #%%
 # Incremento=1
-# Max_temp=math.ceil(filt_df2['T_Amb (°C)'].max())
-# Min_temp=math.floor(filt_df2['T_Amb (°C)'].min())
+# Max_temp=math.ceil(filt_df2['T_Amb (ºC)'].max())
+# Min_temp=math.floor(filt_df2['T_Amb (ºC)'].min())
 # Temperaturas=[]
 # rep=[]
 # for i in range(Min_temp,Max_temp,Incremento):
-#     AUX=filt_df2[(filt_df2['T_Amb (°C)']>i)]
-#     AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]
-#     rep.append(AUX['T_Amb (°C)'].count())
+#     AUX=filt_df2[(filt_df2['T_Amb (ºC)']>i)]
+#     AUX=AUX[((AUX['T_Amb (ºC)'])<i+Incremento)]
+#     rep.append(AUX['T_Amb (ºC)'].count())
 #     Temperaturas.append(i)
 
 
@@ -53,7 +53,7 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 #     layout_title_text="Histograma con la probabilidad de cada temperatura"
     
 # )
-# fig.update_xaxes(title="Temperaturas (°C)")
+# fig.update_xaxes(title="Temperaturas (ºC)")
 # fig.update_yaxes(title="Repeticiones (n.d.)")
 # fig.show()
 
@@ -62,12 +62,12 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 # #el intervalo es desde el valor más pequeño aumentado en uno, es decir tempera 14 signififca desde el 14 al 15 sin incluir
 
 # Incremento=1
-# Max_temp=math.ceil(filt_df2['T_Amb (°C)'].max())
-# Min_temp=math.floor(filt_df2['T_Amb (°C)'].min())
+# Max_temp=math.ceil(filt_df2['T_Amb (ºC)'].max())
+# Min_temp=math.floor(filt_df2['T_Amb (ºC)'].min())
 # fig=go.Figure()
 # for i in range(Min_temp,Max_temp,Incremento):
-#     AUX=filt_df2[(filt_df2['T_Amb (°C)']>=float(i))]
-#     AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
+#     AUX=filt_df2[(filt_df2['T_Amb (ºC)']>=float(i))]
+#     AUX=AUX[((AUX['T_Amb (ºC)'])<i+Incremento)]    
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII (A m2/W)'],
@@ -79,7 +79,7 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
@@ -89,7 +89,7 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 # ####################################CODIGO PARA LA SUPERFCIE#################################
 # fig = go.Figure(data=[go.Scatter3d(
 #     x=filt_df2['aoi'],
-#     y=filt_df2['T_Amb (°C)'],
+#     y=filt_df2['T_Amb (ºC)'],
 #     z=filt_df2['ISC_IIIV/DII (A m2/W)'],
 #     mode='markers',
 #     marker=dict(
@@ -101,11 +101,11 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 # )])
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia y temperatura ambiente",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 #     scene = dict(
-#                     xaxis_title='Ángulo de incidencia (°)',
-#                     yaxis_title='Temperatura ambiente (°C)',
+#                     xaxis_title='Ángulo de incidencia (º)',
+#                     yaxis_title='Temperatura ambiente (ºC)',
 #                     zaxis_title='ISC_IIIV/DII (A m2/W)'),
 #                     )
 # fig.show()
@@ -118,13 +118,13 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 # fig=plt.figure(figsize=(30,15))
 # plt.plot(filt_x,filt_y,'o',markersize=4,label='Datos')
 # plt.plot(filt_x,y_poli,'o',markersize=4,label='Regresion')
-# plt.xlabel('Ángulo de incidencia (°)')
+# plt.xlabel('Ángulo de incidencia (º)')
 # plt.ylabel('ISC_IIIV/DII (A m2/W)')
 # plt.title('Regresión polinómica de grado 2 para todas las temperaturas')
 # plt.legend()
 # print('Con el total de los datos')
 # print(RR_poli)
-# print('Temperaturas entre '+ str(Min_temp) +' y '+str(Max_temp)+' °C')
+# print('Temperaturas entre '+ str(Min_temp) +' y '+str(Max_temp)+' ºC')
 
 #%%
 #Hay que tomar una decision, para ver qué tempetura o temperaturas escoger
@@ -136,8 +136,8 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 # Max_temp=27.0
 # Min_temp=19.0
 
-# df_filt_temp=filt_df2[(filt_df2['T_Amb (°C)']>=Min_temp)]
-# df_filt_temp=df_filt_temp[((df_filt_temp['T_Amb (°C)'])<=Max_temp)] 
+# df_filt_temp=filt_df2[(filt_df2['T_Amb (ºC)']>=Min_temp)]
+# df_filt_temp=df_filt_temp[((df_filt_temp['T_Amb (ºC)'])<=Max_temp)] 
 
 
 # I_DII=np.array(df_filt_temp['ISC_IIIV/DII (A m2/W)'])
@@ -146,13 +146,13 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 # y_poli,RR_poli,a_s,b=Error.regresion_polinomica(aoi,I_DII,2)
 # plt.plot(aoi,I_DII,'o',markersize=4,label='Datos')
 # plt.plot(aoi,y_poli,'o',markersize=4,label='Regresion')
-# plt.xlabel('Ángulo de incidencia (°)')
+# plt.xlabel('Ángulo de incidencia (º)')
 # plt.ylabel('ISC_IIIV/DII (A m2/W)')
-# plt.title('Regresión polinómica de grado 2 para temperaturas entre 19°C y 27°C ')
+# plt.title('Regresión polinómica de grado 2 para temperaturas entre 19ºC y 27ºC ')
 # plt.legend()  
 # print('Con el '+str(sumatorio)+ 'de los datos')
 # print(RR_poli)
-# print('Temperaturas entre '+ str(Min_temp) +' y '+str(Max_temp)+' °C')
+# print('Temperaturas entre '+ str(Min_temp) +' y '+str(Max_temp)+' ºC')
     
 
 # #%%
@@ -165,8 +165,8 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 # Max_temp=28.0
 # Min_temp=26.0
 
-# df_filt_26=filt_df2[(filt_df2['T_Amb (°C)']>=Min_temp)]
-# df_filt_26=df_filt_26[((df_filt_26['T_Amb (°C)'])<=Max_temp)] 
+# df_filt_26=filt_df2[(filt_df2['T_Amb (ºC)']>=Min_temp)]
+# df_filt_26=df_filt_26[((df_filt_26['T_Amb (ºC)'])<=Max_temp)] 
 
 # #%%
 # # Ahora pasamos al filtrado de los datos entre 26 y 28
@@ -199,25 +199,25 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 # y_poli,RR_poli,a_s,b=Error.regresion_polinomica(aoi,I_DII,2)
 # plt.plot(aoi,I_DII,'o',markersize=4,label='Datos')
 # plt.plot(aoi,y_poli,'o',markersize=4,label='Regresion')
-# plt.xlabel('Ángulo de incidencia (°)')
+# plt.xlabel('Ángulo de incidencia (º)')
 # plt.ylabel('ISC_IIIV/DII (A m2/W)')
-# plt.title('Regresión polinómica para 26 °C' )
+# plt.title('Regresión polinómica para 26 ºC' )
 # plt.legend()  
 # print('Con el '+str(prob[13])+ ' de los datos')
 # print('Coeficiente de determinacion del ' +str(RR_poli))
-# print('Temperaturas entre '+ str(Min_temp) +' y '+str(Max_temp)+' °C')
+# print('Temperaturas entre '+ str(Min_temp) +' y '+str(Max_temp)+' ºC')
 # # print('El valor de los coeficientes de la regresion son: a_1=' + str(a_s[1])+ ' a_2=' +str(a_s[2]+ ' b='+str(b)))
 
 
 
 # Incremento=.2
-# Max_temp=math.ceil(df_filt_26['T_Amb (°C)'].max())
-# Min_temp=math.floor(df_filt_26['T_Amb (°C)'].min())
+# Max_temp=math.ceil(df_filt_26['T_Amb (ºC)'].max())
+# Min_temp=math.floor(df_filt_26['T_Amb (ºC)'].min())
 # contador=np.arange(Min_temp,Max_temp,Incremento)
 # fig=go.Figure()
 # for i in contador:
-#     AUX=df_filt_26[(df_filt_26['T_Amb (°C)']>=float(i))]
-#     AUX=AUX[((AUX['T_Amb (°C)'])<(i+Incremento))]    
+#     AUX=df_filt_26[(df_filt_26['T_Amb (ºC)']>=float(i))]
+#     AUX=AUX[((AUX['T_Amb (ºC)'])<(i+Incremento))]    
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII (A m2/W)'],
@@ -229,8 +229,8 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 #     ))
     
 # fig.update_layout(
-#     title="Isc_IIIV/DII en función del ángulo de incidencia para la temperatura de 26°C",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     title="Isc_IIIV/DII en función del ángulo de incidencia para la temperatura de 26ºC",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 # fig.show()
@@ -251,9 +251,9 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 # fig=plt.figure(figsize=(30,15))
 # plt.plot(datos,IAM,'o',markersize=4,label='Datos')
 # plt.plot(datos,IAM2,'o',markersize=4,label='Datos')
-# plt.xlabel('Ángulo de incidencia (°)')
+# plt.xlabel('Ángulo de incidencia (º)')
 # plt.ylabel('ISC_IIIV/DII (A m2/W)')
-# plt.title('Regresión polinómica para 26 °C' )
+# plt.title('Regresión polinómica para 26 ºC' )
 # plt.legend()  
  
  
@@ -284,7 +284,7 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
@@ -312,7 +312,7 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de dirección del viento",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
@@ -353,21 +353,21 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 # plt.plot(filt_df3['aoi'].values,y_poli,'o',markersize=4,label='Datos')
 # plt.plot(filt_df4['aoi'].values,filt_df4['ISC_IIIV/DII (A m2/W)'].values,'o',markersize=4,label='Datos')
 # plt.plot(filt_df4['aoi'].values,y_poli2,'o',markersize=4,label='Datos')
-# plt.xlabel('Ángulo de incidencia (°)')
+# plt.xlabel('Ángulo de incidencia (º)')
 # plt.ylabel('ISC_IIIV/DII (A m2/W)')
-# plt.title('Regresión polinómica para 26 °C' )
+# plt.title('Regresión polinómica para 26 ºC' )
 # plt.legend()  
 
 #%% 
 #CON EL FILTRADO ANTERIOR OBSERVAMOS LA INFLUENCIA DE LA TEMPERATURA
 # Incremento=1
-# Max_temp=math.ceil(filt_df3['T_Amb (°C)'].max())
-# Min_temp=math.floor(filt_df3['T_Amb (°C)'].min())
+# Max_temp=math.ceil(filt_df3['T_Amb (ºC)'].max())
+# Min_temp=math.floor(filt_df3['T_Amb (ºC)'].min())
 # contador=np.arange(Min_temp,Max_temp,Incremento)
 # fig=go.Figure()
 # for i in contador:
-#     AUX=filt_df3[(filt_df3['T_Amb (°C)']>=float(i))]
-#     AUX=AUX[((AUX['T_Amb (°C)'])<(i+Incremento))]    
+#     AUX=filt_df3[(filt_df3['T_Amb (ºC)']>=float(i))]
+#     AUX=AUX[((AUX['T_Amb (ºC)'])<(i+Incremento))]    
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII (A m2/W)'],
@@ -379,8 +379,8 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 #     ))
     
 # fig.update_layout(
-#     title="Isc_IIIV/DII en función del ángulo de incidencia para la temperatura de 26°C",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     title="Isc_IIIV/DII en función del ángulo de incidencia para la temperatura de 26ºC",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 # fig.show()
@@ -389,24 +389,24 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 # #%%
 
 # fig=plt.figure(figsize=(30,15))
-# plt.plot(filt_df2['T_Amb (°C)'].values,filt_df2['Wind Speed (m/s)'].values,'o',markersize=4,label='Datos')
-# plt.xlabel('Ángulo de incidencia (°)')
+# plt.plot(filt_df2['T_Amb (ºC)'].values,filt_df2['Wind Speed (m/s)'].values,'o',markersize=4,label='Datos')
+# plt.xlabel('Ángulo de incidencia (º)')
 # plt.ylabel('ISC_IIIV/DII (A m2/W)')
-# plt.title('Regresión polinómica para 26 °C' )
+# plt.title('Regresión polinómica para 26 ºC' )
 # plt.legend()  
 
 
 # filt_cuadro=filt_df2
-# filt_cuadro=filt_cuadro[filt_cuadro['T_Amb (°C)']>23.0]
-# filt_cuadro=filt_cuadro[filt_cuadro['T_Amb (°C)']<29]
+# filt_cuadro=filt_cuadro[filt_cuadro['T_Amb (ºC)']>23.0]
+# filt_cuadro=filt_cuadro[filt_cuadro['T_Amb (ºC)']<29]
 # filt_cuadro=filt_cuadro[filt_cuadro['Wind Speed (m/s)']>=1.0]
 # filt_cuadro=filt_cuadro[filt_cuadro['Wind Speed (m/s)']<2.5]
 
 # fig=plt.figure(figsize=(30,15))
 # plt.plot(filt_cuadro['aoi'].values,filt_cuadro['ISC_IIIV/DII (A m2/W)'].values,'o',markersize=4,label='Datos')
-# plt.xlabel('Ángulo de incidencia (°)')
+# plt.xlabel('Ángulo de incidencia (º)')
 # plt.ylabel('ISC_IIIV/DII (A m2/W)')
-# plt.title('Regresión polinómica para 26 °C' )
+# plt.title('Regresión polinómica para 26 ºC' )
 # plt.legend()  
 
 # Incremento=.1
@@ -428,19 +428,19 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
 # fig.show()
 # Incremento=1
-# Max_temp=math.ceil(filt_cuadro['T_Amb (°C)'].max())
-# Min_temp=math.floor(filt_cuadro['T_Amb (°C)'].min())
+# Max_temp=math.ceil(filt_cuadro['T_Amb (ºC)'].max())
+# Min_temp=math.floor(filt_cuadro['T_Amb (ºC)'].min())
 # fig=go.Figure()
 # contador=np.arange(Min_temp,Max_temp,Incremento)
 # for i in contador:
-#     AUX=filt_cuadro[(filt_cuadro['T_Amb (°C)']>=float(i))]
-#     AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
+#     AUX=filt_cuadro[(filt_cuadro['T_Amb (ºC)']>=float(i))]
+#     AUX=AUX[((AUX['T_Amb (ºC)'])<i+Incremento)]    
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII (A m2/W)'],
@@ -452,7 +452,7 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
@@ -462,20 +462,20 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 #%%
 
 # filt_cuadro2=filt_cuadro
-# # filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']>=26.0]
-# # filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']<28]
+# # filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (ºC)']>=26.0]
+# # filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (ºC)']<28]
 # filt_cuadro2=filt_cuadro2[filt_cuadro2['Wind Speed (m/s)']>=2]
 # filt_cuadro2=filt_cuadro2[filt_cuadro2['Wind Speed (m/s)']<2.5]
 
 # fig.show()
 # Incremento=1
-# Max_temp=math.ceil(filt_cuadro['T_Amb (°C)'].max())
-# Min_temp=math.floor(filt_cuadro['T_Amb (°C)'].min())
+# Max_temp=math.ceil(filt_cuadro['T_Amb (ºC)'].max())
+# Min_temp=math.floor(filt_cuadro['T_Amb (ºC)'].min())
 # fig=go.Figure()
 # contador=np.arange(Min_temp,Max_temp,Incremento)
 # for i in contador:
-#     AUX=filt_cuadro[(filt_cuadro['T_Amb (°C)']>=float(i))]
-#     AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
+#     AUX=filt_cuadro[(filt_cuadro['T_Amb (ºC)']>=float(i))]
+#     AUX=AUX[((AUX['T_Amb (ºC)'])<i+Incremento)]    
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_IIIV/DII (A m2/W)'],
@@ -487,15 +487,15 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
 # fig.show()
 #%%
 # filt_cuadro2=filt_df2
-# # filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']>=26.0]
-# # filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']<28]
+# # filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (ºC)']>=26.0]
+# # filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (ºC)']<28]
 
 
 # Incremento=10
@@ -517,7 +517,7 @@ filt_y=filt_df2['ISC_IIIV/DII (A m2/W)'].values
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
@@ -534,8 +534,8 @@ filt_cuadro2=filt_cuadro2[filt_cuadro2['Wind Speed (m/s)']>=1.4]
 filt_cuadro2=filt_cuadro2[filt_cuadro2['Wind Speed (m/s)']<2.5]
 
 filt_prueba=filt_cuadro2
-filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']>=26.0]
-filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (°C)']<28]
+filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (ºC)']>=26.0]
+filt_cuadro2=filt_cuadro2[filt_cuadro2['T_Amb (ºC)']<28]
 
 #%%ANTES ES NECESARIO AÑADIR UNOS VALORES SINTÉTICOS PARA LIMITAR LAS LIBERTADES DE LAS REGRESIONES POLINÓMICAS ya que los datos no llegan a 0 grados de aoi
 
@@ -644,9 +644,9 @@ fig=plt.figure(figsize=(30,15))
 plt.plot(filt_df2['aoi'].values,filt_df2['ISC_IIIV/DII (A m2/W)'].values,'o',markersize=4,label='Datos')
 plt.plot(filt_cuadro2['aoi'].values,filt_cuadro2['ISC_IIIV/DII (A m2/W)'].values,'o',markersize=4,label='Datos escogidos')
 
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
-plt.title('Datos filtrados para 26 °C' )
+plt.title('Datos filtrados para 26 ºC' )
 plt.legend()
 
 fig=plt.figure(figsize=(30,15))
@@ -655,9 +655,9 @@ plt.plot(x_total,yr_total,'o',markersize=4,label='regresión de primer grado')
 plt.plot(filt_regresion['aoi'].values,y_poli2,'o',markersize=4,label='regresión de segundo grado')
 plt.plot(filt_regresion['aoi'].values,y_poli3,'o',markersize=4,label='regresión de tercer grado')
 
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
-plt.title('Regresión polinómica para 26 °C' )
+plt.title('Regresión polinómica para 26 ºC' )
 plt.legend() 
 print('El coeficiente de determinación para la regresión de primer grado es: '+str(RR_poli1))
 print('El coeficiente de determinación para la regresión de segundo grado es: '+str(RR_poli2))
@@ -669,9 +669,9 @@ print('El coeficiente de determinación para la regresión de physical es: '+str
 # fig=plt.figure(figsize=(30,15))
 # plt.plot(filt_prueba['aoi'].values,filt_prueba['ISC_IIIV/DII (A m2/W)'].values,'o',markersize=4,label='Datos')
 
-# plt.xlabel('Ángulo de incidencia (°)')
+# plt.xlabel('Ángulo de incidencia (º)')
 # plt.ylabel('ISC_IIIV/DII (A m2/W)')
-# plt.title('Regresión polinómica para 26 °C' )
+# plt.title('Regresión polinómica para 26 ºC' )
 # plt.legend() 
 
 
@@ -699,9 +699,9 @@ plt.plot(filt_regresion['aoi'].values,IAM_martin_ruiz,'o',markersize=4,label='IA
 plt.plot(filt_regresion['aoi'].values,IAM_ashrae,'o',markersize=4,label='IAM_ashrae')
 plt.plot(filt_regresion['aoi'].values,IAM_physical,'o',markersize=4,label='IAM_physical')
 
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
-plt.title('Regresión polinómica para 26 °C' )
+plt.title('Regresión polinómica para 26 ºC' )
 plt.legend() 
 # print('El coeficiente de determinación para la regresión de primer grado es: '+str(RR_poli1))
 # print('El coeficiente de determinación para la regresión de segundo grado es: '+str(RR_poli2))

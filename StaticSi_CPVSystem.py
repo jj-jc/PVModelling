@@ -108,7 +108,7 @@ for i in range(n_intervalos):
 
 Si['Irra_vista_efectiva (W/m2)']=((Si['Irra_vista (W/m2)'].values)*Mi_Si_CPV.get_iam(Si['aoi'],iam_model='Tercer grado'))
 Si['ISC_Si/Irra_vista_efectiva (A m2/W)']=((Si['ISC_measured_Si (A)'].values)/(Si['Irra_vista_efectiva (W/m2)'].values))
-# # filt_x=df_filt_Si['T_Amb (°C)'].values
+# # filt_x=df_filt_Si['T_Amb (ºC)'].values
 # # filt_y=df_filt_Si['ISC_Si/Irra_vista_efectiva (A m2/W)'].values
 
 fig=plt.figure(figsize=(30,15))
@@ -122,14 +122,14 @@ plt.title("Comparación de la irradiancia corregida")
 #%% Cálculo de la temperatura de cell, no tengo muy claro que el uc sea el correcto
 
 
-temp_cell=Mi_Si_CPV.pvsyst_celltemp(poa_global=Si['Irra_vista_efectiva (W/m2)'], temp_air=Si['T_Amb (°C)'], wind_speed=Si['Wind Speed (m/s)']) 
-temp_cell_=Mi_Si_CPV.pvsyst_celltemp(poa_global=Si['Irra_vista (W/m2)'], temp_air=Si['T_Amb (°C)'], wind_speed=Si['Wind Speed (m/s)'])
+temp_cell=Mi_Si_CPV.pvsyst_celltemp(poa_global=Si['Irra_vista_efectiva (W/m2)'], temp_air=Si['T_Amb (ºC)'], wind_speed=Si['Wind Speed (m/s)']) 
+temp_cell_=Mi_Si_CPV.pvsyst_celltemp(poa_global=Si['Irra_vista (W/m2)'], temp_air=Si['T_Amb (ºC)'], wind_speed=Si['Wind Speed (m/s)'])
 
 # fig=plt.figure(figsize=(30,15))
 # plt.plot(Si.index[:].time,temp_cell,'o',markersize=2,label='Temperatura con DII corregida')   
 # plt.plot(Si.index[:].time,temp_cell_,'o',markersize=2,label='Temperatura con DII')
 # plt.xlabel('Horas')
-# plt.ylabel('Temperatura de célula (°C)')
+# plt.ylabel('Temperatura de célula (ºC)')
 # plt.legend()
 # plt.title("Temperatura de célula a lo largo de las horas de un día ")
 
@@ -164,7 +164,7 @@ plt.figure(figsize=(30,15))
 plt.plot(Si['aoi'],Si['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
 plt.plot(Si['aoi'],Curvas_['p_mp'],'o',markersize=2,label='Sin IAM')
 plt.plot(Si['aoi'],Curvas['p_mp'],'o',markersize=2,label='IAM_tercer_grado')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Puntos de máxima potencia (W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del iam')
 plt.legend()

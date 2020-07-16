@@ -36,7 +36,7 @@ df=df.set_index(Fecha)
 df=df.drop(['Date Time'],axis=1)
 
 CPV_location=pvlib.location.Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
-Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (°C)'])
+Solar_position=CPV_location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (ºC)'])
 
 #--------------------------------------------------------criterios de filtrado
 #Se elminan los datos NAN
@@ -47,7 +47,7 @@ filt_df=df[(df['PMP_estimated_IIIV (W)']>0.1)]
 #----------velocidad del viento
 filt_df=filt_df[(filt_df['Wind Speed (m/s)']<2.5)]
 #-----------temperatura
-filt_df=filt_df[(filt_df['T_Amb (°C)']>10.0)]
+filt_df=filt_df[(filt_df['T_Amb (ºC)']>10.0)]
 
 
 filt_df=filt_df[filt_df['GII (W/m2)']>0] 
@@ -68,7 +68,7 @@ fig, ax=plt.subplots(figsize=(30,15))
 #ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
 ax.plot(filt_df['aoi'],filt_df['Irra_vista (W/m2)'],'o',markersize=2)
 # plt.ylim(0,0.04)
-ax.set_xlabel('AOI (°)')
+ax.set_xlabel('AOI (º)')
 ax.set_ylabel('Irradiancia vista por silicio (A m2/W)')
 ax.set_title("Irradancia vista por el silicio en función del ángulo de incidencia sin filtrar",fontsize=20)
 plt.legend()   
@@ -112,7 +112,7 @@ fig, ax=plt.subplots(figsize=(30,15))
 #ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
 ax.plot(filt_df3['aoi'],filt_df3['ISC_measured_Si (A)'],'o',markersize=2)
 # plt.ylim(0,0.04)
-ax.set_xlabel('Ángulo de incidencia (°)')
+ax.set_xlabel('Ángulo de incidencia (º)')
 ax.set_ylabel('Intensidad medida del Silicio (A)')
 ax.set_title("Intensidad medida de la parte de silicio en función del ángulo de incidencia",fontsize=20)
 plt.legend()
@@ -122,7 +122,7 @@ fig, ax=plt.subplots(figsize=(30,15))
 #ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
 ax.plot(filt_df3['aoi'],filt_df3['Irra_vista (W/m2)'],'o',markersize=2)
 # plt.ylim(0,0.04)
-ax.set_xlabel('Ángulo de incidencia (°)')
+ax.set_xlabel('Ángulo de incidencia (º)')
 ax.set_ylabel('Irradiancia vista por silicio (W/m2)')
 ax.set_title("Irradancia vista por el silicio en función del ángulo de incidencia",fontsize=20)
 plt.legend()
@@ -132,7 +132,7 @@ fig, ax=plt.subplots(figsize=(30,15))
 #ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
 ax.plot(filt_df3['aoi'],filt_df3['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2)
 # plt.ylim(0,0.04)
-ax.set_xlabel('Ángulo de incidencia (°)')
+ax.set_xlabel('Ángulo de incidencia (º)')
 ax.set_ylabel('Eficiencia de intensidad (A m2/W)')
 ax.set_title("Eficiencia de intensidad en función del ángulo de incidencia",fontsize=20)
 plt.legend()
@@ -159,7 +159,7 @@ for i in contador:
     ))
 fig.update_layout(
     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-    xaxis_title="Ángulo de incidencia (°)",
+    xaxis_title="Ángulo de incidencia (º)",
     yaxis_title="ISC_IIIV/DII (A m2/W)",
 )
 
@@ -186,20 +186,20 @@ for i in contador:
     ))
 fig.update_layout(
     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-    xaxis_title="Ángulo de incidencia (°)",
+    xaxis_title="Ángulo de incidencia (º)",
     yaxis_title="ISC_IIIV/DII (A m2/W)",
 )
 
 fig.show()
 
 Incremento=1
-Max_temp=math.ceil(filt_df3['T_Amb (°C)'].max())
-Min_temp=math.floor(filt_df3['T_Amb (°C)'].min())
+Max_temp=math.ceil(filt_df3['T_Amb (ºC)'].max())
+Min_temp=math.floor(filt_df3['T_Amb (ºC)'].min())
 fig=go.Figure()
 contador=np.arange(Min_temp,Max_temp,Incremento)
 for i in contador:
-    AUX=filt_df3[(filt_df3['T_Amb (°C)']>=float(i))]
-    AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
+    AUX=filt_df3[(filt_df3['T_Amb (ºC)']>=float(i))]
+    AUX=AUX[((AUX['T_Amb (ºC)'])<i+Incremento)]    
 
     fig.add_trace(go.Scatter(
     y=AUX['ISC_Si/Irra_vista (A m2/W)'],
@@ -211,7 +211,7 @@ for i in contador:
     ))
 fig.update_layout(
     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-    xaxis_title="Ángulo de incidencia (°)",
+    xaxis_title="Ángulo de incidencia (º)",
     yaxis_title="ISC_IIIV/DII (A m2/W)",
 )
 
@@ -273,7 +273,7 @@ filt_greater_AOI=Datos_filtrados[Datos_filtrados['aoi']>AOILIMIT]
 fig=plt.figure(figsize=(30,15))
 plt.plot(smaller_AOI['aoi'],smaller_AOI['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2)
 plt.plot(filt_smaller_AOI['aoi'],filt_smaller_AOI['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2)
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('ISC_Si/Irradiancia vista por silicio (A m2/W)')
 plt.title("ISC_Si/Irradancia vista por el silicio en función del ángulo de incidencia",fontsize=20)
 plt.legend()
@@ -281,7 +281,7 @@ plt.legend()
 fig=plt.figure(figsize=(30,15))
 plt.plot(greater_AOI['aoi'],greater_AOI['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2)
 plt.plot(filt_greater_AOI['aoi'],filt_greater_AOI['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2)
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('ISC_Si/Irradiancia vista por silicio (A m2/W)')
 plt.title("ISC_Si/Irradancia vista por el silicio en función del ángulo de incidencia",fontsize=20)
 plt.legend()
@@ -290,7 +290,7 @@ plt.legend()
 fig=plt.figure(figsize=(30,15))
 plt.plot(filt_df3['aoi'],filt_df3['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2)
 plt.plot(Datos_filtrados['aoi'],Datos_filtrados['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2)
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('ISC_Si/Irradiancia vista por silicio (A m2/W)')
 plt.title("ISC_Si/Irradancia vista por el silicio en función del ángulo de incidencia",fontsize=20)
 plt.legend()
@@ -309,7 +309,7 @@ plt.legend()
 x=Datos_filtrados['aoi']
 y1=Datos_filtrados['ISC_Si/Irra_vista (A m2/W)']
 x_aoi=Datos_filtrados['aoi']
-x_temp=Datos_filtrados['T_Amb (°C)']
+x_temp=Datos_filtrados['T_Amb (ºC)']
 x_AM=Datos_filtrados['airmass_relative']
 
 
@@ -358,7 +358,7 @@ fig, ax=plt.subplots(figsize=(30,15))
 #ax.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=3)
 ax.plot(x_aoi,y1,'o',markersize=2)
 plt.ylim(0,0.04)
-ax.set_xlabel('Ángulo de incidencia (°)')
+ax.set_xlabel('Ángulo de incidencia (º)')
 ax.set_ylabel('Eficiencia de intensidad (A m2/W)')
 ax.set_title("Eficiencia de intensidad en función del ángulo de incidencia",fontsize=20)
 plt.legend()
@@ -366,7 +366,7 @@ plt.legend()
 fig, ax=plt.subplots(figsize=(30,15))
 ax.plot(x_temp,y1,'o',markersize=2)
 plt.ylim(0,0.04)
-ax.set_xlabel('Temperatura ambiente (°C)')
+ax.set_xlabel('Temperatura ambiente (ºC)')
 ax.set_ylabel('Eficiencia de intensidad (A m2/W)')
 ax.set_title("Eficiencia de intensidad en función de la temperatura ambiente",fontsize=20)
 plt.legend()
@@ -384,7 +384,7 @@ plt.legend()
 
 #creamos un scalar mapeable por cada tercera variable a estudiar.
 #Temp
-norm=plt.Normalize(filt_df2['T_Amb (°C)'].min(),filt_df2['T_Amb (°C)'].max())
+norm=plt.Normalize(filt_df2['T_Amb (ºC)'].min(),filt_df2['T_Amb (ºC)'].max())
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["blue","violet","red"])
 Mappable_Temp=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 #aoi
@@ -408,10 +408,10 @@ fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=x_aoi,y=y1,c=x_temp,cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
 #plt.ylim(0,0.0012)
 #plt.xlim(10,60)
-ax.set_xlabel('Ángulo de incidencia (°)')
+ax.set_xlabel('Ángulo de incidencia (º)')
 ax.set_ylabel('Eficiencia de intensidad (A m2/W)')
 ax.set_title("Eficiencia de intensidad en función del ángulo de incidencia y la temperatura",fontsize=20)
-(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C)')
+(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (ºC)')
 plt.show()
 #representacion del airmass con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
@@ -421,7 +421,7 @@ ax.scatter(x=x_AM,y=y1,c=x_temp, cmap=Mappable_Temp.cmap, norm=Mappable_Temp.nor
 ax.set_xlabel('Masa de aire (n.d.)')
 ax.set_ylabel('Eficiencia de intensidad (A m2/W)')
 ax.set_title("Eficiencia de intensidad en función de la masa de aire y la temperatura",fontsize=20)
-(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C) ')
+(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (ºC) ')
 plt.show()
 
 #representacion del airmass con el scalar mapeable
@@ -432,7 +432,7 @@ ax.scatter(x=x_AM,y=y1,c=x_aoi, cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s
 ax.set_xlabel('Masa de aire (n.d.)')
 ax.set_ylabel('Eficiencia de intensidad (A m2/W)')
 ax.set_title("Eficiencia de intensidad en función de la masa de aire y del ángulo de incidencia")
-(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)')
+(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (º)')
 plt.show()
 
 
@@ -442,10 +442,10 @@ fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=x_temp,y=y1,c=x_aoi, cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
 #plt.ylim(0,0.0012)
 #plt.xlim(1,2)
-ax.set_xlabel('Temperatura ambiente (°C)')
+ax.set_xlabel('Temperatura ambiente (ºC)')
 ax.set_ylabel('Eficiencia de intensidad (A m2/W)')
 ax.set_title("Eficiencia de intensidad en función de la temperatura y el ángulo de incidencia")
-(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)')
+(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (º)')
 plt.show()
 
 
@@ -454,10 +454,10 @@ fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=x_aoi,y=y1,c=x_temp,cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
 #plt.ylim(0,0.0012)filt_df['ISC_Si/Irra_vista (A m2/W)'][i]
 #plt.xlim(10,60)
-ax.set_xlabel('Ángulo de incidencia (°)')
+ax.set_xlabel('Ángulo de incidencia (º)')
 ax.set_ylabel('Eficiencia de intensidad (A m2/W)')
 ax.set_title("Eficiencia de intensidad en función del ángulo de incidencia y la temperatura")
-(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C)')
+(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (ºC)')
 plt.show()
 #%%
 #

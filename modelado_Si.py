@@ -38,7 +38,7 @@ greater_AOI_=greater_AOI
 plt.figure(figsize=(30,15))
 plt.plot(filt_x,filt_y,'o',markersize=2,label='Previsión actual')
 # plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'],'o',markersize=2,label='Con UF')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Eficiencia de intensidad (A m2/W)')
 plt.title('Eficiencia de intensidad en función del ángulo de incidencia')
 plt.legend()
@@ -55,9 +55,9 @@ plt.legend()
 
 
 plt.figure(figsize=(30,15))
-plt.plot(greater_AOI['T_Amb (°C)'],filt_y,'o',markersize=2,label='Previsión actual')
+plt.plot(greater_AOI['T_Amb (ºC)'],filt_y,'o',markersize=2,label='Previsión actual')
 # plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'],'o',markersize=2,label='Con UF')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Eficiencia de intensidad (A m2/W)')
 plt.title('Eficiencia de intensidad en función de la temperatura')
 plt.legend()
@@ -67,7 +67,7 @@ plt.legend()
 plt.figure(figsize=(30,15))
 plt.plot(smaller_AOI['aoi'],smaller_AOI['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2,label='Previsión actual')
 # plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'],'o',markersize=2,label='Con UF')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Eficiencia de intensidad (A m2/W)')
 plt.title('Eficiencia de intensidad en función del ángulo de incidencia')
 plt.legend()
@@ -84,9 +84,9 @@ plt.legend()
 
 
 plt.figure(figsize=(30,15))
-plt.plot(smaller_AOI['T_Amb (°C)'],smaller_AOI['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2,label='Previsión actual')
+plt.plot(smaller_AOI['T_Amb (ºC)'],smaller_AOI['ISC_Si/Irra_vista (A m2/W)'],'o',markersize=2,label='Previsión actual')
 # plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'],'o',markersize=2,label='Con UF')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Eficiencia de intensidad (A m2/W)')
 plt.title('Eficiencia de intensidad en función de la temperatura')
 plt.legend()
@@ -113,7 +113,7 @@ for i in contador:
     ))
 fig.update_layout(
     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-    xaxis_title="Ángulo de incidencia (°)",
+    xaxis_title="Ángulo de incidencia (º)",
     yaxis_title="ISC_IIIV/DII (A m2/W)",
 )
 
@@ -140,20 +140,20 @@ for i in contador:
     ))
 fig.update_layout(
     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-    xaxis_title="Ángulo de incidencia (°)",
+    xaxis_title="Ángulo de incidencia (º)",
     yaxis_title="ISC_IIIV/DII (A m2/W)",
 )
 
 fig.show()
 
 Incremento=1
-Max_temp=math.ceil(smaller_AOI['T_Amb (°C)'].max())
-Min_temp=math.floor(smaller_AOI['T_Amb (°C)'].min())
+Max_temp=math.ceil(smaller_AOI['T_Amb (ºC)'].max())
+Min_temp=math.floor(smaller_AOI['T_Amb (ºC)'].min())
 fig=go.Figure()
 contador=np.arange(Min_temp,Max_temp,Incremento)
 for i in contador:
-    AUX=smaller_AOI[(smaller_AOI['T_Amb (°C)']>=float(i))]
-    AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
+    AUX=smaller_AOI[(smaller_AOI['T_Amb (ºC)']>=float(i))]
+    AUX=AUX[((AUX['T_Amb (ºC)'])<i+Incremento)]    
 
     fig.add_trace(go.Scatter(
     y=AUX['ISC_Si/Irra_vista (A m2/W)'],
@@ -165,7 +165,7 @@ for i in contador:
     ))
 fig.update_layout(
     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-    xaxis_title="Ángulo de incidencia (°)",
+    xaxis_title="Ángulo de incidencia (º)",
     yaxis_title="ISC_IIIV/DII (A m2/W)",
 )
 
@@ -176,8 +176,8 @@ fig.show()
 #%% Hacemos el filtrado para el cálculo del iam
 
 
-smaller_AOI=smaller_AOI[smaller_AOI['T_Amb (°C)']>=30.0]
-# smaller_AOI=smaller_AOI[smaller_AOI['T_Amb (°C)']>=30]
+smaller_AOI=smaller_AOI[smaller_AOI['T_Amb (ºC)']>=30.0]
+# smaller_AOI=smaller_AOI[smaller_AOI['T_Amb (ºC)']>=30]
 
 
 smaller_AOI=smaller_AOI[smaller_AOI['Wind Speed (m/s)']>=0.8]
@@ -192,7 +192,7 @@ plt.figure(figsize=(30,15))
 plt.plot(smaller_AOI_['aoi'].values,smaller_AOI_['ISC_Si/Irra_vista (A m2/W)'].values,'o',markersize=4,label='Datos')
 plt.plot(smaller_AOI['aoi'].values,smaller_AOI['ISC_Si/Irra_vista (A m2/W)'].values,'o',markersize=4,label='Datos escogidos')
 # plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'],'o',markersize=2,label='Con UF')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 # plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()
@@ -231,7 +231,7 @@ plt.figure(figsize=(30,15))
 plt.plot(smaller_AOI['aoi'].values,smaller_AOI['ISC_Si/Irra_vista (A m2/W)'].values,'o',markersize=4,label='Datos escogidos')
 plt.plot(prueba['aoi'].values,prueba['ISC_Si/Irra_vista (A m2/W)'].values,'o',markersize=4,label='Datos')
 # plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'],'o',markersize=2,label='Con UF')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 # plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()
@@ -361,7 +361,7 @@ VALOR_NORMALIZAR=y_2.max()
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
@@ -388,20 +388,20 @@ VALOR_NORMALIZAR=y_2.max()
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
 # fig.show()
 
 # Incremento=1
-# Max_temp=math.ceil(filt_df2['T_Amb (°C)'].max())
-# Min_temp=math.floor(filt_df2['T_Amb (°C)'].min())
+# Max_temp=math.ceil(filt_df2['T_Amb (ºC)'].max())
+# Min_temp=math.floor(filt_df2['T_Amb (ºC)'].min())
 # fig=go.Figure()
 # contador=np.arange(Min_temp,Max_temp,Incremento)
 # for i in contador:
-#     AUX=filt_df2[(filt_df2['T_Amb (°C)']>=float(i))]
-#     AUX=AUX[((AUX['T_Amb (°C)'])<i+Incremento)]    
+#     AUX=filt_df2[(filt_df2['T_Amb (ºC)']>=float(i))]
+#     AUX=AUX[((AUX['T_Amb (ºC)'])<i+Incremento)]    
 
 #     fig.add_trace(go.Scatter(
 #     y=AUX['ISC_Si/Irra_vista (A m2/W)'],
@@ -413,7 +413,7 @@ VALOR_NORMALIZAR=y_2.max()
 #     ))
 # fig.update_layout(
 #     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de velocidad de viento",
-#     xaxis_title="Ángulo de incidencia (°)",
+#     xaxis_title="Ángulo de incidencia (º)",
 #     yaxis_title="ISC_IIIV/DII (A m2/W)",
 # )
 
@@ -424,8 +424,8 @@ VALOR_NORMALIZAR=y_2.max()
 
 
 
-greater_AOI=greater_AOI[greater_AOI['T_Amb (°C)']>=30.0]
-greater_AOI=greater_AOI[greater_AOI['T_Amb (°C)']<32]
+greater_AOI=greater_AOI[greater_AOI['T_Amb (ºC)']>=30.0]
+greater_AOI=greater_AOI[greater_AOI['T_Amb (ºC)']<32]
 
 filt_x=greater_AOI['aoi'].values
 filt_y=greater_AOI['ISC_Si/Irra_vista (A m2/W)'].values
@@ -436,7 +436,7 @@ plt.plot(greater_AOI_['aoi'].values,greater_AOI_['ISC_Si/Irra_vista (A m2/W)'].v
 
 plt.plot(filt_x,filt_y,'o',markersize=2,label='Previsión actual')
 # plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'],'o',markersize=2,label='Con UF')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 # plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()
@@ -445,16 +445,16 @@ plt.legend()
 # plt.figure(figsize=(30,15))
 # plt.plot(filt_df2['airmass_relative'],filt_y,'o',markersize=2,label='Previsión actual')
 # # plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'],'o',markersize=2,label='Con UF')
-# plt.xlabel('Ángulo de incidencia (°)')
+# plt.xlabel('Ángulo de incidencia (º)')
 # plt.ylabel('Potencia (III-V)(W)')
 # plt.legend()
 
 
 
 plt.figure(figsize=(30,15))
-plt.plot(greater_AOI['T_Amb (°C)'],filt_y,'o',markersize=2,label='Previsión actual')
+plt.plot(greater_AOI['T_Amb (ºC)'],filt_y,'o',markersize=2,label='Previsión actual')
 # plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'],'o',markersize=2,label='Con UF')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 # plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 plt.legend()
@@ -519,9 +519,9 @@ plt.plot(x_total,yr_total,'o',markersize=4,label='Datos')
 plt.plot(greater_AOI['aoi'].values,y_poli2,'o',markersize=4,label='Datos')
 plt.plot(greater_AOI['aoi'].values,y_poli3,'o',markersize=4,label='Datos')
 
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('ISC_IIIV/DII (A m2/W)')
-plt.title('Regresión polinómica para 26 °C' )
+plt.title('Regresión polinómica para 26 ºC' )
 plt.legend() 
 print('El coeficiente de determinación para la regresión de primer grado es: '+str(RR_poli1))
 print('El coeficiente de determinación para la regresión de segundo grado es: '+str(RR_poli2))

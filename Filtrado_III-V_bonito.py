@@ -4,21 +4,12 @@ Created on Sun Jul 12 20:31:05 2020
 
 @author: juanjo
 """
-
-
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import Error as E
 import matplotlib.colors 
 import matplotlib.cm
-
-
 pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
-
-
-
-
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Entradas.csv')
 Fecha=pd.DatetimeIndex(df['Date Time'])
 df=df.set_index(Fecha)
@@ -27,41 +18,32 @@ df=df.drop(['Date Time'],axis=1)
 #Se elminan los datos NAN
 df=df.where(df!='   NaN')
 df=df.dropna()
-
 filt_df=df[(df['PMP_estimated_IIIV (W)']>0.1)]
-filt_df=df[(df['T_Amb (°C)']>10.0)]
+filt_df=df[(df['T_Amb (ºC)']>10.0)]
 filt_df=filt_df[(filt_df['Wind Speed (m/s)']<2.5)]
 filt_df=filt_df[(filt_df['SMR_Top_Mid (n.d.)'].astype(float)>0.7)]
 filt_df=filt_df[(filt_df['SMR_Top_Mid (n.d.)'].astype(float)<1.1)]
 filt_df=filt_df[filt_df['DII (W/m2)']>0] 
-
-
-
 filt_df['ISC_IIIV/DII (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII (W/m2)']
-
 filt_df_=filt_df
 filt_df=E.mediana_filter(data=filt_df,colum_intervals='aoi',
                          columna_filter='ISC_IIIV/DII (A m2/W)',
                          n_intervalos=100,porcent_mediana=15)
-
-
-
 '''  Comparativa del filtrado'''
-
 fig=plt.figure(figsize=(30,15))
 plt.ylim(0,0.0015 )
 plt.plot(filt_df_['aoi'],filt_df_['ISC_IIIV/DII (A m2/W)'], 'o',markersize='4',label='Sin filtrado')    
 plt.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o', markersize='2',label='Con filtrado')    
-plt.xlabel('Ángulo de incidencia (°)',fontsize=20)
+plt.xlabel('Ángulo de incidencia (º)',fontsize=20)
 plt.ylabel('ISC_IIIV/DII (A m2/W)',fontsize=20)
 plt.legend()
 plt.title("Datos de eficiencia de intensidad en función del ángulo de incidencia",fontsize=30)
 
 fig=plt.figure(figsize=(30,15))
 plt.ylim(0,0.0015 )
-plt.plot(filt_df_['T_Amb (°C)'],filt_df_['ISC_IIIV/DII (A m2/W)'], 'o',markersize='4',label='Sin filtrado')    
-plt.plot(filt_df['T_Amb (°C)'],filt_df['ISC_IIIV/DII (A m2/W)'],'o', markersize='2',label='Con filtrado')    
-plt.xlabel('Temperatura ambiente (°C)',fontsize=20)
+plt.plot(filt_df_['T_Amb (ºC)'],filt_df_['ISC_IIIV/DII (A m2/W)'], 'o',markersize='4',label='Sin filtrado')    
+plt.plot(filt_df['T_Amb (ºC)'],filt_df['ISC_IIIV/DII (A m2/W)'],'o', markersize='2',label='Con filtrado')    
+plt.xlabel('Temperatura ambiente (ºC)',fontsize=20)
 plt.ylabel('ISC_IIIV/DII (A m2/W)',fontsize=20)
 plt.legend()
 plt.title("Datos de eficiencia de intensidad en función de la temperatura",fontsize=30)
@@ -79,17 +61,14 @@ plt.title("Datos de eficiencia de intensidad en función del ángulo del airmass
 fig=plt.figure(figsize=(30,15))
 plt.plot(filt_df_['aoi'],filt_df_['PMP_estimated_IIIV (W)'], 'o',markersize='4',label='Sin filtrado')    
 plt.plot(filt_df['aoi'],filt_df['PMP_estimated_IIIV (W)'],'o', markersize='2',label='Con filtrado')    
-plt.xlabel('Ángulo de incidencia (°)',fontsize=20)
+plt.xlabel('Ángulo de incidencia (º)',fontsize=20)
 plt.ylabel('Potencia (W)',fontsize=20)
 plt.legend()
 plt.title("Datos de potencia en función del ángulo de incidencia",fontsize=30)
 
-
 ''' Se estudian los datos por medio de dos variables de estudio por medio de un scalar mapeable'''
-
-
 #Temp
-norm=plt.Normalize(filt_df['T_Amb (°C)'].min(),filt_df['T_Amb (°C)'].max())
+norm=plt.Normalize(filt_df['T_Amb (ºC)'].min(),filt_df['T_Amb (ºC)'].max())
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["blue","violet","red"])
 Mappable_Temp=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 #aoi
@@ -112,23 +91,23 @@ Mappable_DirViento=matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
 
 #representacion del aoi con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df['aoi'],y=filt_df['ISC_IIIV/DII (A m2/W)'],c=filt_df['T_Amb (°C)'],cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
+ax.scatter(x=filt_df['aoi'],y=filt_df['ISC_IIIV/DII (A m2/W)'],c=filt_df['T_Amb (ºC)'],cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
 plt.ylim(0,0.0012)
 plt.xlim(10,60)
-ax.set_xlabel('Ángulo de incidencia (°)',fontsize=20)
+ax.set_xlabel('Ángulo de incidencia (º)',fontsize=20)
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)',fontsize=20)
 ax.set_title("Eficiencia de intensidad en función del ángulo de incidencia y la temperatura",fontsize=30)
-(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C)')
+(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (ºC)')
 plt.show()
 #representacion del airmass con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df['airmass_relative'],y=filt_df['ISC_IIIV/DII (A m2/W)'],c=filt_df['T_Amb (°C)'], cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
+ax.scatter(x=filt_df['airmass_relative'],y=filt_df['ISC_IIIV/DII (A m2/W)'],c=filt_df['T_Amb (ºC)'], cmap=Mappable_Temp.cmap, norm=Mappable_Temp.norm,s=10)
 plt.ylim(0,0.0012)
 plt.xlim(1,2)
 ax.set_xlabel('airmass (n.d.)',fontsize=20)
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)',fontsize=20)
 ax.set_title("Eficiencia de intensidad en función de la masa de aire y la temperatura",fontsize=30)
-(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (°C) ')
+(fig.colorbar(Mappable_Temp)).set_label('Temperatura ambiente (ºC) ')
 plt.show()
 
 #representacion del airmass con el scalar mapeable
@@ -139,26 +118,25 @@ plt.xlim(1,2)
 ax.set_xlabel('airmass (n.d.)',fontsize=20)
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)',fontsize=20)
 ax.set_title("Eficiencia de intensidad en función de la masa de aire y la temperatura",fontsize=30)
-(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)')
+(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (º)')
 plt.show()
 
 #representamos de la temp con el scalar mapeable
 fig, ax = plt.subplots(1,1,figsize=(30,20))
-ax.scatter(x=filt_df['T_Amb (°C)'],y=filt_df['ISC_IIIV/DII (A m2/W)'],c=filt_df['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
+ax.scatter(x=filt_df['T_Amb (ºC)'],y=filt_df['ISC_IIIV/DII (A m2/W)'],c=filt_df['aoi'], cmap=Mappable_aoi.cmap, norm=Mappable_aoi.norm,s=10)
 plt.ylim(0,0.0012)
 #plt.xlim(1,2)
-ax.set_xlabel('Temperatura ambiente (°C)',fontsize=20)
+ax.set_xlabel('Temperatura ambiente (ºC)',fontsize=20)
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)',fontsize=20)
 ax.set_title("Eficiencia de intensidad en función de la temperatura y el ángulo de incidencia",fontsize=30)
-(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (°)')
+(fig.colorbar(Mappable_aoi)).set_label('Ángulo de incidencia (º)')
 plt.show()
-
 
 fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=filt_df['aoi'],y=filt_df['ISC_IIIV/DII (A m2/W)'],c=filt_df['Wind Speed (m/s)'], cmap=Mappable_viento.cmap, norm=Mappable_viento.norm,s=10)
 plt.ylim(0,0.0012)
 #plt.xlim(1,2)
-ax.set_xlabel('Ángulo de incidencia (°)',fontsize=20)
+ax.set_xlabel('Ángulo de incidencia (º)',fontsize=20)
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)',fontsize=20)
 ax.set_title("Eficiencia de intensidad en función del ángulo de incidencia y la velocidad del viento",fontsize=30)
 (fig.colorbar(Mappable_viento)).set_label('Velocidad del viento (m/s)',fontsize=20)
@@ -168,13 +146,11 @@ fig, ax = plt.subplots(1,1,figsize=(30,20))
 ax.scatter(x=filt_df['aoi'],y=filt_df['ISC_IIIV/DII (A m2/W)'],c=filt_df['Wind Dir. (m/s)'], cmap=Mappable_DirViento.cmap, norm=Mappable_DirViento.norm,s=10)
 plt.ylim(0,0.0012)
 #plt.xlim(1,2)
-ax.set_xlabel('Ángulo de incidencia (°)',fontsize=20)
+ax.set_xlabel('Ángulo de incidencia (º)',fontsize=20)
 ax.set_ylabel('ISC_measured_IIIV/DII (A m2/W)',fontsize=20)
 ax.set_title("Eficiencia de intensidad en función del ángulo de incidencia y la dirección del viento",fontsize=30)
-(fig.colorbar(Mappable_DirViento)).set_label('Dirección del viento (°N)',fontsize=20 )
+(fig.colorbar(Mappable_DirViento)).set_label('Dirección del viento (ºN)',fontsize=20 )
 plt.show()
-
-
 
 ''' Una vez satisfechos con el filtrado se guarda en un excel'''
 

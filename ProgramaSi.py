@@ -81,7 +81,7 @@ My_Si_local=CPVClass.LocalizedFlat_CPVSystem(My_Si,location)
 
 Fecha=pd.DatetimeIndex(df['Date Time'],tz=tz)
 
-Solar_position=location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (°C)'])
+Solar_position=location.get_solarposition(Fecha, pressure=None, temperature=df['T_Amb (ºC)'])
 
 
 
@@ -112,7 +112,7 @@ greater_AOILIMIT=df[df['aoi']>My_Si_local.AOILIMIT]
 
 #Filtrado de condiciones normales
 greater_AOILIMIT=greater_AOILIMIT[(greater_AOILIMIT['PMP_estimated_IIIV (W)']>0.1)]
-greater_AOILIMIT=greater_AOILIMIT[(greater_AOILIMIT['T_Amb (°C)']>10.0)]
+greater_AOILIMIT=greater_AOILIMIT[(greater_AOILIMIT['T_Amb (ºC)']>10.0)]
 #----------velocidad del viento
 greater_AOILIMIT=greater_AOILIMIT[(greater_AOILIMIT['Wind Speed (m/s)']<2.5)]
 #----------SMR
@@ -137,7 +137,7 @@ greater_AOILIMIT=E.mediana_filter(data=greater_AOILIMIT,colum_intervals='aoi',co
 # plt.figure(figsize=(30,15))
 # plt.plot(greater_AOILIMIT['aoi'],greater_AOILIMIT['Difusa'],'o',markersize=2,label='Datos ')
 # plt.plot(greater_AOILIMIT_['aoi'],greater_AOILIMIT_['Difusa'],'o',markersize=2,label='Datos ')
-# plt.xlabel('Ángulo de incidencia (°)')
+# plt.xlabel('Ángulo de incidencia (º)')
 # plt.ylabel('Potencia (III-V)(W)')
 # plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
 # plt.legend()
@@ -166,8 +166,8 @@ greater_AOILIMIT['GII_efective']=greater_AOILIMIT['GII (W/m2)']*IAM
 greater_AOILIMIT['DII_efective_Difusa']=greater_AOILIMIT['DII_efective']+greater_AOILIMIT['Difusa']
 greater_AOILIMIT['GII_efective_Difusa']=greater_AOILIMIT['GII_efective']-greater_AOILIMIT['Difusa']
 
-temp_cell=My_Si_local.pvsyst_celltemp(poa_global=greater_AOILIMIT['DII_efective_Difusa'], temp_air=greater_AOILIMIT['T_Amb (°C)'], wind_speed=greater_AOILIMIT['Wind Speed (m/s)']) 
-temp_cell_=My_Si_local.pvsyst_celltemp(poa_global=greater_AOILIMIT['DII (W/m2)'], temp_air=greater_AOILIMIT['T_Amb (°C)'], wind_speed=greater_AOILIMIT['Wind Speed (m/s)'])
+temp_cell=My_Si_local.pvsyst_celltemp(poa_global=greater_AOILIMIT['DII_efective_Difusa'], temp_air=greater_AOILIMIT['T_Amb (ºC)'], wind_speed=greater_AOILIMIT['Wind Speed (m/s)']) 
+temp_cell_=My_Si_local.pvsyst_celltemp(poa_global=greater_AOILIMIT['DII (W/m2)'], temp_air=greater_AOILIMIT['T_Amb (ºC)'], wind_speed=greater_AOILIMIT['Wind Speed (m/s)'])
 
 Five_parameters=My_Si_local.calcparams_pvsyst(greater_AOILIMIT['DII_efective'], temp_cell)
 Five_parameters_=My_Si_local.calcparams_pvsyst(greater_AOILIMIT['DII (W/m2)'], temp_cell_)
@@ -195,12 +195,12 @@ plt.figure(figsize=(30,15))
 plt.plot(greater_AOILIMIT['aoi'],Potencia,'o',markersize=2,label='Calculado')
 plt.plot(greater_AOILIMIT['aoi'],greater_AOILIMIT['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
 plt.plot(greater_AOILIMIT['aoi'],Potencia_prueba,'o',markersize=2,label='Prueba ')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Potencia (III-V)(W)')
 plt.title('Comparación de los resultados con los datos estimados de potencias')
 plt.legend()
 
-# Intensidad_1=Curvas['i_sc']*My_CPV_local.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (°C)'].values)
+# Intensidad_1=Curvas['i_sc']*My_CPV_local.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (ºC)'].values)
 
 
 #%% SE COMPRUEBA LA INTENSIDAD
@@ -216,7 +216,7 @@ plt.figure(figsize=(30,15))
 plt.plot(greater_AOILIMIT['aoi'],Intensidad,'o',markersize=2,label='Calculado')
 plt.plot(greater_AOILIMIT['aoi'],greater_AOILIMIT['ISC_measured_Si (A)'],'o',markersize=2,label='Datos')
 plt.plot(greater_AOILIMIT['aoi'],Intensidad_prueba,'o',markersize=2,label='Prueba')
-plt.xlabel('Ángulo de incidencia (°)')
+plt.xlabel('Ángulo de incidencia (º)')
 plt.ylabel('Intensidad (A)')
 plt.title('Comparación de los resultados con los datos estimados de intensidad')
 plt.legend()
