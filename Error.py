@@ -143,14 +143,14 @@ def regresion_polinomica(x,y,grado):
 def regresion_martin_ruiz(aoi,datos):
     a_r=1
     RR=0.0
-    for i in range(1000):     
+    for i in range(10000):     
         IAM_martin_ruiz=pvlib.iam.martin_ruiz(aoi=aoi,a_r=a_r)
         RR_nuevo=Determination_coefficient(datos,IAM_martin_ruiz)
         if(abs(RR_nuevo)<RR):#como es una aproximacion lineal, en el momento que el error se reduce, en la siguiente iteración aumentara este.
             break 
         else:
             RR=RR_nuevo
-            a_r=a_r+1000
+            a_r=a_r+100
     return IAM_martin_ruiz,RR,a_r
 
 
