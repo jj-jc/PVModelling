@@ -12,7 +12,6 @@ from pvlib import atmosphere, irradiance
 from pvlib.tools import _build_kwargs
 from pvlib.location import Location
 import numpy as np
-import pandas as pd
 from pvlib import (atmosphere, iam, irradiance,temperature)
 from pvlib._deprecation import pvlibDeprecationWarning            
 from pvlib import pvsystem

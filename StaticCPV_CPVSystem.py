@@ -2,23 +2,23 @@
 """
 Created on Mon Jun 29 09:56:02 2020
 
-@author: juanj
+@author: juanjo
 """
-
-
 from pvlib.location import Location
 import CPVClass
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import Error as E
-
 import datetime
+import pvlib
 
-
-
+tz='Europe/Berlin'
+#AOILIMIT
+AOILIMIT=55.0
+pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
+#este es el resultado que se ha conseguido
 #Se construye el objeto CPVSystem
-
 Mi_CPV=CPVClass.CPVSystem(surface_tilt=30, surface_azimuth=180,
                  AOILIMIT=55.0,albedo=None, surface_type=None,
                  module=None, module_type='glass_polymer',
@@ -35,35 +35,24 @@ Mi_CPV.module_CPV_parameters={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0
                 'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':12,
                 'eta_m':0.32, 'alpha_absorption':0.9, 'pdc0': 25,'gamma_pdc':-0.005 }
 
-Mi_CPV.temperature_model_parameters={'u_c': 10.0,'u_v':0}
+Mi_CPV.temperature_model_CPV_parameters={'u_c': 4.5,'u_v':0}
 
-Mi_CPV.iam_CPV_parameters={'a3':-8.315977512579898e-06,'a2':0.00039212250547851236,
-                        'a1':-0.006006260890940105,'valor_norm':0.0008938270669770386}
+Mi_CPV.iam_CPV_parameters={'a3':-8.315977512579876e-06,'a2': 0.00039212250547851317,
+                        'a1':-0.006006260890940136,'valor_norm':0.0008882140968826235}
 
+# Mi_CPV.uf_parameters={'m1_am':0.172793, 'thld_am':1.285187 ,'m2_am':-0.408000,
+#                       'm_temp':-0.006439, 'thld_temp':15.18,
+#                        'w_am':0.41400000000000003,'w_temp': 0.464}
 
-
-Mi_CPV.uf_parameters={'m1_am':0.172793, 'thld_am':1.285187 ,'m2_am':-0.408000,
-                      'm_temp':-0.006439, 'thld_temp':15.18,
-                      'w_am':0.41400000000000003,'w_temp': 0.464}
-
+Mi_CPV.uf_parameters={'m1_am':0.173885, 'thld_am':1.285187 ,'m2_am':-0.410000,
+                      'm_temp':-0.006480, 'thld_temp':15.180000,
+                        'w_am':0.369,'w_temp': 0.623}
 #'pdc0': 25,'gamma_pdc':-0.005 son para comprobar que fuuncionen las funcione, pero no esta correctamente seleccionado
 Mi_CPV.inverter_parameters={'pdc0': 25, 'eta_inv_nom': 0.96 ,'eta_inv_ref':0.9637}
 
 
 
-
-
-
-tz='Europe/Berlin'
-
-#AOILIMIT
-AOILIMIT=55.0
-pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
-
-
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
-
-
 
 #SE filtran los datos que no correspondan a una tendencia clara de la potencia.
 CPV=df[(df['aoi']<=AOILIMIT)]
@@ -72,20 +61,7 @@ CPV=CPV.set_index(Fecha)
 CPV=CPV.drop(['Date Time'],axis=1)
 CPV_=CPV
 #Se limpian un poco los datos de potencia por medio de la mediana 
-limSup=CPV['aoi'].max()
-limInf=CPV['aoi'].min()
-Rango=limSup-limInf
-n_intervalos=100
-porcent_mediana=20
-incremento=Rango/n_intervalos
-for i in range(n_intervalos):
-    AUX=CPV[CPV['aoi']>limInf+i*incremento]
-    AUX=AUX[AUX['aoi']<=limInf+incremento*(1+i)]
-    Mediana=E.mediana(AUX['PMP_estimated_IIIV (W)'].values)
-    DEBAJO=AUX[AUX['PMP_estimated_IIIV (W)']<(Mediana*(1-porcent_mediana/100))]   
-    CPV=CPV.drop(DEBAJO.index[:],axis=0)
-    ENCIMA=AUX[AUX['PMP_estimated_IIIV (W)']>(Mediana*(1+porcent_mediana/100))]
-    CPV=CPV.drop(ENCIMA.index[:],axis=0)
+CPV=E.mediana_filter(CPV,'aoi','PMP_estimated_IIIV (W)',200,15)
 
 plt.figure(figsize=(30,15))
 plt.plot(CPV_['aoi'],CPV_['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos')
@@ -95,53 +71,40 @@ plt.ylabel('Potencia (III-V)(W)')
 plt.title('Visualizar los datos filtrados por la mediana')
 plt.legend()
 
-
 CPV=E.mediana_filter(data=CPV,colum_intervals='aoi',columna_filter='DII (W/m2)',n_intervalos=20,porcent_mediana=10)
-
-plt.figure(figsize=(30,15))
-plt.plot(CPV['aoi'],CPV['DII (W/m2)'],'o',markersize=2,label='Datos ')
-plt.plot(CPV['aoi'],CPV['DII (W/m2)'],'o',markersize=2,label='Datos filtrado con mediana de DII')
-plt.xlabel('Ángulo de incidencia (º)')
-plt.ylabel('Potencia (III-V)(W)')
-plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
-plt.legend()
-
-# CPV['DII_efectiva_tercer_grado (W/m2)']=CPV['DII (W/m2)']*E.calc_iam(CPV['aoi'].values,'Tercer grado')
-# CPV['DII_efectiva_segundo_grado (W/m2)']=CPV['DII (W/m2)']*E.calc_iam(CPV['aoi'].values,'Segundo grado')
-# CPV['DII_efectiva_primer_grado (W/m2)']=CPV['DII (W/m2)']*E.calc_iam(CPV['aoi'].values,'Primer grado')
-# CPV['ISC_IIIV/DII_efectiva_tercer_grado (W/m2)']=CPV['ISC_measured_IIIV (A)']/CPV['DII_efectiva_tercer_grado (W/m2)']
-# CPV['ISC_IIIV/DII_efectiva_segundo_grado (W/m2)']=CPV['ISC_measured_IIIV (A)']/CPV['DII_efectiva_segundo_grado (W/m2)']
-# CPV['ISC_IIIV/DII_efectiva_primer_grado (W/m2)']=CPV['ISC_measured_IIIV (A)']/CPV['DII_efectiva_primer_grado (W/m2)']
-
-''' lo he comentado para poder ejecutar todo sin tner que ejectuar todo , luego hay que descomentarlo------------------------------------------------ 
-CPV['DII_efectiva_tercer_grado (W/m2)']=CPV['DII (W/m2)']*Mi_CPV.get_iam(CPV['aoi'],iam_model='Tercer grado')
-
+CPV['DII_efectiva (W/m2)']=CPV['DII (W/m2)']*Mi_CPV.get_iam(CPV['aoi'],iam_model='Tercer grado')
 
 fig=plt.figure(figsize=(30,15))
-plt.plot(CPV['aoi'],CPV['DII_efectiva_tercer_grado (W/m2)'],'o',markersize=4,label='DII con iam')   
+plt.plot(CPV['aoi'],CPV['DII_efectiva (W/m2)'],'o',markersize=4,label='DII con iam')   
 plt.plot(CPV['aoi'],CPV['DII (W/m2)'],'o',markersize=4,label='DII')
-plt.xlabel('Ángulo de incidencia (º)')
-plt.ylabel('Irradiancia (W/m2)')
-plt.legend()
-plt.title("Comparación de la irradiancia corregida")
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
+plt.ylabel('Irradiancia (W/m2)',fontsize=30)
+plt.legend(fontsize=30,markerscale=3)
+plt.title("Comparación de la irradiancia corregida",fontsize=40)
 
-#%% Cálculo de la temperatura de cell, no tengo muy claro que el uc sea el correcto
-
-
-temp_cell=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII_efectiva_tercer_grado (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)']) 
+# Cálculo de la temperatura de cell
+temp_cell=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII_efectiva (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)']) 
+# temp_cell=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva (W/m2)'], 
+#                                         temp_air=CPV['T_Amb (ºC)'],
+#                                         wind_speed=CPV['Wind Speed (m/s)'], 
+#                                         u_c=4.5, u_v=0.0, 
+#                                         eta_m=0.32, alpha_absorption=0.9)
 temp_cell_=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)'])
  
 fig=plt.figure(figsize=(30,15))
 plt.plot(CPV.index[:].time,temp_cell,'o',markersize=2,label='Temperatura con DII corregida')   
 plt.plot(CPV.index[:].time,temp_cell_,'o',markersize=2,label='Temperatura con DII')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Horas',fontsize=30)
+plt.ylabel('Temperatura de célula (ºC)',fontsize=30)
+plt.legend(fontsize=30,markerscale=3)
+plt.title("Temperatura de célula a lo largo de las horas de un día ",fontsize=40)
 
-plt.xlabel('Horas')
-plt.ylabel('Temperatura de célula (ºC)')
-plt.legend()
-plt.title("Temperatura de célula a lo largo de las horas de un día ")
 
-#%% Cálculo I_sc y la potencia y comparación con los datos
-Five_parameters=Mi_CPV.calcparams_cpvsyst(CPV['DII_efectiva_tercer_grado (W/m2)'], temp_cell)
+Five_parameters=Mi_CPV.calcparams_cpvsyst(CPV['DII_efectiva (W/m2)'], temp_cell)
 Five_parameters_=Mi_CPV.calcparams_cpvsyst(CPV['DII (W/m2)'], temp_cell_)
 
 Curvas=Mi_CPV.singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
@@ -151,49 +114,106 @@ Curvas_=Mi_CPV.singlediode(photocurrent=Five_parameters_[0], saturation_current=
                                   resistance_series=Five_parameters_[2],resistance_shunt=Five_parameters_[3], 
                                   nNsVth=Five_parameters_[4],ivcurve_pnts=100, method='lambertw')
 
+UF=Mi_CPV.calculate_UF(CPV['airmass_relative'].values,CPV['T_Amb (ºC)'].values,
+             Curvas['p_mp'],CPV['PMP_estimated_IIIV (W)'].values)
 
-Potencia=Curvas['p_mp']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (ºC)'].values)
-Intensidad=Curvas['i_sc']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (ºC)'].values)
-
-
-plt.figure(figsize=(30,15))
-plt.plot(CPV['aoi'],Curvas_['i_sc'],'o',markersize=2,label='Sin IAM')
-plt.plot(CPV['aoi'],Curvas['i_sc'],'o',markersize=2,label='IAM_tercer_grado')
-plt.plot(CPV['aoi'],Intensidad,'o',markersize=2,label='conUF')
-plt.plot(CPV['aoi'],CPV['ISC_measured_IIIV (A)'],'o',markersize=2,label='Datos medidos de ISC_IIIV')
-plt.plot()
-plt.xlabel('Voltaje (III-V) (V)')
-plt.ylabel('Corriente (III-V) (A)')
-plt.title('Curvas I-V para validar el proceso anterior')
-plt.legend()
-
+# Potencia=Curvas['p_mp']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (ºC)'].values)
+Potencia=Curvas['p_mp']*UF
+Diferencia_potencia=Potencia-CPV['PMP_estimated_IIIV (W)'].values
+Diferencia_potencia_=Curvas['p_mp']-CPV['PMP_estimated_IIIV (W)'].values
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
-plt.plot(CPV['aoi'],Curvas_['p_mp'],'o',markersize=2,label='Sin IAM')
-plt.plot(CPV['aoi'],Curvas['p_mp'],'o',markersize=2,label='IAM_tercer_grado')
-plt.plot(CPV['aoi'],Potencia,'o',markersize=2,label='UF')
-plt.xlabel('Ángulo de incidencia (º)')
-plt.ylabel('Puntos de máxima potencia (W)')
-plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del iam')
-plt.legend()
---------------------------------------------------------------------------------------------------------------------'''
+plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos')
+plt.plot(CPV['aoi'],Curvas_['p_mp'],'o',markersize=2,label='Sin corregir')
+plt.plot(CPV['aoi'],Curvas['p_mp'],'o',markersize=2,label='Corregido con IAM')
+plt.plot(CPV['aoi'],Potencia,'o',markersize=2,label='Corregido con IAM y UF')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
+plt.ylabel('Puntos de máxima potencia (W)',fontsize=30)
+plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del iam',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
 
-#%% COMPROBAMOS SI FUNCIONAN LOS MÉTODOS
+RMS_potencia=E.RMSE(CPV['PMP_estimated_IIIV (W)'],Potencia)
 
+plt.figure(figsize=(30,15))
+plt.plot(CPV['aoi'],Diferencia_potencia,'o',markersize=2,label='Error UF')
+plt.plot(CPV['aoi'],Diferencia_potencia_,'o',markersize=2,label='Error IAM')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
+plt.ylabel('Error de potencia (W)',fontsize=30)
+plt.title('Búsqueda de un tendencia del error en función del aoi',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['airmass_relative'],Diferencia_potencia,'o',markersize=2,label='Datos')
+plt.plot(CPV['airmass_relative'],Diferencia_potencia_,'o',markersize=2,label='Datos UF')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Masa del aire (n.d.)',fontsize=30)
+plt.ylabel('Errores de potencia (W)',fontsize=30)
+plt.title('Búsqueda de un tendencia del error en función del aoi',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['T_Amb (ºC)'],Diferencia_potencia,'o',markersize=2,label='Datos')
+plt.plot(CPV['T_Amb (ºC)'],Diferencia_potencia_,'o',markersize=2,label='Datos UF')
+
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Temperatura ambiente (ºC)',fontsize=30)
+plt.ylabel('Errores de potencia (W)',fontsize=30)
+plt.title('Búsqueda de un tendencia del error en función del aoi',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
+
+#%% Se ha observado que por medio del procedimiento se obtienen un errror dependiente del aoi y del airmass
+
+'''
 Data_iam=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/datos_para_calcular.xlsx',sheet_name='Cálculo_iam_CPV',encoding='utf-8')
 Data_am=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/datos_para_calcular.xlsx',sheet_name='Cálculo_uf_am_CPV',encoding='utf-8')
 Data_temp=pd.read_excel('C://Users/juanj/OneDrive/Escritorio/TFG/datos_para_calcular.xlsx',sheet_name='Cálculo_uf_temp_CPV',encoding='utf-8')
 
+df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
+
+#SE filtran los datos que no correspondan a una tendencia clara de la potencia.
+CPV=df[(df['aoi']<=AOILIMIT)]
+Fecha=pd.DatetimeIndex(CPV['Date Time'])
+CPV=CPV.set_index(Fecha)
+CPV=CPV.drop(['Date Time'],axis=1)
+CPV_=CPV 
+CPV=E.mediana_filter(CPV,'aoi','PMP_estimated_IIIV (W)',200,15)
+CPV=E.mediana_filter(data=CPV,colum_intervals='aoi',columna_filter='DII (W/m2)',n_intervalos=20,porcent_mediana=10)
 
 
-Mi_CPV.generate_iam_parameters(Data_iam['aoi'].values, Data_iam['ISC_IIIV/DII (A m2/W)'].values)
-CPV['DII_efectiva_tercer_grado (W/m2)']=CPV['DII (W/m2)']*Mi_CPV.get_iam(CPV['aoi'],iam_model='Tercer grado')
+#Se construye el objeto CPVSystem
+Mi_CPV=CPVClass.CPVSystem(surface_tilt=30, surface_azimuth=180,
+                 AOILIMIT=55.0,albedo=None, surface_type=None,
+                 module=None, module_type='glass_polymer',
+                 module_parameters=None,
+                 temperature_model_parameters=None,
+                 modules_per_string=1, strings_per_inverter=1,
+                 inverter=None, inverter_parameters=None,
+                 racking_model='open_rack', losses_parameters=None, name=None,
+                 iam_parameters=None)
 
-temp_cell=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII_efectiva_tercer_grado (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)']) 
+
+
+Mi_CPV.generate_iam_parameters(Data_iam['aoi'].values, Data_iam['ISC_IIIV/DII (A m2/W)'].values,grado=2)
+
+
+
+#%%
+Mi_CPV.generate_uf_am_parameters(Data_iam['airmass_relative'].values, Data_iam['ISC_IIIV/DII (A m2/W)'].values,grado=2)
+
+
+CPV['DII_efectiva (W/m2)']=CPV['DII (W/m2)']*Mi_CPV.get_iam(CPV['aoi'],iam_model='Tercer grado')
+
+temp_cell=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII_efectiva (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)']) 
 temp_cell_=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)'])
 
-Five_parameters=Mi_CPV.calcparams_cpvsyst(CPV['DII_efectiva_tercer_grado (W/m2)'], temp_cell)
+Five_parameters=Mi_CPV.calcparams_cpvsyst(CPV['DII_efectiva (W/m2)'], temp_cell)
 Five_parameters_=Mi_CPV.calcparams_cpvsyst(CPV['DII (W/m2)'], temp_cell_)
 
 Curvas=Mi_CPV.singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
@@ -335,8 +355,7 @@ plt.legend()
 
 
 
-
-
+'''
 
 
 

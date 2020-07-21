@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,21 +11,17 @@ import pvlib
 pio.renderers.default='browser'
 AOILIMIT=55.0
 # VALOR_NORMALIZAR=0.0009180248205304829
-VALOR_NORMALIZAR=0.0008938270669770386
+VALOR_NORMALIZAR=0.0008882140968826235
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv')
 df_iam=pd.read_csv("C://Users/juanj/OneDrive/Escritorio/TFG/IAM.csv")
 df_iam=df_iam.set_index(df_iam['Unnamed: 0'].values)
 df_iam=df_iam.drop('Unnamed: 0',axis=1)
-
-
 
 filt_df=df[df['aoi']<=AOILIMIT]
 filt_df['DII_efectiva (W/m2)']=filt_df['DII (W/m2)']*E.calc_iam(filt_df['aoi'].values,'Tercer grado')
 filt_df['ISC_IIIV/DII_efectiva (A m2/W)']=filt_df['ISC_measured_IIIV (A)']/filt_df['DII_efectiva (W/m2)']
 filt_x=filt_df['T_Amb (ºC)'].values
 filt_y=filt_df['ISC_IIIV/DII_efectiva (A m2/W)'].values
-
-
 
 fig=plt.figure(figsize=(30,15))
 plt.plot(filt_df['aoi'],filt_df['ISC_IIIV/DII (A m2/W)'],'o',markersize=4,label='Datos de eficiencia de capatación')
@@ -42,32 +36,35 @@ plt.legend(fontsize=30,markerscale=3)
 filt_df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Prueba.csv")
 
 #%% CÓDIGO PARA OBSERVAR LA INFLUENCIA DEL AIRMASS
-# Incremento=1
-# Max_temp=math.ceil(filt_df['airmass_relative'].max())*10
-# Min_temp=math.floor(filt_df['airmass_relative'].min())*10
-# fig=go.Figure()
-# for i in range(Min_temp,Max_temp,Incremento):
-#     AUX=filt_df[(filt_df['airmass_relative']>=float(i/10))]
-#     AUX=AUX[((AUX['airmass_relative'])<(i+Incremento)/10)]    
+Incremento=0.05
+Max_airmass=math.ceil(filt_df['airmass_relative'].max())
+Min_airmass=math.floor(filt_df['airmass_relative'].min())
+fig=go.Figure()
+aux=np.arange(Min_airmass,Max_airmass,Incremento)
+for i in aux:
+    AUX=filt_df[(filt_df['airmass_relative']>=float(i))]
+    AUX=AUX[((AUX['airmass_relative'])<(i+Incremento))]    
 
-#     fig.add_trace(go.Scatter(
-#     y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
-#     x=AUX['T_Amb (ºC)'],
-#     mode='markers',
-#     visible=True,
-#     showlegend=True,
-#     name='airmass '+ str(i/10)
-#     ))
-# fig.update_layout(
-#     title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
-#     xaxis_title="Ángulo de incidencia (º)",
-#     yaxis_title="ISC_IIIV/DII (A m2/W)",
-# )
-# fig.show()
+    fig.add_trace(go.Scatter(
+    y=AUX['ISC_IIIV/DII_efectiva (A m2/W)'],
+    x=AUX['T_Amb (ºC)'],
+    mode='markers',
+    visible=True,
+    showlegend=True,
+    name='airmass '+ str(i)
+    ))
+fig.update_layout(
+    title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
+    xaxis_title="Temperatura (ºC)",
+    yaxis_title="ISC_IIIV/DII (A m2/W)",
+)
+fig.show()
 #%% Cálulco UF_temp
 filt_df_temp=filt_df
-filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']>=1.0)]
-filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']<1.1)]
+# filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']>=1.0)]
+# filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']<1.1)]
+filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']>=1.2)]
+filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']<1.25)]
 
 datos_guardar=pd.DataFrame({'T_Amb (ºC)':filt_df_temp['T_Amb (ºC)'].values,'ISC_IIIV/DII_efectiva (A m2/W)':filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values})
 
@@ -105,17 +102,18 @@ simple_uf= 1 + (filt_df_temp_x - thld) * (a_temp)
 UF_temp=simple_uf
 thld_temp=thld[0]
 
-#dando como resultado tras el normalizado
-#  1+(Temp-thld)*(m/Normalizar)
-# thld=14.67
-# m=-3.35258382e-06
-# valor_normalizar=0.00096
+fig=plt.figure(figsize=(30,15))
+plt.plot(filt_df_temp_x,filt_df_temp_y,'o',markersize=4,label='Datos escogidos')
+plt.plot(filt_df_temp_x,y1_regre,'o',markersize=4,label='Línea de regresión')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Temperatura ambiente (ºC)',fontsize=30)
+plt.ylabel('ISC_IIIV/DII (A m2/W)',fontsize=30)
+plt.title('Cálculo del UF para la temperatura',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
 
 
-
-
-
-#%%CÓDIGO PARA OBSERVAR LAS TENDENDICAS CON TEMPERTAURA, LA VELOCIDAD DEL VIENTO Y SU DIRECCION
+#%%CÓDIGO PARA OBSERVAR LAS TENDENDICAS CON TEMPERTAURA, LA VELOCIDAD DEL VIENTO 
 
 # Incremento=1
 # Max_temp=math.ceil(filt_df_am['T_Amb (ºC)'].max())
@@ -186,7 +184,6 @@ thld_temp=thld[0]
 
 # Si dibujamos la ISC_IIIV/DII_efectiva (A m2/W) en función de la dirección del viento, observamos
 # que existe una mayor densidad de datos, lo que puede indicar mejora de rendimiento en esa situación
-
 
 #%% Cálculo del UF_AM
 filt_df_am=filt_df
@@ -299,22 +296,23 @@ UF_am=simple_uf
 # UF_am=np.concatenate((simple_uf_low,simple_uf_high))
 # x_am=np.concatenate((x_low,x_high))
 
-#%%Compruebo con un segundo grado
+#%% Esto es una prueba, como el airmass es está muy liguado al aoi, puede que este comportamiento
+# se defina mejor con una regresión de segundo grado o tercero, como sucede con el IAM.
 
-x=filt_df['airmass_relative'].values
-y=filt_df['ISC_IIIV/DII (A m2/W)'].values
-yr, RR, a_s, b=E.regresion_polinomica(x, y, 2)
+# x=filt_df['airmass_relative'].values
+# y=filt_df['ISC_IIIV/DII (A m2/W)'].values
+# yr, RR, a_s, b=E.regresion_polinomica(x, y, 2)
 
-fig=plt.figure(figsize=(30,15))
-plt.plot(x,y,'o',markersize=4)
-plt.plot(x,yr,'o',markersize=4)
-plt.xticks(fontsize=30)
-plt.yticks(fontsize=30)
-plt.xlabel('airmass (n.d.)',fontsize=30)
-plt.ylabel('ISC_IIIV/DII (A m2/W)',fontsize=30)
-plt.title('Regresión polinómica de grado 2',fontsize=40)
-plt.legend(fontsize=30,markerscale=3)
-print('El coeficiente de determinación es de: ', str(RR))
+# fig=plt.figure(figsize=(30,15))
+# plt.plot(x,y,'o',markersize=4)
+# plt.plot(x,yr,'o',markersize=4)
+# plt.xticks(fontsize=30)
+# plt.yticks(fontsize=30)
+# plt.xlabel('airmass (n.d.)',fontsize=30)
+# plt.ylabel('ISC_IIIV/DII (A m2/W)',fontsize=30)
+# plt.title('Regresión polinómica de grado 2',fontsize=40)
+# plt.legend(fontsize=30,markerscale=3)
+# print('El coeficiente de determinación es de: ', str(RR))
 
 
 #SE OBTIENE UN RR=0.8549227924488301 Y SIN LA NECESIDAD DE THLD NI DE SEGUNDAS REGRESIONES
@@ -393,18 +391,6 @@ x_high=filt_df_high['airmass_relative'].values
 
 y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR  
 
-
-
-
-'''  Los mejors resultados han sido:
-        thld=1.1355029758362343
-        RR=0.1476449374269485
-        a_low=0.3146154685597937
-        a_high=-0.27199999999999935
-        b_low=0.560213035356623
-        b_high=1.2261536696305373
-
-'''
 y_producida_low=x_low*a_final_low+b_final_low
 
 
@@ -426,6 +412,7 @@ plt.xlabel('airmass (n.d.)',fontsize=30)
 plt.ylabel('ISC_IIIV/DII (A m2/W)',fontsize=30)
 plt.title('Comparación de las dos modelos de UF para el airmass',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)      
+
 #%%ahora hay que aplicar el método de UF
 x=filt_df_am['airmass_relative'].values
 y=filt_df_am['ISC_IIIV/DII (A m2/W)'].values
