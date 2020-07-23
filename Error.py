@@ -1,4 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue May 26 09:41:15 2020
 
+@author: juanj
+"""
 
 import numpy as np#para trabajas con vectores mucho más rapido
 import pvlib
@@ -7,7 +12,6 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 import math
-
 
 def promedio(datos):
     sumatoria = sum(datos)
@@ -77,14 +81,12 @@ def Determination_coefficient(datos,estimaciones):
     except ZeroDivisionError:
         print('No se puede realizar una division por cero')
         return 1
-    
-    
+
 def RMSE(datos, estimaciones):
     Error_cuadrado=(datos-estimaciones)**2
     rmse=math.sqrt((sum(Error_cuadrado))/len(datos))
     return rmse
-    
-    
+
 def crear_estimaciones(a_s,b,x):
 #como el vector que devuelve la recta de regresión es siempre [0, a1,a2...]
 #eesta funcion no sirve para la de marcos
@@ -93,10 +95,6 @@ def crear_estimaciones(a_s,b,x):
     elif (np.count_nonzero(a_s)==2):
         y_estimados=a_s[2]*x**2+a_s[1]*x+b
     return y_estimados
-
-    
-    
-    
 #############################################Regresiones
 def regresion_lineal(x,y):
     # coeficientes de regresion
@@ -138,8 +136,6 @@ def regresion_polinomica(x,y,grado):
         RR=Determination_coefficient(y,Y_pred)
     return Y_pred,RR, pr.coef_, pr.intercept_
 
-
-
 def regresion_martin_ruiz(aoi,datos):
     a_r=1
     RR=0.0
@@ -153,7 +149,6 @@ def regresion_martin_ruiz(aoi,datos):
             a_r=a_r+100
     return IAM_martin_ruiz,RR,a_r
 
-
 def regresion_ashrae(aoi,datos):
     b=0.0
     RR=0.0
@@ -166,7 +161,6 @@ def regresion_ashrae(aoi,datos):
             RR=RR_nuevo
             b=b+0.0001
     return IAM_ashrae,RR,b
-
 
 def regresion_physical(aoi, datos):
     x=aoi
@@ -201,34 +195,6 @@ def regresion_physical(aoi, datos):
     IAM_physical=pvlib.iam.physical(aoi=x, n=float(Valores['n']),K=float(Valores['k']), L=float(Valores['l']))
     return IAM_physical,float(Valores['RR']),float(Valores['n']),float(Valores['k']),float(Valores['l'])
 
-# def obtención_dii_efectiva(datos,regresion):
-#     df_iam=pd.read_excel("C://Users/juanj/OneDrive/Escritorio/TFG/IAM.xls",encoding='utf-8', dtype={'Segundo grado': np.ndarray})
-#     df_iam=df_iam.set_index(df_iam['Unnamed: 0'].values)
-#     df_iam=df_iam.drop('Unnamed: 0',axis=1)
-#     if regresion=='Segundo grado':
-#           IAM_c=(df_iam['Segundo grado']['a_s'][2]*datos**2+df_iam['Segundo grado']['a_s'][1]*datos+df_iam['Segundo grado']['b'])
-        
-#     elif regresion=='Primer grado':
-#         1
-#     elif regresion=='Tercer grado':
-#         1
-#     # a1=1.45965860e-05
-#     # a2=-3.50234258e-07
-#     # b=0.0007236846839700705
-#     # IAM=(datos*a1+datos**2*a2+b)/Valor_normalizar
-#     return IAM
-def obtencion_dii_efectiva(datos):
-    a1=-9.79645026e-03*0.0009180248205304829/0.00096
-    a2=5.17456391e-04*0.0009180248205304829/0.00096
-    a3=-9.47190593e-06*0.0009180248205304829/0.00096
-    b=1.0*0.0009180248205304829/0.00096
-    IAM=(a3*datos**3+a2*datos**2+a1*datos+b)
-    return IAM
-
-
-#calcula el iam con los parametros obtenidos tras el estudio de los datos.
-#faltaría añadir los tres posibles cálculos de iam implementados en pvlib. Aunque se demostró que se determinaba
-#mejor el comportamiento con las regrsiones lineales
 def calc_iam(datos,tipo):
     
     df_iam=pd.read_csv("C://Users/juanj/OneDrive/Escritorio/TFG/IAM.csv")
@@ -258,6 +224,7 @@ def calc_iam(datos,tipo):
             else:
                 IAM.append(a1_high*datos[i]+b_high)
     return IAM
+
 def calc_iam_Si(datos,tipo):
     
     df_iam=pd.read_csv("C://Users/juanj/OneDrive/Escritorio/TFG/IAM_Si.csv")
@@ -287,6 +254,7 @@ def calc_iam_Si(datos,tipo):
             else:
                 IAM.append(a1_high*datos[i]+b_high)
     return IAM
+
 def mediana_filter(data,colum_intervals,columna_filter,n_intervalos, porcent_mediana):
     limSup=data[colum_intervals].max()
     limInf=data[colum_intervals].min()
@@ -302,15 +270,6 @@ def mediana_filter(data,colum_intervals,columna_filter,n_intervalos, porcent_med
         data=data.drop(ENCIMA.index[:],axis=0)
     return data
         
-# def obtencion_dii_efectiva(datos):
-#     a1=-9.79645026e-03
-#     a2=5.17456391e-04
-#     a3=-9.47190593e-06
-#     b=1.0
-#     IAM=(a3*datos**3+a2*datos**2+a1*datos+b)
-#     return IAM
-
-
 
 
     

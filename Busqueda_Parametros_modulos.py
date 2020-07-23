@@ -8,7 +8,6 @@ Created on Fri Jun 26 09:35:03 2020
 import pvlib
 import pandas as pd
 import matplotlib.pyplot as plt
-
 tz='Europe/Berlin'
 #AOILIMIT
 AOILIMIT=55.0

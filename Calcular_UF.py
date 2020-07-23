@@ -7,7 +7,6 @@ import Error as E
 import plotly.graph_objects as go
 import plotly.io as pio
 import math
-import pvlib
 pio.renderers.default='browser'
 AOILIMIT=55.0
 # VALOR_NORMALIZAR=0.0009180248205304829
@@ -160,8 +159,13 @@ plt.title('Cálculo del UF para la temperatura',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
 
 
+x=filt_df_temp_x.tolist()
+
+x_dibujar=sorted(x)
+UF_temp_dibujar=sorted(UF_temp, reverse=True)
+
 fig=plt.figure(figsize=(30,15))
-plt.plot(filt_df_temp_x,simple_uf,'o',markersize=4,label='Datos escogidos')
+plt.plot(filt_df_temp_x,simple_uf,'-',markersize=4)
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Temperatura ambiente (ºC)',fontsize=30)
@@ -417,9 +421,13 @@ for i in range(len(x)):
 
     else:
         UF_am.append(1 + ( x[i]- thld) * (a_final_high))
+        
+x_dibujar=sorted(x)
+UF_am_dibujar=sorted(UF_am, reverse=True)
+
     
 fig=plt.figure(figsize=(30,15))
-plt.plot(x,UF_am,'o',markersize=4)
+plt.plot(x_dibujar,UF_am_dibujar,'-',markersize=4)
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Masa de aire (n.d.)',fontsize=30)

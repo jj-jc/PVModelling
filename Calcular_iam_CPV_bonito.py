@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import math
 import Error 
 import plotly.graph_objects as go
-from mpl_toolkits.axes_grid1 import host_subplot
 #Sentencia para poder expresar las gráfcas en plotly
 import plotly.io as pio
 pio.renderers.default='browser'
