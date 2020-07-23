@@ -44,9 +44,14 @@ Mi_CPV.iam_CPV_parameters={'a3':-8.315977512579876e-06,'a2': 0.00039212250547851
 #                       'm_temp':-0.006439, 'thld_temp':15.18,
 #                        'w_am':0.41400000000000003,'w_temp': 0.464}
 
-Mi_CPV.uf_parameters={'m1_am':0.173885, 'thld_am':1.285187 ,'m2_am':-0.410000,
+# Mi_CPV.uf_parameters={'m1_am':0.173885, 'thld_am':1.285187 ,'m2_am':-0.410000,
+#                       'm_temp':-0.006480, 'thld_temp':15.180000,
+#                         'w_am':0.369,'w_temp': 0.623}
+Mi_CPV.uf_parameters={'m1_am':-0.1448392843942126, 'thld_am':1.2432864275564657 ,'m2_am':-0.7409999999999998,
                       'm_temp':-0.006480, 'thld_temp':15.180000,
-                        'w_am':0.369,'w_temp': 0.623}
+                        'w_am':0,'w_temp': 0}
+
+
 #'pdc0': 25,'gamma_pdc':-0.005 son para comprobar que fuuncionen las funcione, pero no esta correctamente seleccionado
 Mi_CPV.inverter_parameters={'pdc0': 25, 'eta_inv_nom': 0.96 ,'eta_inv_ref':0.9637}
 
@@ -121,6 +126,7 @@ UF=Mi_CPV.calculate_UF(CPV['airmass_relative'].values,CPV['T_Amb (ºC)'].values,
 Potencia=Curvas['p_mp']*UF
 Diferencia_potencia=Potencia-CPV['PMP_estimated_IIIV (W)'].values
 Diferencia_potencia_=Curvas['p_mp']-CPV['PMP_estimated_IIIV (W)'].values
+Diferencia_potencia_dat=Curvas_['p_mp']-CPV['PMP_estimated_IIIV (W)'].values
 
 plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],CPV['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos')
@@ -136,9 +142,11 @@ plt.legend(fontsize=30,markerscale=3)
 
 RMS_potencia=E.RMSE(CPV['PMP_estimated_IIIV (W)'],Potencia)
 
+
 plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],Diferencia_potencia,'o',markersize=2,label='Error UF')
 plt.plot(CPV['aoi'],Diferencia_potencia_,'o',markersize=2,label='Error IAM')
+plt.plot(CPV['aoi'],Diferencia_potencia_dat,'o',markersize=2,label='Error')
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
@@ -147,8 +155,8 @@ plt.title('Búsqueda de un tendencia del error en función del aoi',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['airmass_relative'],Diferencia_potencia,'o',markersize=2,label='Datos')
-plt.plot(CPV['airmass_relative'],Diferencia_potencia_,'o',markersize=2,label='Datos UF')
+plt.plot(CPV['airmass_relative'],Diferencia_potencia,'o',markersize=2,label='Error UF')
+plt.plot(CPV['airmass_relative'],Diferencia_potencia_,'o',markersize=2,label='Error IAM')
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Masa del aire (n.d.)',fontsize=30)
@@ -158,14 +166,18 @@ plt.legend(fontsize=30,markerscale=3)
 
 plt.figure(figsize=(30,15))
 plt.plot(CPV['T_Amb (ºC)'],Diferencia_potencia,'o',markersize=2,label='Datos')
-plt.plot(CPV['T_Amb (ºC)'],Diferencia_potencia_,'o',markersize=2,label='Datos UF')
-
+plt.plot(CPV['T_Amb (ºC)'],Diferencia_potencia_,'o',markersize=2,label='Error IAM')
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Temperatura ambiente (ºC)',fontsize=30)
 plt.ylabel('Errores de potencia (W)',fontsize=30)
 plt.title('Búsqueda de un tendencia del error en función del aoi',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
+
+
+
+
+
 
 
 #%% Se ha observado que por medio del procedimiento se obtienen un errror dependiente del aoi y del airmass

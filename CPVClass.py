@@ -632,7 +632,11 @@ class CPVSystem(object):
         UF_am=[]
         for i in range(len(airmass)):
             if airmass[i]<=self.uf_parameters['thld_am']:
-                UF_am.append(1 + ( airmass[i]- self.uf_parameters['thld_am']) * (self.uf_parameters['m1_am']))
+                aux=1 + ( airmass[i]- self.uf_parameters['thld_am']) * (self.uf_parameters['m1_am'])
+                if (aux>1):
+                    UF_am.append(1)
+                else:
+                    UF_am.append(aux)
             else:
                 UF_am.append(1 + ( airmass[i]- self.uf_parameters['thld_am']) * (self.uf_parameters['m2_am']))
         UF_am=np.array(UF_am)
