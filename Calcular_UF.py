@@ -37,8 +37,8 @@ filt_df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Prueba.csv")
 
 #%% CÓDIGO PARA OBSERVAR LA INFLUENCIA DEL AIRMASS
 filt_df_temp=filt_df
-filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']>=1.0)]
-filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']<1.1)]
+# filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']>=1.0)]
+# filt_df_temp=filt_df_temp[(filt_df_temp['airmass_relative']<1.1)]
 Incremento=0.05
 Max_airmass=math.ceil(filt_df_temp['airmass_relative'].max())
 Min_airmass=math.floor(filt_df_temp['airmass_relative'].min())
@@ -57,7 +57,7 @@ for i in aux:
     name='airmass '+ str(i)
     ))
 fig.update_layout(
-    title="Isc_IIIV/DII en función del ángulo de incidencia, divido por intervalos de temperatura",
+    title="Isc_IIIV/DII en función de la temperatura ambiente, divido por intervalos de masa de aire",
     xaxis_title="Temperatura (ºC)",
     yaxis_title="ISC_IIIV/DII (A m2/W)",
 )
@@ -160,13 +160,17 @@ plt.title('Cálculo del UF para la temperatura',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
 
 
+fig=plt.figure(figsize=(30,15))
+plt.plot(filt_df_temp_x,simple_uf,'o',markersize=4,label='Datos escogidos')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Temperatura ambiente (ºC)',fontsize=30)
+plt.ylabel('Factor de utilización (n.d.)',fontsize=30)
+plt.title('Factor de utilización para la temperatura',fontsize=40)
+
 #%%CÓDIGO PARA OBSERVAR LAS TENDENDICAS CON TEMPERTAURA, LA VELOCIDAD DEL VIENTO Y DIRECCION DE ESTE 
-
-
 filt_df=filt_df[filt_df['T_Amb (ºC)']>=19]
 filt_df=filt_df[filt_df['T_Amb (ºC)']<22]
-
-
 Incremento=1
 Max_temp=math.ceil(filt_df['T_Amb (ºC)'].max())
 Min_temp=math.floor(filt_df['T_Amb (ºC)'].min())
@@ -188,8 +192,6 @@ fig.update_layout(
     xaxis_title="Ángulo de incidencia (º)",
     yaxis_title="ISC_IIIV/DII (A m2/W)",
 )
-
-
 fig.show()
 
 Incremento=0.1
@@ -214,11 +216,7 @@ fig.update_layout(
     xaxis_title="Ángulo de incidencia (º)",
     yaxis_title="ISC_IIIV/DII (A m2/W)",
 )
-
-
 fig.show()
-
-
 Incremento=10
 Max_temp=math.ceil(filt_df['Wind Dir. (m/s)'].max())
 Min_temp=math.floor(filt_df['Wind Dir. (m/s)'].min())
@@ -241,8 +239,6 @@ fig.update_layout(
     xaxis_title="Ángulo de incidencia (º)",
     yaxis_title="ISC_IIIV/DII (A m2/W)",
 )
-
-
 fig.show()
 # #al observar el scatter, se observan como dos líneas de tendencias, pero no parecen que se la tempera amb 
 # # la causa de tales tendencias. Puede ser perfectamente la temperatura de trabajo de la célula, que debido 
@@ -282,7 +278,6 @@ filt_df_am=filt_df_am[filt_df_am['T_Amb (ºC)']<22]
 
 
 #filtrado para búsqueda de la línea de tendencia:
-
 filtrado_eliminar=filt_df_am[filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)']<0.00085]
 filtrado_eliminar=filtrado_eliminar[filtrado_eliminar['airmass_relative']<1.3]                  
 filt_df_am=filt_df_am.drop(filtrado_eliminar.index[:],axis=0)
@@ -300,99 +295,6 @@ plt.ylabel('ISC_IIIV/DII (A m2/W)',fontsize=30)
 plt.xlabel('Airmass (n.d.)',fontsize=30)
 plt.title('Datos escogidos de la nube de puntos',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
-
-
-# aux=np.arange(filt_df_am['airmass_relative'].min(),filt_df_am['airmass_relative'].max(),0.001) 
-# thld=30
-# RR_max=0.01
-# for i in aux:
-#     filt_df_low=filt_df_am[filt_df_am['airmass_relative']<=i]
-#     filt_df_high=filt_df_am[filt_df_am['airmass_relative']>i]
-
-#     x_low=filt_df_low['airmass_relative'].values
-#     y_low=filt_df_low['ISC_IIIV/DII_efectiva (A m2/W)'].values
-#     yr_low, RR_low, a_s_low, b_low=E.regresion_polinomica(x_low, y_low, 1)
-    
-    
-#     x_high=filt_df_high['airmass_relative'].values
-#     y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values
-#     yr_high, RR_high, a_s_high, b_high=E.regresion_polinomica(x_high, y_high, 1)
-    
-
-#     y_datos=filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)'].values
-#     y=np.concatenate((y_low,y_high))
-#     yr=np.concatenate((yr_low,yr_high))
-#     xr=np.concatenate((x_low,x_high))
-#     RR=E.Determination_coefficient(y,yr)   
-#     if RR_max < RR:
-#         RR_max=RR
-#         thld=i
-        
-        
-        
-# filt_df_low=filt_df_am[filt_df_am['airmass_relative']<=thld]
-# filt_df_high=filt_df_am[filt_df_am['airmass_relative']>thld]
-
-# x_low=filt_df_low['airmass_relative'].values
-# y_low=filt_df_low['ISC_IIIV/DII_efectiva (A m2/W)'].values
-# yr_low, RR_low, a_s_low, b_low=E.regresion_polinomica(x_low, y_low, 1)
-
-# x_high=filt_df_high['airmass_relative'].values
-# y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values
-# yr_high, RR_high, a_s_high, b_high=E.regresion_polinomica(x_high, y_high, 1)
-
-
-# y_total=np.concatenate((y_low,y_high))
-# yr_total=np.concatenate((yr_low,yr_high))
-# RR=E.Determination_coefficient(y_total, yr_total)
-# #asi vemos de un color los datos y de otro las regresiones
-# # fig=plt.figure(figsize=(30,15))
-# # plt.plot(x,y_datos,'o',markersize=4,label='Datos primera parte')
-# # plt.plot(xr,yr,'o',markersize=4,label='Datos primera parte')
-# # plt.title('Regresión polinómica')
-# # plt.legend()
-
-# #asi vemos de cada color cada regresion
-# fig=plt.figure(figsize=(30,15))
-# plt.plot(x_low,y_low,'o',markersize=4,label='Datos por debajo de thdl')
-# plt.plot(x_low,yr_low,'o',markersize=4,label='Regresión por debajo de thdl')
-# plt.plot(x_high,y_high,'o',markersize=4,label='Datos por encima de thdl')
-# plt.plot(x_high,yr_high,'o',markersize=4,label='Regresion por encima de thdl')
-# plt.xticks(fontsize=30)
-# plt.yticks(fontsize=30)
-# plt.xlabel('Airmass (n.d.)', fontsize=30)
-# plt.ylabel('ISC_IIIV/DII (A m2/W)', fontsize=30)
-# plt.title('Cáculo del UF para airmass', fontsize=40)
-# plt.legend(fontsize=30,markerscale=3)
-# print('El coeficiente de determinación por debajo de thdl : ', str(RR_low))
-# print('El coeficiente de determinación por encima de thdl : ', str(RR_high))
-# print('El coeficiente de determinación total : ', str(RR))
-
-# thld_low=filt_x.min()
-
-# y_low_min=float(1 + (x_low[np.where(yr_low==yr_low.min())] - thld_low) * (a_s_low[1])/VALOR_NORMALIZAR)
-
-
-# simple_uf=[]
-# for i in filt_df_am['airmass_relative'].values:
-#     if i < thld:
-#         simple_uf.append(float(1 + (i - thld_low) * (a_s_low[1])/VALOR_NORMALIZAR))
-
-
-#     else:
-#         simple_uf.append(float(y_low_min + ((i - thld) * a_s_high[1])/VALOR_NORMALIZAR))
-        
-
-
-# UF_am=simple_uf
-# # fig=plt.figure(figsize=(30,15))
-# # plt.plot(x_low,simple_uf_low,'o',markersize=4,label='Datos primera parte')
-# # plt.plot(x_high,simple_uf_high,'o',markersize=4,label='Datos primera parte')
-
-
-# # UF_am=np.concatenate((simple_uf_low,simple_uf_high))
-# # x_am=np.concatenate((x_low,x_high))
-
 #%% Esto es una prueba, como el airmass es está muy liguado al aoi, puede que este comportamiento
 # se defina mejor con una regresión de segundo grado o tercero, como sucede con el IAM.
 
@@ -472,12 +374,7 @@ for j in thlds:
                 a_final_low=a_s_low[1]
                 b_final_low=b_low
                 b_final_high=yr_low.max()+(-thld)*a_final_high
-                # print(y_max)
-                # print(x_low.min())
-                
-                
-                
-                
+            
 filt_df_low=filt_df_am[filt_df_am['airmass_relative']<=thld]
 filt_df_high=filt_df_am[filt_df_am['airmass_relative']>thld]
 
@@ -493,16 +390,11 @@ y_producida_low=x_low*a_final_low+b_final_low
 
 y_producida_high=x_high*a_final_high+b_final_high
 
-
-
 #%%
 fig=plt.figure(figsize=(30,15))
-# plt.plot(x,simple_uf,'o',markersize=4,label='Datos primera parte')
 plt.plot(x_low,y_producida_low,'o',markersize=4,label='De forma polinómica de grado 2')
 plt.plot(x_high,y_producida_high,'o',markersize=4,label='De forma polinómica de grado 2')
 plt.plot(filt_df_am['airmass_relative'],filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)']/VALOR_NORMALIZAR,'o',markersize=4,label='De forma polinómica de grado 2')
-# plt.plot(x_high,y_aux,'o',markersize=4,label='De forma polinómica de grado 2')
-# plt.plot(x_high,y_high,'o',markersize=4,label='De forma polinómica de grado 2')
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('airmass (n.d.)',fontsize=30)
@@ -525,21 +417,19 @@ for i in range(len(x)):
 
     else:
         UF_am.append(1 + ( x[i]- thld) * (a_final_high))
-        
-
+    
 fig=plt.figure(figsize=(30,15))
-plt.plot(x,UF_am,'o',markersize=4,label='Datos primera parte')
+plt.plot(x,UF_am,'o',markersize=4)
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
-plt.xlabel('airmass (n.d.)',fontsize=30)
-plt.title('Resultado de los UF',fontsize=40)
-plt.legend(fontsize=30,markerscale=3) 
+plt.xlabel('Masa de aire (n.d.)',fontsize=30)
+plt.ylabel('Factor de utilización (n.d.)',fontsize=30)
+plt.title('Factor de utilización para la ma',fontsize=40)
+
 #%%Recojo los UF obtenidos y los guardo en un archivo csv
 UF=pd.DataFrame(columns={'UF_am_low','UF_am_high','UF_temp'},index=['a','thld','RR'])
-
 UF['UF_am_low']=[a_final_low,thld,RR_max]
 UF['UF_am_high']=[a_final_high,thld,RR_max]
 UF['UF_temp']=[a_temp,thld_temp,RR_temp]
-
 UF.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/UF.csv")
 
