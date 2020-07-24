@@ -360,8 +360,8 @@ CPV_location=Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
 
 
 
-localized_Mi_CPV=CPVClass.LocalizedCPVSystem(Mi_CPV,CPV_location)
-# Hola=localized_Mi_CPV.get_iam(CPV['aoi'],iam_model='Tercer grado')
+localized_Mi_CPV=CPVClass.LocalizedCPVSystem(cpvsystem=Mi_CPV,second_object=CPV_location)
+Hola=localized_Mi_CPV.get_iam(CPV['aoi'],iam_model='Tercer grado')
 
 # Hola=localized_Mi_CPV.get_aoi(solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'])
 
