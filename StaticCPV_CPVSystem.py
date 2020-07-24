@@ -51,7 +51,7 @@ Mi_CPV.uf_parameters={'m1_am':-0.1448392843942126, 'thld_am':1.2432864275564657 
                       'm_temp':-0.006480, 'thld_temp':15.180000,
                         'w_am':0,'w_temp': 0}
 
-
+'''
 #'pdc0': 25,'gamma_pdc':-0.005 son para comprobar que fuuncionen las funcione, pero no esta correctamente seleccionado
 Mi_CPV.inverter_parameters={'pdc0': 25, 'eta_inv_nom': 0.96 ,'eta_inv_ref':0.9637}
 
@@ -177,7 +177,7 @@ plt.legend(fontsize=30,markerscale=3)
 
 
 
-
+'''
 
 
 #%% Se ha observado que por medio del procedimiento se obtienen un errror dependiente del aoi y del airmass
@@ -346,28 +346,27 @@ plt.title('Residuos de las potencias calculadas con los datos estimados')
 plt.legend()
 
 
-
+'''
 
 #%% LOCALIZED SYSTEM
-# #Datos:
-# #localización
-# lat=40.453
-# lon=-3.727
-# alt=667
-# tz='Europe/Berlin'
+#Datos:
+#localización
+lat=40.453
+lon=-3.727
+alt=667
+tz='Europe/Berlin'
 
-# CPV_location=Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
+CPV_location=Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
 
 
 
-# localized_Mi_CPV=PVClass.LocalizedCVSystem(Mi_CPV,CPV_location)
+localized_Mi_CPV=CPVClass.LocalizedCPVSystem(Mi_CPV,CPV_location)
 # Hola=localized_Mi_CPV.get_iam(CPV['aoi'],iam_model='Tercer grado')
 
 # Hola=localized_Mi_CPV.get_aoi(solar_zenith=Solar_position['zenith'], solar_azimuth=Solar_position['azimuth'])
 
 
 
-'''
 
 
 

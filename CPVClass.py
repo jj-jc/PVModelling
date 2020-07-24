@@ -48,7 +48,7 @@ def _combine_localized_attributes(cpvsystem=None, location=None, **kwargs):
     return new_kwargs
 
 
-def _combine_system_attributes(cpvsystem=None, flat_cpvsystem=None, **kwargs):
+def _combine_attributes(cpvsystem=None, flat_cpvsystem=None, **kwargs):
     """
     Get and combine attributes from the pvsystem and/or location
     with the rest of the kwargs.
@@ -761,7 +761,7 @@ class LocalizedCPVSystem(CPVSystem, Location):
 
     def __init__(self, cpvsystem=None, location=None, **kwargs):
 
-        new_kwargs = _combine_localized_attributes(
+        new_kwargs = _combine_attributes(
             cpvsystem=cpvsystem,
             location=location,
             **kwargs,
@@ -1102,7 +1102,7 @@ class LocalizedFlat_CPVSystem(Flat_CPVSystem, Location):
 
     def __init__(self, cpvsystem=None, location=None, **kwargs):
 
-        new_kwargs = _combine_localized_attributes(
+        new_kwargs = _combine_attributes(
             cpvsystem=cpvsystem,
             location=location,
             **kwargs,
@@ -1157,7 +1157,7 @@ class LocalizedHybridSystem(HybridSystem, Location):
 
     def __init__(self, cpvsystem=None, location=None, **kwargs):
 
-        new_kwargs = _combine_localized_attributes(
+        new_kwargs = _combine_attributes(
             cpvsystem=cpvsystem,
             location=location,
             **kwargs,

@@ -360,7 +360,7 @@ for j in thlds:
     y_high=filt_df_high['ISC_IIIV/DII_efectiva (A m2/W)'].values/VALOR_NORMALIZAR  
     
     #y_regresion=mx+b donde la b=y_max
-    m=np.arange(-1,-0.001,0.001)
+    m=np.arange(-1,-0.001,0.0001)
     # yr_high=pd.DataFrame({'x_desplazado': x_desplazado})
     for i in range(len(m)):
         yr_high=x_desplazado*m[i]+y_max
