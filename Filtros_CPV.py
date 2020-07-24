@@ -61,37 +61,46 @@ IAM=pd.DataFrame({'aoi':x_regresion,'ISC_IIIV/DII (A m2/W)':y_regresion})
 
 #%% La parte del uf_temp
 
-
 Data_UF_temp=df
 Data_UF_temp=Data_UF_temp[(Data_UF_temp['airmass_relative']>=1.0)]
 Data_UF_temp=Data_UF_temp[(Data_UF_temp['airmass_relative']<1.1)]
-# filt_x=filt_df_temp['T_Amb (ºC)'].values
-# filt_y=filt_df_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values
 
 UF_temp=pd.DataFrame({'T_Amb (ºC)':Data_UF_temp['T_Amb (ºC)'].values,'ISC_IIIV/DII_efectiva (A m2/W)':Data_UF_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values})
 
 #%% La parte del uf_am
 
-
 Data_UF_am=df
-Data_UF_am=Data_UF_am[Data_UF_am['Wind Speed (m/s)']>=0.9]
-Data_UF_am=Data_UF_am[Data_UF_am['Wind Speed (m/s)']<1.1]
-Data_UF_am=Data_UF_am[Data_UF_am['T_Amb (ºC)']>=20]
-Data_UF_am=Data_UF_am[Data_UF_am['T_Amb (ºC)']<28]
-
+Data_UF_am=Data_UF_am[Data_UF_am['T_Amb (ºC)']>=19]
+Data_UF_am=Data_UF_am[Data_UF_am['T_Amb (ºC)']<22]
 UF_am=pd.DataFrame({'airmass':Data_UF_am['airmass_relative'].values,'ISC_IIIV/DII_efectiva (A m2/W)':Data_UF_am['ISC_IIIV/DII_efectiva (A m2/W)'].values})
 
 
-#%% PARA LOS de silicio
+#%% La parte de Si
 
-df_si=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_Si.csv',encoding='utf-8')
+
+df_si=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/filt_df_Si.csv',encoding='utf-8')
+# Smaller AOILIMIT
+smaller_AOI=df_si[(df_si['aoi']<AOILIMIT)]
+
+smaller_AOI=smaller_AOI[smaller_AOI['T_Amb (ºC)']>=30.0]
+# smaller_AOI=smaller_AOI[smaller_AOI['T_Amb (ºC)']>=30]
+smaller_AOI=smaller_AOI[smaller_AOI['Wind Speed (m/s)']>=0.8]
+smaller_AOI=smaller_AOI[smaller_AOI['Wind Speed (m/s)']<1.2]
+smaller_AOI=smaller_AOI[smaller_AOI['Wind Dir. (m/s)']>=79.0]
+smaller_AOI=smaller_AOI[smaller_AOI['Wind Dir. (m/s)']<=150.0]
+
+Data_smaller_Si=pd.DataFrame({'aoi':smaller_AOI['aoi'].values,'ISC_Si/Irra_vista (A m2/W)':smaller_AOI['ISC_Si/Irra_vista (A m2/W)'].values})
+
+
+# greater AOILIMT
 
 greater_AOI=df_si[(df_si['aoi']>AOILIMIT)]
 
-#%% IAM
+greater_AOI=greater_AOI[greater_AOI['T_Amb (ºC)']>=30.0]
+greater_AOI=greater_AOI[greater_AOI['T_Amb (ºC)']<32]
 
 
-
+Data_greater_Si=pd.DataFrame({'aoi':greater_AOI['aoi'].values,'ISC_Si/Irra_vista (A m2/W)':greater_AOI['ISC_Si/Irra_vista (A m2/W)'].values})
 
 
 
@@ -102,5 +111,7 @@ writer = pd.ExcelWriter('C://Users/juanj/OneDrive/Escritorio/TFG/datos_para_calc
 IAM.to_excel(writer, sheet_name='Cálculo_iam_CPV')
 UF_am.to_excel(writer, sheet_name='Cálculo_uf_am_CPV')
 UF_temp.to_excel(writer, sheet_name='Cálculo_uf_temp_CPV')
+Data_smaller_Si.to_excel(writer, sheet_name='Cálculo_iam_Si_smaller')
+Data_greater_Si.to_excel(writer, sheet_name='Cálculo_iam_Si_greater')
 writer.save()
 writer.close()
