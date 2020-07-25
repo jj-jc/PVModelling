@@ -421,7 +421,7 @@ print('El coeficiente de determinación para la regresión de tercer grado es: '
 
 
 #%% ASIGNAMOS EL VALOR_NORMALIZAR
-VALOR_NORMALIZAR=y_2.max()
+VALOR_NORMALIZAR=0.00515
 # VALOR_NORMALIZAR=y_poli3.max()
 iam1_low=[a_s_low[1]/VALOR_NORMALIZAR,0,0,b_low/VALOR_NORMALIZAR,thld,RR_low]
 iam1_high=[a_s_high[1]/VALOR_NORMALIZAR,0,0,b_high/VALOR_NORMALIZAR,0,RR_low]

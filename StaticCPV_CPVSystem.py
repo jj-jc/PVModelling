@@ -19,13 +19,13 @@ AOILIMIT=55.0
 
 #Se construye el objeto CPVSystem
 Mi_CPV=CPVClass.CPVSystem(surface_tilt=30, surface_azimuth=180,
-                 AOILIMIT=55.0,albedo=None, surface_type=None,
-                 module=None, module_type='glass_polymer',
+                 albedo=None, surface_type=None,
+                 module=None, 
                  module_parameters=None,
                  temperature_model_parameters=None,
                  modules_per_string=1, strings_per_inverter=1,
                  inverter=None, inverter_parameters=None,
-                 racking_model='open_rack', losses_parameters=None, name=None,
+                 losses_parameters=None, name=None,
                  iam_parameters=None)
 
 Mi_CPV.module_CPV_parameters={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
@@ -127,7 +127,7 @@ Curvas_=Mi_CPV.singlediode(photocurrent=Five_parameters_[0], saturation_current=
                                   resistance_series=Five_parameters_[2],resistance_shunt=Five_parameters_[3], 
                                   nNsVth=Five_parameters_[4],ivcurve_pnts=100, method='lambertw')
 
-UF=Mi_CPV.calculate_UF(CPV['airmass_relative'].values,CPV['T_Amb (ºC)'].values,
+UF=Mi_CPV.calculate_uf(CPV['airmass_relative'].values,CPV['T_Amb (ºC)'].values,
              Curvas['p_mp'],CPV['PMP_estimated_IIIV (W)'].values)
 
 # Potencia=Curvas['p_mp']*Mi_CPV.get_uf(CPV['airmass_relative'].values,CPV['T_Amb (ºC)'].values)

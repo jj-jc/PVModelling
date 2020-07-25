@@ -28,12 +28,11 @@ surface_azimuth=180
 AOILIMIT=55.0
 pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
 
-#Se construye el objeto Si_CPVSystem
+#Se construye el objeto Si_SiSystem
 
 Mi_Si_CPV=CPVClass.Flat_CPVSystem(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
-                 AOILIMIT=AOILIMIT,
                  albedo=None, surface_type=None,
-                 module=None, module_type='glass_polymer',
+                 module=None, 
                  module_Flat_parameters=None,
                  temperature_model_Flat_parameters=None,
                  modules_per_string=1, strings_per_inverter=1,
@@ -52,8 +51,8 @@ Mi_Si_CPV.temperature_model_Flat_parameters={'u_c': 29.0,'u_v':0}
 #                         'a1':1.9229049866733197,'b':-39.58930494613328,'valor_norm':0.005027867032371985}
 
 
-Mi_Si_CPV.iam_Flat_parameters={'a3': 0.000027,'a2': -0.005280,
-                        'a1':0.337143,'b':-6.713646,'valor_norm':0.01725087080193924}
+Mi_Si_CPV.iam_Flat_parameters={'a3': 0.000089,'a2': -0.017687,
+                        'a1':1.129321,'b':-22.488592,'valor_norm':0.00515}
 
 Flat_location=Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
 
@@ -63,7 +62,7 @@ Localized_Mi_Si_CPV=CPVClass.LocalizedFlat_CPVSystem(Mi_Si_CPV,Flat_location)
 
 #%%
 #'pdc0': 25,'gamma_pdc':-0.005 son para comprobar que fuuncionen las funcione, pero no esta correctamente seleccionado
-# Mi_CPV.inverter_parameters={'pdc0': 25, 'eta_inv_nom': 0.96 ,'eta_inv_ref':0.9637}
+# Mi_Si.inverter_parameters={'pdc0': 25, 'eta_inv_nom': 0.96 ,'eta_inv_ref':0.9637}
 
 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/filt_df_Si.csv',encoding='utf-8')
@@ -92,7 +91,7 @@ for i in range(n_intervalos):
 
 #%%%
 
-Si['Irra_vista_efectiva (W/m2)']=((Si['DII (W/m2)'].values)*Mi_Si_CPV.get_iam(Si['aoi'],iam_model='Third degree'))
+Si['Irra_vista_efectiva (W/m2)']=((Si['Irra_vista (W/m2)'].values)*Mi_Si_CPV.get_iam(Si['aoi'],iam_model='Third degree'))
 Si['ISC_Si/Irra_vista_efectiva (A m2/W)']=((Si['ISC_measured_Si (A)'].values)/(Si['Irra_vista_efectiva (W/m2)'].values))
 
 
@@ -134,26 +133,76 @@ Curvas_=Mi_Si_CPV.singlediode(photocurrent=Five_parameters_[0], saturation_curre
                                   resistance_series=Five_parameters_[2],resistance_shunt=Five_parameters_[3], 
                                   nNsVth=Five_parameters_[4],ivcurve_pnts=100, method='lambertw')
 
-#Representamos unas cuantas curavs iv
-plt.figure(figsize=(30,15))
-plt.plot(Si['aoi'],Curvas_['i_sc'],'o',markersize=2,label='Sin IAM')
-plt.plot(Si['aoi'],Curvas['i_sc'],'o',markersize=2,label='IAM_tercer_grado')
-plt.plot(Si['aoi'],Si['ISC_measured_Si (A)'],'o',markersize=2,label='Datos medidos de ISC_Si')
-# plt.plot(Curvas_2['v'][165],Curvas_2['i'][165],'--',markersize=2,label='IAM_segundo_grado')
-# plt.plot(Curvas_1['v'][165],Curvas_1['i'][165],'--',markersize=2,label='IAM_primer_grado')
-# plt.plot(Curvas['v'][165],Curvas['i'][165],'--',markersize=2,label='GII')
-plt.plot()
-plt.xlabel('Voltaje (Si) (V)')
-plt.ylabel('Corriente (Si) (A)')
-plt.title('Curvas I-V para validar el proceso anterior')
-plt.legend()
+
+Diferencia_potencia_=Curvas['p_mp']-Si['PMP_estimated_Si (W)'].values
+Diferencia_potencia_dat=Curvas_['p_mp']-Si['PMP_estimated_Si (W)'].values
+
+
+
 
 plt.figure(figsize=(30,15))
-plt.plot(Si['aoi'],Si['PMP_estimated_IIIV (W)'],'o',markersize=2,label='Datos ')
-plt.plot(Si['aoi'],Curvas_['p_mp'],'o',markersize=2,label='Sin IAM')
-plt.plot(Si['aoi'],Curvas['p_mp'],'o',markersize=2,label='IAM_tercer_grado')
-plt.xlabel('Ángulo de incidencia (º)')
-plt.ylabel('Puntos de máxima potencia (W)')
-plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del iam')
-plt.legend()
+plt.plot(Si['aoi'],Si['PMP_estimated_Si (W)'],'o',markersize=2,label='Datos')
+plt.plot(Si['aoi'],Curvas_['p_mp'],'o',markersize=2,label='Sin corregir')
+plt.plot(Si['aoi'],Curvas['p_mp'],'o',markersize=2,label='Corregido con IAM')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
+plt.ylabel('Puntos de máxima potencia (W)',fontsize=30)
+plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del ángulo de incidencia',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
 
+RMS_potencia=E.RMSE(Si['PMP_estimated_IIIV (W)'],Curvas['p_mp'])
+MAE_potencia=E.MAE(Si['PMP_estimated_IIIV (W)'], Curvas['p_mp'])
+Datos_max=Si['PMP_estimated_IIIV (W)'].max()
+Datos_min=Si['PMP_estimated_IIIV (W)'].min()
+Datos_media=sum(Si['PMP_estimated_IIIV (W)'].values)/len(Si['PMP_estimated_IIIV (W)'].values)
+Potencia_max=Curvas['p_mp'].max()
+Potencia_min=Curvas['p_mp'].min()
+Potencia_media=sum(Curvas['p_mp'])/len(Curvas['p_mp'])
+
+
+
+plt.figure(figsize=(30,15))
+plt.plot(Si['aoi'],Diferencia_potencia_,'o',markersize=2,label='Corregido con IAM')
+plt.plot(Si['aoi'],Diferencia_potencia_dat,'o',markersize=2,label='Sin corregir')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
+plt.ylabel('Error de potencia (W)',fontsize=30)
+plt.title('Residuos en función del ángulo de incidencia',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
+plt.figure(figsize=(30,15))
+plt.plot(Si['airmass_relative'],Diferencia_potencia_,'o',markersize=2,label='Corregido con IAM')
+plt.plot(Si['airmass_relative'],Diferencia_potencia_dat,'o',markersize=2,label='Sin corregir')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Masa del aire (n.d.)',fontsize=30)
+plt.ylabel('Errores de potencia (W)',fontsize=30)
+plt.title('Residuos en función de la masa del aire',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
+plt.figure(figsize=(30,15))
+plt.plot(Si['T_Amb (ºC)'],Diferencia_potencia_,'o',markersize=2,label='Corregido con IAM')
+plt.plot(Si['T_Amb (ºC)'],Diferencia_potencia_dat,'o',markersize=2,label='Sin corregir')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Temperatura ambiente (ºC)',fontsize=30)
+plt.ylabel('Errores de potencia (W)',fontsize=30)
+plt.title('Residuos en función de la temperatura',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
+
+# #Representamos unas cuantas curavs iv
+# plt.figure(figsize=(30,15))
+# plt.plot(Si['aoi'],Curvas_['i_sc'],'o',markersize=2,label='Sin IAM')
+# plt.plot(Si['aoi'],Curvas['i_sc'],'o',markersize=2,label='IAM_tercer_grado')
+# plt.plot(Si['aoi'],Si['ISC_measured_Si (A)'],'o',markersize=2,label='Datos medidos de ISC_Si')
+# # plt.plot(Curvas_2['v'][165],Curvas_2['i'][165],'--',markersize=2,label='IAM_segundo_grado')
+# # plt.plot(Curvas_1['v'][165],Curvas_1['i'][165],'--',markersize=2,label='IAM_primer_grado')
+# # plt.plot(Curvas['v'][165],Curvas['i'][165],'--',markersize=2,label='GII')
+# plt.plot()
+# plt.xlabel('Voltaje (Si) (V)')
+# plt.ylabel('Corriente (Si) (A)')
+# plt.title('Curvas I-V para validar el proceso anterior')
+# plt.legend()
