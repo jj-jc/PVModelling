@@ -7,7 +7,6 @@ Created on Thu Jun 11 20:23:03 2020
 
 # from pvlib import pvsystem
 import Error
-
 from pvlib import atmosphere, irradiance
 from pvlib.tools import _build_kwargs
 from pvlib.location import Location
@@ -909,6 +908,7 @@ class Flat_CPVSystem (object):
         return pvsystem.calcparams_pvsyst(effective_irradiance, temp_cell, **kwargs)
     
     def get_aoi(self, solar_zenith, solar_azimuth):
+        
         """Get the angle of incidence on the system.
 
         Parameters
@@ -927,6 +927,18 @@ class Flat_CPVSystem (object):
         aoi = irradiance.aoi(self.surface_tilt, self.surface_azimuth,
                               solar_zenith, solar_azimuth)
         return aoi
+    
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
     def get_iam(self, aoi,iam_model='third degree'):
         '''Get the incidence angle modifier from the 
         parameters given and the model type
@@ -976,15 +988,21 @@ class Flat_CPVSystem (object):
         #                      'option for PVSystem')
         else:
             raise ValueError(model + ' is not a valid IAM model')
-    def generate_iam_parameters(self, aoi,values,grado=3):
+        
+
+           
+    def generate_iam_parameters(self, aoi_smaller,aoi_greater,values,grado=3):
         
         '''Get and write the parameters for iam from the 
         values given
         
         Parameters
         ----------
-        aoi : Series.
-            The angle of incidence.
+        aoi_smaller : Series.
+            The angle of incidence values under AOILIMIT
+        aoi_greater : Series.
+            The angle of incidence values greater than AOILIMIT
+            
         values : Series.
             Filtered values to obtain the iam parameters.
 
@@ -994,13 +1012,16 @@ class Flat_CPVSystem (object):
             The incidence angle modifier
     
         '''
-        aoi=np.array(aoi)
-        y_,RR,a_s,b=Error.regresion_polinomica(aoi,values,grado)
+        aoi_smaller=np.array(aoi_smaller)
+        aoi_greater=np.array(aoi_greater)
+        y_,RR,a_s,b=Error.regresion_polinomica(aoi_smaller,values,grado)
+        y__,RR__,a_s__,b_=Error.regresion_polinomica(aoi_greater,values,2)
+
         if grado==3:
-            self.iam_Flat_parameters={'a3':a_s[3]/b, 'a2':a_s[2]/b,
-                                  'a1':a_s[1]/b,'valor_norm':b}
+            self.iam_Flat_parameters={'a3':a_s[3]/b_, 'a2':a_s[2]/b_,
+                                  'a1':a_s[1]/b_,'valor_norm':b/b_}
         elif grado==2:
-            self.iam_Flat_parameters={'a2':a_s[2]/b,'a1':a_s[1]/b,'valor_norm':b}            
+            self.iam_Flat_parameters={'a2':a_s[2]/b_,'a1':a_s[1]/b_,'valor_norm':b/b_}            
         elif grado==1:
             self.iam_Flat_parameters={'a2':a_s[2]/b,
                                   'a1':a_s[1]/b,'valor_norm':b} 
@@ -1157,7 +1178,7 @@ class HybridSystem(CPVSystem,Flat_CPVSystem):
     
     
     
-    def __init__(self, cpvsystem=None, second_object=None, **kwargs):
+    def __init__(self, cpvsystem=None, second_object=None,AOILIMIT, **kwargs):
 
         new_kwargs = _combine_attributes(
             cpvsystem=cpvsystem,
@@ -1179,8 +1200,7 @@ class HybridSystem(CPVSystem,Flat_CPVSystem):
     
 class LocalizedHybridSystem(HybridSystem, Location):
     
-    
-    
+   
     '''
     The LocalizedHybridSystem class defines a standard set of installed Hybrid
     system attributes and modeling functions. This class combines the

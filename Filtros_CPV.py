@@ -7,24 +7,9 @@ Created on Thu Jul  2 13:09:38 2020
 
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import math
 import Error 
-import plotly.graph_objects as go
-
-from mpl_toolkits.axes_grid1 import host_subplot
-#Codigo para poder expresar las gráfcas en plotly
-import plotly.io as pio
-pio.renderers.default='browser'
-
-
 #AOILIMIT
 AOILIMIT=55.0
-# Valor_normalizar=0.00091802
-# VALOR_NORMALIZAR=0.00096
-
-
-
 
 #%% PARA LOS CPV
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
@@ -32,7 +17,6 @@ df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv
 df=df[(df['aoi']<AOILIMIT)]
 df['DII_efectiva (W/m2)']=df['DII (W/m2)']*Error.calc_iam(df['aoi'].values,'Tercer grado')
 df['ISC_IIIV/DII_efectiva (A m2/W)']=df['ISC_measured_IIIV (A)']/df['DII_efectiva (W/m2)']
-
 
 #%% La parte del iam
 Data_IAM=df
@@ -57,8 +41,6 @@ y_regresion=np.concatenate((y_añadir,Data_IAM['ISC_IIIV/DII (A m2/W)'].values))
 
 IAM=pd.DataFrame({'aoi':x_regresion,'ISC_IIIV/DII (A m2/W)':y_regresion})
 
-
-
 #%% La parte del uf_temp
 
 Data_UF_temp=df
@@ -66,18 +48,13 @@ Data_UF_temp=Data_UF_temp[(Data_UF_temp['airmass_relative']>=1.0)]
 Data_UF_temp=Data_UF_temp[(Data_UF_temp['airmass_relative']<1.1)]
 
 UF_temp=pd.DataFrame({'T_Amb (ºC)':Data_UF_temp['T_Amb (ºC)'].values,'ISC_IIIV/DII_efectiva (A m2/W)':Data_UF_temp['ISC_IIIV/DII_efectiva (A m2/W)'].values})
-
 #%% La parte del uf_am
 
 Data_UF_am=df
 Data_UF_am=Data_UF_am[Data_UF_am['T_Amb (ºC)']>=19]
 Data_UF_am=Data_UF_am[Data_UF_am['T_Amb (ºC)']<22]
 UF_am=pd.DataFrame({'airmass':Data_UF_am['airmass_relative'].values,'ISC_IIIV/DII_efectiva (A m2/W)':Data_UF_am['ISC_IIIV/DII_efectiva (A m2/W)'].values})
-
-
 #%% La parte de Si
-
-
 df_si=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/filt_df_Si.csv',encoding='utf-8')
 # Smaller AOILIMIT
 smaller_AOI=df_si[(df_si['aoi']<AOILIMIT)]
@@ -90,21 +67,13 @@ smaller_AOI=smaller_AOI[smaller_AOI['Wind Dir. (m/s)']>=79.0]
 smaller_AOI=smaller_AOI[smaller_AOI['Wind Dir. (m/s)']<=150.0]
 
 Data_smaller_Si=pd.DataFrame({'aoi':smaller_AOI['aoi'].values,'ISC_Si/Irra_vista (A m2/W)':smaller_AOI['ISC_Si/Irra_vista (A m2/W)'].values})
-
-
 # greater AOILIMT
-
 greater_AOI=df_si[(df_si['aoi']>AOILIMIT)]
 
 greater_AOI=greater_AOI[greater_AOI['T_Amb (ºC)']>=30.0]
 greater_AOI=greater_AOI[greater_AOI['T_Amb (ºC)']<32]
 
-
 Data_greater_Si=pd.DataFrame({'aoi':greater_AOI['aoi'].values,'ISC_Si/Irra_vista (A m2/W)':greater_AOI['ISC_Si/Irra_vista (A m2/W)'].values})
-
-
-
-
 
 #%%  Se guardan todos en un archivo de excel para tenerlos a mano
 writer = pd.ExcelWriter('C://Users/juanj/OneDrive/Escritorio/TFG/datos_para_calcular.xlsx', engine='xlsxwriter')

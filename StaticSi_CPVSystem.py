@@ -28,10 +28,6 @@ surface_azimuth=180
 AOILIMIT=55.0
 pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
 
-
-
-
-
 #Se construye el objeto Si_CPVSystem
 
 Mi_Si_CPV=CPVClass.Flat_CPVSystem(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
@@ -52,18 +48,14 @@ Mi_Si_CPV.module_Flat_parameters={'gamma_ref': 2.13, 'mu_gamma': 0.002, 'I_L_ref
                 'eta_m':0.16, 'alpha_absorption':0.9}
 
 Mi_Si_CPV.temperature_model_Flat_parameters={'u_c': 29.0,'u_v':0}
-
 # Mi_Si_CPV.iam_Flat_parameters={'a3': 0.00015150050021614284,'a2':-0.02987855934621265,
 #                         'a1':1.9229049866733197,'b':-39.58930494613328,'valor_norm':0.005027867032371985}
 
 
-Mi_Si_CPV.iam_Flat_parameters={'a3': 4.415712058608902e-05,'a2':-0.00870855968202769,
-                        'a1':0.5604598483238424,'b':-11.538903897556816,'valor_norm':0.017250317962638585}
-
+Mi_Si_CPV.iam_Flat_parameters={'a3': 0.000027,'a2': -0.005280,
+                        'a1':0.337143,'b':-6.713646,'valor_norm':0.01725087080193924}
 
 Flat_location=Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
-
-
 
 Localized_Mi_Si_CPV=CPVClass.LocalizedFlat_CPVSystem(Mi_Si_CPV,Flat_location)
 
@@ -74,7 +66,7 @@ Localized_Mi_Si_CPV=CPVClass.LocalizedFlat_CPVSystem(Mi_Si_CPV,Flat_location)
 # Mi_CPV.inverter_parameters={'pdc0': 25, 'eta_inv_nom': 0.96 ,'eta_inv_ref':0.9637}
 
 
-df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_Si.csv',encoding='utf-8')
+df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/filt_df_Si.csv',encoding='utf-8')
 
 
 Si=df[(df['aoi']>AOILIMIT)]
@@ -98,16 +90,12 @@ for i in range(n_intervalos):
     ENCIMA=AUX[AUX['PMP_estimated_Si (W)']>(Mediana*(1+porcent_mediana/100))]
     Si=Si.drop(ENCIMA.index[:],axis=0)
 
-
-
-
 #%%%
 
-
-
-
-Si['Irra_vista_efectiva (W/m2)']=((Si['Irra_vista (W/m2)'].values)*Mi_Si_CPV.get_iam(Si['aoi'],iam_model='Tercer grado'))
+Si['Irra_vista_efectiva (W/m2)']=((Si['DII (W/m2)'].values)*Mi_Si_CPV.get_iam(Si['aoi'],iam_model='Third degree'))
 Si['ISC_Si/Irra_vista_efectiva (A m2/W)']=((Si['ISC_measured_Si (A)'].values)/(Si['Irra_vista_efectiva (W/m2)'].values))
+
+
 # # filt_x=df_filt_Si['T_Amb (ºC)'].values
 # # filt_y=df_filt_Si['ISC_Si/Irra_vista_efectiva (A m2/W)'].values
 
@@ -119,10 +107,10 @@ plt.ylabel('Irradiancia (W/m2)')
 plt.legend()
 plt.title("Comparación de la irradiancia corregida")
 
-#%% Cálculo de la temperatura de cell, no tengo muy claro que el uc sea el correcto
+#%%
 
-
-temp_cell=Mi_Si_CPV.pvsyst_celltemp(poa_global=Si['Irra_vista_efectiva (W/m2)'], temp_air=Si['T_Amb (ºC)'], wind_speed=Si['Wind Speed (m/s)']) 
+Irradianccia_afecta_temp=Si['Irra_vista_efectiva (W/m2)']+Si['Difusa']
+temp_cell=Mi_Si_CPV.pvsyst_celltemp(poa_global=Irradianccia_afecta_temp, temp_air=Si['T_Amb (ºC)'], wind_speed=Si['Wind Speed (m/s)']) 
 temp_cell_=Mi_Si_CPV.pvsyst_celltemp(poa_global=Si['Irra_vista (W/m2)'], temp_air=Si['T_Amb (ºC)'], wind_speed=Si['Wind Speed (m/s)'])
 
 # fig=plt.figure(figsize=(30,15))

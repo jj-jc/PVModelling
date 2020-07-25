@@ -224,6 +224,7 @@ y_total=np.concatenate((prueba['ISC_Si/Irra_vista (A m2/W)'].values,y_artificial
 x_total=np.concatenate((prueba['aoi'].values,x_artificial))
 #----poli2
 y_poli2,RR_poli2,a_s2,b2=Error.regresion_polinomica(x_total,y_total,2)
+print('EL COEFICIENTE DE DETERMINACIÓN PARA LA REGRESION DE SEGUNDO GRADO CUANDO EL AOI<AOILIMIT' + str(RR_poli2))
 #-----poli3
 y_poli3,RR_poli3,a_s3,b3=Error.regresion_polinomica(x_total,y_total,3)
 
@@ -426,7 +427,7 @@ iam1_low=[a_s_low[1]/VALOR_NORMALIZAR,0,0,b_low/VALOR_NORMALIZAR,thld,RR_low]
 iam1_high=[a_s_high[1]/VALOR_NORMALIZAR,0,0,b_high/VALOR_NORMALIZAR,0,RR_low]
 iam2=[a_s2[1]/VALOR_NORMALIZAR,a_s2[2]/VALOR_NORMALIZAR,0,b2/VALOR_NORMALIZAR,0,RR_poli2]
 iam3=[a_s3[1]/VALOR_NORMALIZAR,a_s3[2]/VALOR_NORMALIZAR,a_s3[3]/VALOR_NORMALIZAR,b3/VALOR_NORMALIZAR,0,RR_poli3]
-IAM=pd.DataFrame(columns={'Primer grado low','Primer grado high','Segundo grado','Tercer grado','ashrae','physical','martin_ruiz'},index=['a1','a2','a3','b','thld','RR'])
+IAM=pd.DataFrame(columns={'Primer grado low','Primer grado high','Segundo grado','Tercer grado'},index=['a1','a2','a3','b','thld','RR'])
 IAM['Primer grado low']=iam1_low
 IAM['Primer grado high']=iam1_high
 IAM['Segundo grado']=iam2

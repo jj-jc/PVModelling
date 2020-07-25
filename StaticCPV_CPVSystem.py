@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import Error as E
 import datetime
 import pvlib
-
+pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
 tz='Europe/Berlin'
 #AOILIMIT
 AOILIMIT=55.0
@@ -48,7 +48,7 @@ Mi_CPV.iam_CPV_parameters={'a3':-8.315977512579876e-06,'a2': 0.00039212250547851
 #                         'w_am':0.369,'w_temp': 0.623}
 Mi_CPV.uf_parameters={'m1_am':-0.1448392843942126, 'thld_am':1.2432864275564657 ,'m2_am':-0.7409999999999998,
                       'm_temp':-0.006480, 'thld_temp':15.180000,
-                        'w_am':0,'w_temp': 0}
+                        'w_am':0.9460000000000001,'w_temp': 0.0}
 
 
 #'pdc0': 25,'gamma_pdc':-0.005 son para comprobar que fuuncionen las funcione, pero no esta correctamente seleccionado
@@ -64,10 +64,6 @@ tz='Europe/Berlin'
 
 CPV_location=Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
 localized_Mi_CPV=CPVClass.LocalizedCPVSystem(cpvsystem=Mi_CPV,second_object=CPV_location)
-
-
-#%%
-
 
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/Datos_filtrados_IIIV.csv',encoding='utf-8')
 
@@ -149,41 +145,54 @@ plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
 plt.ylabel('Puntos de máxima potencia (W)',fontsize=30)
-plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del iam',fontsize=40)
+plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del ángulo de incidencia',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
 
 RMS_potencia=E.RMSE(CPV['PMP_estimated_IIIV (W)'],Potencia)
+MAE_potencia=E.MAE(CPV['PMP_estimated_IIIV (W)'], Potencia)
+Datos_max=CPV['PMP_estimated_IIIV (W)'].max()
+Datos_min=CPV['PMP_estimated_IIIV (W)'].min()
+Datos_media=sum(CPV['PMP_estimated_IIIV (W)'].values)/len(CPV['PMP_estimated_IIIV (W)'].values)
+Potencia_max=Potencia.max()
+Potencia_min=Potencia.min()
+Potencia_media=sum(Potencia)/len(Potencia)
+Potencia_iam_max=Curvas['p_mp'].max()
+Potencia_iam_min=Curvas['p_mp'].min()
+Potencia_iam_media=sum(Curvas['p_mp'])/len(Curvas['p_mp'])
 
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['aoi'],Diferencia_potencia,'o',markersize=2,label='Error UF')
-plt.plot(CPV['aoi'],Diferencia_potencia_,'o',markersize=2,label='Error IAM')
-plt.plot(CPV['aoi'],Diferencia_potencia_dat,'o',markersize=2,label='Error')
+plt.plot(CPV['aoi'],Diferencia_potencia,'o',markersize=2,label='Corregido con IAM y UF')
+plt.plot(CPV['aoi'],Diferencia_potencia_,'o',markersize=2,label='Corregido con IAM')
+plt.plot(CPV['aoi'],Diferencia_potencia_dat,'o',markersize=2,label='Sin corregir')
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
 plt.ylabel('Error de potencia (W)',fontsize=30)
-plt.title('Búsqueda de un tendencia del error en función del aoi',fontsize=40)
+plt.title('Residuos en función del ángulo de incidencia',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['airmass_relative'],Diferencia_potencia,'o',markersize=2,label='Error UF')
-plt.plot(CPV['airmass_relative'],Diferencia_potencia_,'o',markersize=2,label='Error IAM')
+plt.plot(CPV['airmass_relative'],Diferencia_potencia,'o',markersize=2,label='Corregido con IAM y UF')
+plt.plot(CPV['airmass_relative'],Diferencia_potencia_,'o',markersize=2,label='Corregido con IAM')
+plt.plot(CPV['airmass_relative'],Diferencia_potencia_dat,'o',markersize=2,label='Sin corregir')
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Masa del aire (n.d.)',fontsize=30)
 plt.ylabel('Errores de potencia (W)',fontsize=30)
-plt.title('Búsqueda de un tendencia del error en función del aoi',fontsize=40)
+plt.title('Residuos en función de la masa del aire',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
 
 plt.figure(figsize=(30,15))
-plt.plot(CPV['T_Amb (ºC)'],Diferencia_potencia,'o',markersize=2,label='Datos')
-plt.plot(CPV['T_Amb (ºC)'],Diferencia_potencia_,'o',markersize=2,label='Error IAM')
+plt.plot(CPV['T_Amb (ºC)'],Diferencia_potencia,'o',markersize=2,label='Corregido con IAM y UF')
+plt.plot(CPV['T_Amb (ºC)'],Diferencia_potencia_,'o',markersize=2,label='Corregido con IAM')
+plt.plot(CPV['T_Amb (ºC)'],Diferencia_potencia_dat,'o',markersize=2,label='Sin corregir')
+
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Temperatura ambiente (ºC)',fontsize=30)
 plt.ylabel('Errores de potencia (W)',fontsize=30)
-plt.title('Búsqueda de un tendencia del error en función del aoi',fontsize=40)
+plt.title('Residuos en función de la temperatura',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
 
 

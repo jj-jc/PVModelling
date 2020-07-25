@@ -83,9 +83,15 @@ def Determination_coefficient(datos,estimaciones):
         return 1
 
 def RMSE(datos, estimaciones):
-    Error_cuadrado=(datos-estimaciones)**2
+    Error_cuadrado=(estimaciones-datos)**2
     rmse=math.sqrt((sum(Error_cuadrado))/len(datos))
     return rmse
+def MAE(datos, estimaciones):
+    Error_absoluto=0
+    for i in range(len(datos)):
+        Error_absoluto=Error_absoluto+abs(estimaciones[i]-datos[i])
+    MAE=Error_absoluto/len(datos)
+    return MAE
 
 def crear_estimaciones(a_s,b,x):
 #como el vector que devuelve la recta de regresión es siempre [0, a1,a2...]
