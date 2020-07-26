@@ -8,13 +8,8 @@ Created on Mon Jun 29 16:57:10 2020
 from pvlib.location import Location
 import CPVClass
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import Error as E
-
-import datetime
-
-
 #Datos:
 #localización
 lat=40.453
@@ -28,8 +23,7 @@ surface_azimuth=180
 AOILIMIT=55.0
 pd.plotting.register_matplotlib_converters()#ESTA SENTENCIA ES NECESARIA PARA DIBUJAR DATE.TIMES
 
-#Se construye el objeto Si_SiSystem
-
+#Se construye el objeto 
 Mi_Si_CPV=CPVClass.Flat_CPVSystem(surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
                  albedo=None, surface_type=None,
                  module=None, 
@@ -51,23 +45,17 @@ Mi_Si_CPV.temperature_model_Flat_parameters={'u_c': 29.0,'u_v':0}
 #                         'a1':1.9229049866733197,'b':-39.58930494613328,'valor_norm':0.005027867032371985}
 
 
-Mi_Si_CPV.iam_Flat_parameters={'a3': 0.000089,'a2': -0.017687,
-                        'a1':1.129321,'b':-22.488592,'valor_norm':0.00515}
+Mi_Si_CPV.iam_Flat_parameters={'a3': 0.000125,'a2': -0.024691,
+                        'a1': 1.585953,'b':-32.380195,'valor_norm':0.0058701213348946735}
 
 Flat_location=Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
 
 Localized_Mi_Si_CPV=CPVClass.LocalizedFlat_CPVSystem(Mi_Si_CPV,Flat_location)
 
-
-
 #%%
 #'pdc0': 25,'gamma_pdc':-0.005 son para comprobar que fuuncionen las funcione, pero no esta correctamente seleccionado
 # Mi_Si.inverter_parameters={'pdc0': 25, 'eta_inv_nom': 0.96 ,'eta_inv_ref':0.9637}
-
-
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/filt_df_Si.csv',encoding='utf-8')
-
-
 Si=df[(df['aoi']>AOILIMIT)]
 Fecha=pd.DatetimeIndex(Si['Date Time'])
 Si=Si.set_index(Fecha)
@@ -93,8 +81,6 @@ for i in range(n_intervalos):
 
 Si['Irra_vista_efectiva (W/m2)']=((Si['Irra_vista (W/m2)'].values)*Mi_Si_CPV.get_iam(Si['aoi'],iam_model='Third degree'))
 Si['ISC_Si/Irra_vista_efectiva (A m2/W)']=((Si['ISC_measured_Si (A)'].values)/(Si['Irra_vista_efectiva (W/m2)'].values))
-
-
 # # filt_x=df_filt_Si['T_Amb (ºC)'].values
 # # filt_y=df_filt_Si['ISC_Si/Irra_vista_efectiva (A m2/W)'].values
 
@@ -151,15 +137,19 @@ plt.ylabel('Puntos de máxima potencia (W)',fontsize=30)
 plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del ángulo de incidencia',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
 
-RMS_potencia=E.RMSE(Si['PMP_estimated_IIIV (W)'],Curvas['p_mp'])
-MAE_potencia=E.MAE(Si['PMP_estimated_IIIV (W)'], Curvas['p_mp'])
-Datos_max=Si['PMP_estimated_IIIV (W)'].max()
-Datos_min=Si['PMP_estimated_IIIV (W)'].min()
-Datos_media=sum(Si['PMP_estimated_IIIV (W)'].values)/len(Si['PMP_estimated_IIIV (W)'].values)
+RMS_potencia=E.RMSE(Si['PMP_estimated_Si (W)'],Curvas['p_mp'])
+MAE_potencia=E.MAE(Si['PMP_estimated_Si (W)'], Curvas['p_mp'])
+Datos_max=Si['PMP_estimated_Si (W)'].max()
+Datos_min=Si['PMP_estimated_Si (W)'].min()
+Datos_media=sum(Si['PMP_estimated_Si (W)'].values)/len(Si['PMP_estimated_Si (W)'].values)
 Potencia_max=Curvas['p_mp'].max()
 Potencia_min=Curvas['p_mp'].min()
 Potencia_media=sum(Curvas['p_mp'])/len(Curvas['p_mp'])
-
+RMS_potencia_nada=E.RMSE(Si['PMP_estimated_Si (W)'],Curvas_['p_mp'])
+MAE_potencia_nada=E.MAE(Si['PMP_estimated_Si (W)'], Curvas_['p_mp'])
+Potencia_max_nada=Curvas_['p_mp'].max()
+Potencia_min_nada=Curvas_['p_mp'].min()
+Potencia_medi_nada=sum(Curvas_['p_mp'])/len(Curvas_['p_mp'])
 
 
 plt.figure(figsize=(30,15))

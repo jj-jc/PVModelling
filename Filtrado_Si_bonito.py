@@ -26,7 +26,7 @@ filt_df=filt_df[filt_df['GII (W/m2)']>0]
 filt_df=filt_df[filt_df['DII (W/m2)']>0] 
 filt_df['Difusa']=filt_df['GII (W/m2)']-filt_df['DII (W/m2)']
 filt_df=filt_df[filt_df['Difusa']>0]
-filt_df['Irra_vista (W/m2)']=filt_df['GII (W/m2)']
+filt_df['Irra_vista (W/m2)']=filt_df['DII (W/m2)']
 for i in range(len(filt_df.index[:])):    
     if filt_df.iloc[i]['aoi']<AOILIMIT:
         filt_df['Irra_vista (W/m2)'][i]=filt_df['Difusa'][i]
