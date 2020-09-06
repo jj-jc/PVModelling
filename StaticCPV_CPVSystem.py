@@ -28,13 +28,15 @@ Mi_CPV=CPVClass.CPVSystem(surface_tilt=30, surface_azimuth=180,
                  losses_parameters=None, name=None,
                  iam_parameters=None)
 
-Mi_CPV.module_CPV_parameters={'gamma_ref': 5.524, 'mu_gamma': 0.003, 'I_L_ref':0.96,
+
+Mi_CPV.module_CPV_parameters={'gamma_ref': 5.524, 'mu_gamma': 0.0004, 'I_L_ref':0.96,
                 'I_o_ref': 0.00000000017,'R_sh_ref': 5226, 'R_sh_0':21000,
                 'R_sh_exp': 5.50,'R_s': 0.01,'alpha_sc':0.00,'EgRef':3.91,
                 'irrad_ref': 1000,'temp_ref':25, 'cells_in_series':12,
                 'eta_m':0.32, 'alpha_absorption':0.9, 'pdc0': 25,'gamma_pdc':-0.005 }
 
-Mi_CPV.temperature_model_CPV_parameters={'u_c': 4.5,'u_v':0}
+
+Mi_CPV.temperature_model_CPV_parameters={'u_c': 9,'u_v':0}
 
 Mi_CPV.iam_CPV_parameters={'a3':-8.315977512579876e-06,'a2': 0.00039212250547851317,
                         'a1':-0.006006260890940136,'valor_norm':0.0008882140968826235}
@@ -48,7 +50,7 @@ Mi_CPV.iam_CPV_parameters={'a3':-8.315977512579876e-06,'a2': 0.00039212250547851
 #                         'w_am':0.369,'w_temp': 0.623}
 Mi_CPV.uf_parameters={'m1_am':-0.1448392843942126, 'thld_am':1.2432864275564657 ,'m2_am':-0.7409999999999998,
                       'm_temp':-0.006480, 'thld_temp':15.180000,
-                        'w_am':0.9460000000000001,'w_temp': 0.0}
+                        'w_am':0,'w_temp': 0.0}
 
 
 #'pdc0': 25,'gamma_pdc':-0.005 son para comprobar que fuuncionen las funcione, pero no esta correctamente seleccionado
@@ -85,7 +87,7 @@ plt.title('Visualizar los datos filtrados por la mediana')
 plt.legend()
 
 CPV=E.mediana_filter(data=CPV,colum_intervals='aoi',columna_filter='DII (W/m2)',n_intervalos=20,porcent_mediana=10)
-CPV['DII_efectiva (W/m2)']=CPV['DII (W/m2)']*Mi_CPV.get_iam(CPV['aoi'],iam_model='third degree')
+CPV['DII_efectiva (W/m2)']=CPV['DII (W/m2)']*Mi_CPV.get_CPV_iam(CPV['aoi'],iam_model='third degree')
 
 fig=plt.figure(figsize=(30,15))
 plt.plot(CPV['aoi'],CPV['DII_efectiva (W/m2)'],'o',markersize=4,label='DII con iam')   
@@ -98,13 +100,13 @@ plt.legend(fontsize=30,markerscale=3)
 plt.title("Comparación de la irradiancia corregida",fontsize=40)
 
 # Cálculo de la temperatura de cell
-temp_cell=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII_efectiva (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)']) 
+temp_cell=Mi_CPV.CPV_temp(poa_global=CPV['DII_efectiva (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)']) 
 # temp_cell=pvlib.temperature.pvsyst_cell(poa_global=CPV['DII_efectiva (W/m2)'], 
 #                                         temp_air=CPV['T_Amb (ºC)'],
 #                                         wind_speed=CPV['Wind Speed (m/s)'], 
 #                                         u_c=4.5, u_v=0.0, 
 #                                         eta_m=0.32, alpha_absorption=0.9)
-temp_cell_=Mi_CPV.pvsyst_celltemp(poa_global=CPV['DII (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)'])
+temp_cell_=Mi_CPV.CPV_temp(poa_global=CPV['DII (W/m2)'], temp_air=CPV['T_Amb (ºC)'], wind_speed=CPV['Wind Speed (m/s)'])
  
 fig=plt.figure(figsize=(30,15))
 plt.plot(CPV.index[:].time,temp_cell,'o',markersize=2,label='Temperatura con DII corregida')   
@@ -116,14 +118,14 @@ plt.ylabel('Temperatura de célula (ºC)',fontsize=30)
 plt.legend(fontsize=30,markerscale=3)
 plt.title("Temperatura de célula a lo largo de las horas de un día ",fontsize=40)
 
+#%%
+Five_parameters=Mi_CPV.CPV_calcparams(CPV['DII_efectiva (W/m2)'], temp_cell)
+Five_parameters_=Mi_CPV.CPV_calcparams(CPV['DII (W/m2)'], temp_cell_)
 
-Five_parameters=Mi_CPV.calcparams_cpvsyst(CPV['DII_efectiva (W/m2)'], temp_cell)
-Five_parameters_=Mi_CPV.calcparams_cpvsyst(CPV['DII (W/m2)'], temp_cell_)
-
-Curvas=Mi_CPV.singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
+Curvas=Mi_CPV.CPV_singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
                                   resistance_series=Five_parameters[2],resistance_shunt=Five_parameters[3], 
                                   nNsVth=Five_parameters[4],ivcurve_pnts=100, method='lambertw')
-Curvas_=Mi_CPV.singlediode(photocurrent=Five_parameters_[0], saturation_current=Five_parameters_[1],
+Curvas_=Mi_CPV.CPV_singlediode(photocurrent=Five_parameters_[0], saturation_current=Five_parameters_[1],
                                   resistance_series=Five_parameters_[2],resistance_shunt=Five_parameters_[3], 
                                   nNsVth=Five_parameters_[4],ivcurve_pnts=100, method='lambertw')
 
@@ -144,8 +146,8 @@ plt.plot(CPV['aoi'],Potencia,'o',markersize=2,label='Corregido con IAM y UF')
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
-plt.ylabel('Puntos de máxima potencia (W)',fontsize=30)
-plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del ángulo de incidencia',fontsize=40)
+plt.ylabel('Potencia (W)',fontsize=30)
+plt.title('Previsión de potencia',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
 
 
@@ -162,11 +164,35 @@ MAE_potencia_iam=E.MAE(CPV['PMP_estimated_IIIV (W)'], Curvas['p_mp'])
 Potencia_iam_max=Curvas['p_mp'].max()
 Potencia_iam_min=Curvas['p_mp'].min()
 Potencia_iam_media=sum(Curvas['p_mp'])/len(Curvas['p_mp'])
-RMSE_potencia_nada=E.RMSE(CPV['PMP_estimated_Si (W)'],Curvas_['p_mp'])
-MAE_potencia_nada=E.MAE(CPV['PMP_estimated_Si (W)'], Curvas_['p_mp'])
+RMSE_potencia_nada=E.RMSE(CPV['PMP_estimated_IIIV (W)'],Curvas_['p_mp'])
+MAE_potencia_nada=E.MAE(CPV['PMP_estimated_IIIV (W)'], Curvas_['p_mp'])
 Potencia_max_nada=Curvas_['p_mp'].max()
 Potencia_min_nada=Curvas_['p_mp'].min()
 Potencia_medi_nada=sum(Curvas_['p_mp'])/len(Curvas_['p_mp'])
+
+print("Estos son los resultados obtenidos para la potencia:")
+print("Datos")
+print("Potencia máxima: ", Datos_max)
+print("Potencia mínima: ", Datos_min)
+print("Potencia media: ", Datos_media)
+print("Aplicando IAM y UF")
+print("Potencia máxima: ", Potencia_max)
+print("Potencia mínima: ", Potencia_min)
+print("Potencia media: ", Potencia_media)
+print("RMSE potencia: ", RMSE_potencia)
+print("MAE potencia: ", MAE_potencia)
+print("Aplicando IAM")
+print("Potencia máxima: ", Potencia_iam_max)
+print("Potencia mínima: ", Potencia_iam_min)
+print("Potencia media: ", Potencia_iam_media)
+print("RMSE potencia: ", RMSE_potencia_iam)
+print("MAE potencia: ", MAE_potencia_iam)
+print("Si aplicar modelos de corrección")
+print("Potencia máxima: ", Potencia_max_nada)
+print("Potencia mínima: ", Potencia_min_nada)
+print("Potencia media: ", Potencia_iam_media)
+print("RMSE potencia: ", RMSE_potencia_nada)
+print("MAE potencia: ", MAE_potencia_nada)
 
 
 plt.figure(figsize=(30,15))
@@ -187,7 +213,7 @@ plt.plot(CPV['airmass_relative'],Diferencia_potencia_dat,'o',markersize=2,label=
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Masa del aire (n.d.)',fontsize=30)
-plt.ylabel('Errores de potencia (W)',fontsize=30)
+plt.ylabel('Error de potencia (W)',fontsize=30)
 plt.title('Residuos en función de la masa del aire',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
 
@@ -195,13 +221,111 @@ plt.figure(figsize=(30,15))
 plt.plot(CPV['T_Amb (ºC)'],Diferencia_potencia,'o',markersize=2,label='Corregido con IAM y UF')
 plt.plot(CPV['T_Amb (ºC)'],Diferencia_potencia_,'o',markersize=2,label='Corregido con IAM')
 plt.plot(CPV['T_Amb (ºC)'],Diferencia_potencia_dat,'o',markersize=2,label='Sin corregir')
-
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Temperatura ambiente (ºC)',fontsize=30)
-plt.ylabel('Errores de potencia (W)',fontsize=30)
+plt.ylabel('Error de potencia (W)',fontsize=30)
 plt.title('Residuos en función de la temperatura',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
+
+
+#ahora se comprueba la intensidad
+Intensidad=Curvas['i_sc']*UF
+Diferencia_intensidad=Intensidad-CPV['ISC_measured_IIIV (A)'].values
+Diferencia_intensidad_=Curvas['i_sc']-CPV['ISC_measured_IIIV (A)'].values
+Diferencia_intensidad_dat=Curvas_['i_sc']-CPV['ISC_measured_IIIV (A)'].values
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['aoi'],CPV['ISC_measured_IIIV (A)'],'o',markersize=2,label='Datos')
+plt.plot(CPV['aoi'],Curvas_['i_sc'],'o',markersize=2,label='Sin corregir')
+plt.plot(CPV['aoi'],Curvas['i_sc'],'o',markersize=2,label='Corregido con IAM')
+plt.plot(CPV['aoi'],Intensidad,'o',markersize=2,label='Corregido con IAM y UF')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
+plt.ylabel('Intensidad de cortocircuito (A)',fontsize=30)
+plt.title('Previsión de intensidad',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
+
+Datos_i_max=CPV['ISC_measured_IIIV (A)'].max()
+Datos_i_min=CPV['ISC_measured_IIIV (A)'].min()
+Datos_i_media=sum(CPV['ISC_measured_IIIV (A)'].values)/len(CPV['ISC_measured_IIIV (A)'].values)
+RMSE_intensidad=E.RMSE(CPV['ISC_measured_IIIV (A)'],Intensidad)
+MAE_intensidad=E.MAE(CPV['ISC_measured_IIIV (A)'], Intensidad)
+intensidad_max=Intensidad.max()
+intensidad_min=Intensidad.min()
+intensidad_media=sum(Intensidad)/len(Intensidad)
+RMSE_intensidad_iam=E.RMSE(CPV['ISC_measured_IIIV (A)'],Curvas['i_sc'])
+MAE_intensidad_iam=E.MAE(CPV['ISC_measured_IIIV (A)'], Curvas['i_sc'])
+intensidad_iam_max=Curvas['i_sc'].max()
+intensidad_iam_min=Curvas['i_sc'].min()
+intensidad_iam_media=sum(Curvas['i_sc'])/len(Curvas['i_sc'])
+RMSE_intensidad_nada=E.RMSE(CPV['ISC_measured_IIIV (A)'],Curvas_['i_sc'])
+MAE_intensidad_nada=E.MAE(CPV['ISC_measured_IIIV (A)'], Curvas_['i_sc'])
+intensidad_max_nada=Curvas_['i_sc'].max()
+intensidad_min_nada=Curvas_['i_sc'].min()
+intensidad_medi_nada=sum(Curvas_['i_sc'])/len(Curvas_['i_sc'])
+
+print("Estos son los resultados obtenidos para la intensidad:")
+print("Datos")
+print("Intensidad máxima: ", Datos_i_max)
+print("Intensidad mínima: ", Datos_i_min)
+print("Intensidad media: ", Datos_i_media)
+print("Aplicando IAM y UF")
+print("Intensidad máxima: ", intensidad_max)
+print("Intensidad mínima: ", intensidad_min)
+print("Intensidad media: ", intensidad_media)
+print("RMSE Intensidad: ", RMSE_intensidad)
+print("MAE Intensidad: ", MAE_intensidad)
+print("Aplicando IAM")
+print("Intensidad máxima: ", intensidad_iam_max)
+print("Intensidad mínima: ", intensidad_iam_min)
+print("Intensidad media: ", intensidad_iam_media)
+print("RMSE Intensidad: ", RMSE_intensidad_iam)
+print("MAE Intensidad: ", MAE_intensidad_iam)
+print("Si aplicar modelos de corrección")
+print("Intensidad máxima: ", intensidad_max_nada)
+print("Intensidad mínima: ", intensidad_min_nada)
+print("Intensidad media: ", intensidad_medi_nada)
+print("RMSE Intensidad: ", RMSE_intensidad_nada)
+print("MAE Intensidad: ", MAE_intensidad_nada)
+
+
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['aoi'],Diferencia_intensidad,'o',markersize=2,label='Corregido con IAM y UF')
+plt.plot(CPV['aoi'],Diferencia_intensidad_,'o',markersize=2,label='Corregido con IAM')
+plt.plot(CPV['aoi'],Diferencia_intensidad_dat,'o',markersize=2,label='Sin corregir')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
+plt.ylabel('Error de intensidad (A)',fontsize=30)
+plt.title('Residuos en función del ángulo de incidencia',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['airmass_relative'],Diferencia_intensidad,'o',markersize=2,label='Corregido con IAM y UF')
+plt.plot(CPV['airmass_relative'],Diferencia_intensidad_,'o',markersize=2,label='Corregido con IAM')
+plt.plot(CPV['airmass_relative'],Diferencia_intensidad_dat,'o',markersize=2,label='Sin corregir')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Masa del aire (n.d.)',fontsize=30)
+plt.ylabel('Error de intensidad (A)',fontsize=30)
+plt.title('Residuos en función de la masa del aire',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
+plt.figure(figsize=(30,15))
+plt.plot(CPV['T_Amb (ºC)'],Diferencia_intensidad,'o',markersize=2,label='Corregido con IAM y UF')
+plt.plot(CPV['T_Amb (ºC)'],Diferencia_intensidad_,'o',markersize=2,label='Corregido con IAM')
+plt.plot(CPV['T_Amb (ºC)'],Diferencia_intensidad_dat,'o',markersize=2,label='Sin corregir')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Temperatura ambiente (ºC)',fontsize=30)
+plt.ylabel('Error de intensidad (A)',fontsize=30)
+plt.title('Residuos en función de la temperatura',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
 
 
 

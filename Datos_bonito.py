@@ -45,6 +45,8 @@ df['DII']=AOI_projection*df['DNI (W/m2)']
 df['GII']=AOI_projection*df['GNI (W/m2)']
 #almaceno los datos en otro excel
 df.to_csv("C://Users/juanj/OneDrive/Escritorio/TFG/Entradas.csv")
+
+
 fig=plt.figure(figsize=(30,20))
 plt.plot(df['aoi'],df['DNI (W/m2)'],'o',markersize='2',label='DNI')   
 plt.plot(df['aoi'],df['DII (W/m2)'],'o',markersize='4',label='DII_datos') 

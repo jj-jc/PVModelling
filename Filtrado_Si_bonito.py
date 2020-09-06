@@ -38,7 +38,7 @@ filt_df=E.mediana_filter(data=filt_df,colum_intervals='aoi',
 filt_df=E.mediana_filter(data=filt_df,colum_intervals='aoi',
                          columna_filter='ISC_measured_Si (A)',
                          n_intervalos=50,porcent_mediana=10)
-'''Debido a que quiero cambair los límites de los intervalos es necesario desarrollar la función'''
+'''Debido a que quiero cambaiar los límites de los intervalos es necesario desarrollar la función'''
 Datos_filtrados=filt_df
 limSup=AOILIMIT
 limInf=filt_df['aoi'].min()

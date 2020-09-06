@@ -86,6 +86,7 @@ def RMSE(datos, estimaciones):
     Error_cuadrado=(estimaciones-datos)**2
     rmse=math.sqrt((sum(Error_cuadrado))/len(datos))
     return rmse
+
 def MAE(datos, estimaciones):
     Error_absoluto=0
     for i in range(len(datos)):

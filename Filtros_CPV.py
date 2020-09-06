@@ -53,6 +53,15 @@ UF_temp=pd.DataFrame({'T_Amb (ºC)':Data_UF_temp['T_Amb (ºC)'].values,'ISC_IIIV
 Data_UF_am=df
 Data_UF_am=Data_UF_am[Data_UF_am['T_Amb (ºC)']>=19]
 Data_UF_am=Data_UF_am[Data_UF_am['T_Amb (ºC)']<22]
+#filtrado para búsqueda de la línea de tendencia:
+filtrado_eliminar=Data_UF_am[Data_UF_am['ISC_IIIV/DII_efectiva (A m2/W)']<0.00085]
+filtrado_eliminar=filtrado_eliminar[filtrado_eliminar['airmass_relative']<1.3]                  
+Data_UF_am=Data_UF_am.drop(filtrado_eliminar.index[:],axis=0)
+
+filtrado_eliminar=Data_UF_am[Data_UF_am['ISC_IIIV/DII_efectiva (A m2/W)']>0.00076]
+filtrado_eliminar=filtrado_eliminar[filtrado_eliminar['airmass_relative']>1.44]     
+Data_UF_am=Data_UF_am.drop(filtrado_eliminar.index[:],axis=0)
+
 UF_am=pd.DataFrame({'airmass':Data_UF_am['airmass_relative'].values,'ISC_IIIV/DII_efectiva (A m2/W)':Data_UF_am['ISC_IIIV/DII_efectiva (A m2/W)'].values})
 #%% La parte de Si
 df_si=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/filt_df_Si.csv',encoding='utf-8')
@@ -72,6 +81,7 @@ greater_AOI=df_si[(df_si['aoi']>AOILIMIT)]
 
 greater_AOI=greater_AOI[greater_AOI['T_Amb (ºC)']>=30.0]
 greater_AOI=greater_AOI[greater_AOI['T_Amb (ºC)']<32]
+
 
 Data_greater_Si=pd.DataFrame({'aoi':greater_AOI['aoi'].values,'ISC_Si/Irra_vista (A m2/W)':greater_AOI['ISC_Si/Irra_vista (A m2/W)'].values})
 

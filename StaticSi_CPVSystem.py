@@ -46,7 +46,7 @@ Mi_Si_CPV.temperature_model_Flat_parameters={'u_c': 29.0,'u_v':0}
 
 
 Mi_Si_CPV.iam_Flat_parameters={'a3': 0.000125,'a2': -0.024691,
-                        'a1': 1.585953,'b':-32.380195,'valor_norm':0.0058701213348946735}
+                        'a1': 1.585953,'b':-32.380195}
 
 Flat_location=Location(latitude=lat,longitude=lon,tz=tz,altitude=alt)
 
@@ -79,7 +79,7 @@ for i in range(n_intervalos):
 
 #%%%
 
-Si['Irra_vista_efectiva (W/m2)']=((Si['Irra_vista (W/m2)'].values)*Mi_Si_CPV.get_iam(Si['aoi'],iam_model='Third degree'))
+Si['Irra_vista_efectiva (W/m2)']=((Si['Irra_vista (W/m2)'].values)*Mi_Si_CPV.get_Flat_iam(Si['aoi'],iam_model='Third degree'))
 Si['ISC_Si/Irra_vista_efectiva (A m2/W)']=((Si['ISC_measured_Si (A)'].values)/(Si['Irra_vista_efectiva (W/m2)'].values))
 # # filt_x=df_filt_Si['T_Amb (ºC)'].values
 # # filt_y=df_filt_Si['ISC_Si/Irra_vista_efectiva (A m2/W)'].values
@@ -95,8 +95,8 @@ plt.title("Comparación de la irradiancia corregida")
 #%%
 
 Irradianccia_afecta_temp=Si['Irra_vista_efectiva (W/m2)']+Si['Difusa']
-temp_cell=Mi_Si_CPV.pvsyst_celltemp(poa_global=Irradianccia_afecta_temp, temp_air=Si['T_Amb (ºC)'], wind_speed=Si['Wind Speed (m/s)']) 
-temp_cell_=Mi_Si_CPV.pvsyst_celltemp(poa_global=Si['Irra_vista (W/m2)'], temp_air=Si['T_Amb (ºC)'], wind_speed=Si['Wind Speed (m/s)'])
+temp_cell=Mi_Si_CPV.Flat_temp(poa_global=Irradianccia_afecta_temp, temp_air=Si['T_Amb (ºC)'], wind_speed=Si['Wind Speed (m/s)']) 
+temp_cell_=Mi_Si_CPV.Flat_temp(poa_global=Si['Irra_vista (W/m2)'], temp_air=Si['T_Amb (ºC)'], wind_speed=Si['Wind Speed (m/s)'])
 
 # fig=plt.figure(figsize=(30,15))
 # plt.plot(Si.index[:].time,temp_cell,'o',markersize=2,label='Temperatura con DII corregida')   
@@ -109,13 +109,13 @@ temp_cell_=Mi_Si_CPV.pvsyst_celltemp(poa_global=Si['Irra_vista (W/m2)'], temp_ai
 #%% Cálculo I_sc y la potencia y comparación con los datos
 
 
-Five_parameters=Mi_Si_CPV.calcparams_pvsyst(Si['Irra_vista_efectiva (W/m2)'], temp_cell)
-Five_parameters_=Mi_Si_CPV.calcparams_pvsyst(Si['Irra_vista (W/m2)'], temp_cell_)
+Five_parameters=Mi_Si_CPV.Flat_calcparams(Si['Irra_vista_efectiva (W/m2)'], temp_cell)
+Five_parameters_=Mi_Si_CPV.Flat_calcparams(Si['Irra_vista (W/m2)'], temp_cell_)
 
-Curvas=Mi_Si_CPV.singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
+Curvas=Mi_Si_CPV.Flat_singlediode(photocurrent=Five_parameters[0], saturation_current=Five_parameters[1],
                                   resistance_series=Five_parameters[2],resistance_shunt=Five_parameters[3], 
                                   nNsVth=Five_parameters[4],ivcurve_pnts=100, method='lambertw')
-Curvas_=Mi_Si_CPV.singlediode(photocurrent=Five_parameters_[0], saturation_current=Five_parameters_[1],
+Curvas_=Mi_Si_CPV.Flat_singlediode(photocurrent=Five_parameters_[0], saturation_current=Five_parameters_[1],
                                   resistance_series=Five_parameters_[2],resistance_shunt=Five_parameters_[3], 
                                   nNsVth=Five_parameters_[4],ivcurve_pnts=100, method='lambertw')
 
@@ -133,8 +133,8 @@ plt.plot(Si['aoi'],Curvas['p_mp'],'o',markersize=2,label='Corregido con IAM')
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
-plt.ylabel('Puntos de máxima potencia (W)',fontsize=30)
-plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del ángulo de incidencia',fontsize=40)
+plt.ylabel('Potencia (W)',fontsize=30)
+plt.title('Previsión de potencia',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
 
 RMS_potencia=E.RMSE(Si['PMP_estimated_Si (W)'],Curvas['p_mp'])
@@ -150,6 +150,24 @@ MAE_potencia_nada=E.MAE(Si['PMP_estimated_Si (W)'], Curvas_['p_mp'])
 Potencia_max_nada=Curvas_['p_mp'].max()
 Potencia_min_nada=Curvas_['p_mp'].min()
 Potencia_medi_nada=sum(Curvas_['p_mp'])/len(Curvas_['p_mp'])
+
+print("Estos son los resultados obtenidos para la potencia:")
+print("Datos")
+print("Potencia máxima: ", Datos_max)
+print("Potencia mínima: ", Datos_min)
+print("Potencia media: ", Datos_media)
+print("Aplicando IAM")
+print("Potencia máxima: ", Potencia_max)
+print("Potencia mínima: ", Potencia_min)
+print("Potencia media: ", Potencia_media)
+print("RMSE potencia: ", RMS_potencia)
+print("MAE potencia: ", MAE_potencia)
+print("Si aplicar modelos de corrección")
+print("Potencia máxima: ", Potencia_max_nada)
+print("Potencia mínima: ", Potencia_min_nada)
+print("Potencia media: ", Potencia_medi_nada)
+print("RMSE potencia: ", RMS_potencia_nada)
+print("MAE potencia: ", MAE_potencia_nada)
 
 
 plt.figure(figsize=(30,15))
@@ -168,7 +186,7 @@ plt.plot(Si['airmass_relative'],Diferencia_potencia_dat,'o',markersize=2,label='
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Masa del aire (n.d.)',fontsize=30)
-plt.ylabel('Errores de potencia (W)',fontsize=30)
+plt.ylabel('Error de potencia (W)',fontsize=30)
 plt.title('Residuos en función de la masa del aire',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
 
@@ -178,21 +196,92 @@ plt.plot(Si['T_Amb (ºC)'],Diferencia_potencia_dat,'o',markersize=2,label='Sin c
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Temperatura ambiente (ºC)',fontsize=30)
-plt.ylabel('Errores de potencia (W)',fontsize=30)
+plt.ylabel('Error de potencia (W)',fontsize=30)
+plt.title('Residuos en función de la temperatura',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
+#ahora se comprueba la intensidad
+
+Diferencia_intensidad_=Curvas['i_sc']-Si['ISC_measured_Si (A)'].values
+Diferencia_intensidad_dat=Curvas_['i_sc']-Si['ISC_measured_Si (A)'].values
+
+plt.figure(figsize=(30,15))
+plt.plot(Si['aoi'],Si['ISC_measured_Si (A)'],'o',markersize=2,label='Datos')
+plt.plot(Si['aoi'],Curvas_['i_sc'],'o',markersize=2,label='Sin corregir')
+plt.plot(Si['aoi'],Curvas['i_sc'],'o',markersize=2,label='Corregido con IAM')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
+plt.ylabel('Intensidad de cortocircuito (A)',fontsize=30)
+plt.title('Previsión de intensidad',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
+
+Datos_i_max=Si['ISC_measured_Si (A)'].max()
+Datos_i_min=Si['ISC_measured_Si (A)'].min()
+Datos_i_media=sum(Si['ISC_measured_Si (A)'].values)/len(Si['ISC_measured_Si (A)'].values)
+RMSE_intensidad_iam=E.RMSE(Si['ISC_measured_Si (A)'],Curvas['i_sc'])
+MAE_intensidad_iam=E.MAE(Si['ISC_measured_Si (A)'], Curvas['i_sc'])
+intensidad_iam_max=Curvas['i_sc'].max()
+intensidad_iam_min=Curvas['i_sc'].min()
+intensidad_iam_media=sum(Curvas['i_sc'])/len(Curvas['i_sc'])
+RMSE_intensidad_nada=E.RMSE(Si['ISC_measured_Si (A)'],Curvas_['i_sc'])
+MAE_intensidad_nada=E.MAE(Si['ISC_measured_Si (A)'], Curvas_['i_sc'])
+intensidad_max_nada=Curvas_['i_sc'].max()
+intensidad_min_nada=Curvas_['i_sc'].min()
+intensidad_medi_nada=sum(Curvas_['i_sc'])/len(Curvas_['i_sc'])
+
+print("Estos son los resultados obtenidos para la intensidad:")
+print("Datos")
+print("Potencia máxima: ", Datos_i_max)
+print("Potencia mínima: ", Datos_i_min)
+print("Potencia media: ", Datos_i_media)
+print("Aplicando IAM")
+print("Potencia máxima: ", intensidad_iam_max)
+print("Potencia mínima: ", intensidad_iam_min)
+print("Potencia media: ", intensidad_iam_media)
+print("RMSE potencia: ", RMSE_intensidad_iam)
+print("MAE potencia: ", MAE_intensidad_iam)
+print("Si aplicar modelos de corrección")
+print("Potencia máxima: ", intensidad_max_nada)
+print("Potencia mínima: ", intensidad_min_nada)
+print("Potencia media: ", intensidad_medi_nada)
+print("RMSE potencia: ", RMSE_intensidad_nada)
+print("MAE potencia: ", MAE_intensidad_nada)
+
+
+plt.figure(figsize=(30,15))
+plt.plot(Si['aoi'],Diferencia_intensidad_,'o',markersize=2,label='Corregido con IAM')
+plt.plot(Si['aoi'],Diferencia_intensidad_dat,'o',markersize=2,label='Sin corregir')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Ángulo de incidencia (º)',fontsize=30)
+plt.ylabel('Error de intensidad (A)',fontsize=30)
+plt.title('Residuos en función del ángulo de incidencia',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
+plt.figure(figsize=(30,15))
+plt.plot(Si['airmass_relative'],Diferencia_intensidad_,'o',markersize=2,label='Corregido con IAM')
+plt.plot(Si['airmass_relative'],Diferencia_intensidad_dat,'o',markersize=2,label='Sin corregir')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Masa del aire (n.d.)',fontsize=30)
+plt.ylabel('Error de intensidad (A)',fontsize=30)
+plt.title('Residuos en función de la masa del aire',fontsize=40)
+plt.legend(fontsize=30,markerscale=3)
+
+plt.figure(figsize=(30,15))
+plt.plot(Si['T_Amb (ºC)'],Diferencia_intensidad_,'o',markersize=2,label='Corregido con IAM')
+plt.plot(Si['T_Amb (ºC)'],Diferencia_intensidad_dat,'o',markersize=2,label='Sin corregir')
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.xlabel('Temperatura ambiente (ºC)',fontsize=30)
+plt.ylabel('Error de intensidad (A)',fontsize=30)
 plt.title('Residuos en función de la temperatura',fontsize=40)
 plt.legend(fontsize=30,markerscale=3)
 
 
-# #Representamos unas cuantas curavs iv
-# plt.figure(figsize=(30,15))
-# plt.plot(Si['aoi'],Curvas_['i_sc'],'o',markersize=2,label='Sin IAM')
-# plt.plot(Si['aoi'],Curvas['i_sc'],'o',markersize=2,label='IAM_tercer_grado')
-# plt.plot(Si['aoi'],Si['ISC_measured_Si (A)'],'o',markersize=2,label='Datos medidos de ISC_Si')
-# # plt.plot(Curvas_2['v'][165],Curvas_2['i'][165],'--',markersize=2,label='IAM_segundo_grado')
-# # plt.plot(Curvas_1['v'][165],Curvas_1['i'][165],'--',markersize=2,label='IAM_primer_grado')
-# # plt.plot(Curvas['v'][165],Curvas['i'][165],'--',markersize=2,label='GII')
-# plt.plot()
-# plt.xlabel('Voltaje (Si) (V)')
-# plt.ylabel('Corriente (Si) (A)')
-# plt.title('Curvas I-V para validar el proceso anterior')
-# plt.legend()
+
+
+
+

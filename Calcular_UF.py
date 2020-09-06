@@ -165,13 +165,14 @@ x_dibujar=sorted(x)
 UF_temp_dibujar=sorted(UF_temp, reverse=True)
 
 fig=plt.figure(figsize=(30,15))
-plt.plot(filt_df_temp_x,simple_uf,'-',markersize=4)
+plt.plot(filt_df_temp_x,filt_df_temp_y,'o',markersize=4,label='Datos escogidos')
+plt.plot(filt_df_temp_x,simple_uf,'-',markersize=4, label='Factor de Utilización')
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Temperatura ambiente (ºC)',fontsize=30)
 plt.ylabel('Factor de utilización (n.d.)',fontsize=30)
 plt.title('Factor de utilización para la temperatura',fontsize=40)
-
+plt.legend(fontsize=30)
 #%%CÓDIGO PARA OBSERVAR LAS TENDENDICAS CON TEMPERTAURA, LA VELOCIDAD DEL VIENTO Y DIRECCION DE ESTE 
 filt_df=filt_df[filt_df['T_Amb (ºC)']>=19]
 filt_df=filt_df[filt_df['T_Amb (ºC)']<22]
@@ -427,12 +428,14 @@ UF_am_dibujar=sorted(UF_am, reverse=True)
 
     
 fig=plt.figure(figsize=(30,15))
-plt.plot(x_dibujar,UF_am_dibujar,'-',markersize=4)
+plt.plot(filt_df_am['airmass_relative'],filt_df_am['ISC_IIIV/DII_efectiva (A m2/W)']/VALOR_NORMALIZAR,'o',markersize=4,label='Datos escogidos')
+plt.plot(x_dibujar,UF_am_dibujar,'-',markersize=4,label='Factor de Utilización')
 plt.xticks(fontsize=30)
 plt.yticks(fontsize=30)
 plt.xlabel('Masa de aire (n.d.)',fontsize=30)
 plt.ylabel('Factor de utilización (n.d.)',fontsize=30)
-plt.title('Factor de utilización para la ma',fontsize=40)
+plt.legend(fontsize=30)
+plt.title('Factor de utilización para la masa de aire',fontsize=40)
 
 #%%Recojo los UF obtenidos y los guardo en un archivo csv
 UF=pd.DataFrame(columns={'UF_am_low','UF_am_high','UF_temp'},index=['a','thld','RR'])

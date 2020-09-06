@@ -17,7 +17,7 @@ pio.renderers.default='browser'
 #AOILIMIT
 AOILIMIT=55.0
 df=pd.read_csv('C://Users/juanj/OneDrive/Escritorio/TFG/filt_df_Si.csv',encoding='utf-8')
-smaller_AOI=df[(df['aoi']<AOILIMIT)]
+smaller_AOI=df[(df['aoi']<=AOILIMIT)]
 smaller_AOI_=smaller_AOI
 greater_AOI=df[(df['aoi']>AOILIMIT)]
 filt_x=greater_AOI['aoi'].values
@@ -326,14 +326,18 @@ filt_x=greater_AOI['aoi'].values
 filt_y=greater_AOI['ISC_Si/Irra_vista (A m2/W)'].values
 
 
-plt.figure(figsize=(30,15))
+plt.figure(figsize=(30,20))
+plt.ylim(0.002,0.007 )
 plt.plot(greater_AOI_['aoi'].values,greater_AOI_['ISC_Si/Irra_vista (A m2/W)'].values,'o',markersize=2,label='Previsión actual')
-plt.plot(filt_x,filt_y,'o',markersize=2,label='Previsión actual')
+plt.plot(filt_x,filt_y,'o',markersize=4,label='Previsión actual')
 # plt.plot(CPV['aoi'],Potencias_estimadas['Potencias_estimadas (W)'],'o',markersize=2,label='Con UF')
-plt.xlabel('Ángulo de incidencia (º)')
-plt.ylabel('Potencia (III-V)(W)')
-# plt.title('Comparación de los resultados con los datos estimados de potencias en funcion del UF')
-plt.legend()
+plt.xlabel('Ángulo de incidencia (º)', fontsize=30)
+plt.ylabel('Eficiencia de intensidad (A m2/W)',fontsize=30)
+plt.title('Eficiencia de intensidad en función del ángulo de incidencia', fontsize=40)
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30)
+plt.legend(fontsize=30,markerscale=3)
+plt.show()
 
 plt.figure(figsize=(30,15))
 plt.plot(greater_AOI['T_Amb (ºC)'],filt_y,'o',markersize=2,label='Previsión actual')
@@ -407,17 +411,17 @@ plt.plot(greater_AOI['aoi'].values,greater_AOI['ISC_Si/Irra_vista (A m2/W)'].val
 plt.plot(x_total,yr_total,'o',markersize=4,label='Regresión de primer grado')
 plt.plot(greater_AOI['aoi'].values,y_poli2,'o',markersize=4,label='Regresión de segundo grado')
 plt.plot(greater_AOI['aoi'].values,y_poli3,'o',markersize=4,label='Regresión de tercer grado')
-plt.table(cellText=valores, rowLabels=etiquetas_fil, colLabels = etiquetas_col,colWidths=[0.3,0.1],  loc='lower center')
+# plt.table(cellText=valores, rowLabels=etiquetas_fil, colLabels = etiquetas_col,colWidths=[0.3,0.1],  loc='lower center')
 plt.xticks(fontsize=15)
 plt.yticks(fontsize=15)
 plt.xlabel('Ángulo de incidencia (º)',fontsize=15)
 plt.ylabel('ISC_IIIV/DII (A m2/W)',fontsize=15)
 plt.title('Regresiones lineales para la obtención del IAM' ,fontsize=20)
-plt.legend() 
+plt.legend(fontsize=15) 
+
 print('El coeficiente de determinación para la regresión de primer grado es: '+str(RR_poli1))
 print('El coeficiente de determinación para la regresión de segundo grado es: '+str(RR_poli2))
 print('El coeficiente de determinación para la regresión de tercer grado es: '+str(RR_poli3))
-
 
 #%% ASIGNAMOS EL VALOR_NORMALIZAR
 VALOR_NORMALIZAR=y_poli3.max()

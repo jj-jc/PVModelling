@@ -107,13 +107,13 @@ class CPVSystem(object):
         else:
             self.uf_parameters = uf_parameters
     def __repr__(self):
-        attrs = ['name', 'AOILIMIT', 'surface_tilt', 'surface_azimuth', 'module',
+        attrs = ['name', 'surface_tilt', 'surface_azimuth', 'module',
                  'inverter', 'albedo', 'racking_model']
         return ('CPVSystem: \n  ' + '\n  '.join(
             ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))        
     
     
-    def get_iam(self, aoi,iam_model='third degree'):
+    def get_CPV_iam(self, aoi,iam_model='third degree'):
         '''Get the incidence angle modifier from the 
         parameters given and the model type
         
@@ -264,7 +264,7 @@ class CPVSystem(object):
                               solar_zenith, solar_azimuth)
         irrads = irradiance.poa_components(aoi_, dni, poa_sky_diffuse, poa_ground_diffuse)
         return irrads
-    def calcparams_cpvsyst(self, effective_irradiance, temp_cell):
+    def CPV_calcparams(self, effective_irradiance, temp_cell):
         """
         Use the :py:func:`calcparams_pvsyst` function, the input
         parameters and ``self.module_CPV_parameters`` to calculate the
@@ -291,7 +291,7 @@ class CPVSystem(object):
                                self.module_CPV_parameters)
 
         return pvsystem.calcparams_pvsyst(effective_irradiance, temp_cell, **kwargs)
-    def pvsyst_celltemp(self, poa_global, temp_air, wind_speed=1.0):
+    def CPV_temp(self, poa_global, temp_air, wind_speed=1.0):
         """
         Uses :py:func:`pvsystem.pvsyst_celltemp` to calculate module
         temperatures based on ``self.racking_model`` and the input parameters.
@@ -311,7 +311,7 @@ class CPVSystem(object):
                                     self.temperature_model_CPV_parameters))
         return temperature.pvsyst_cell(poa_global, temp_air, wind_speed,
                                        **kwargs)
-    def singlediode(self, photocurrent, saturation_current,
+    def CPV_singlediode(self, photocurrent, saturation_current,
                     resistance_series, resistance_shunt, nNsVth,
                     ivcurve_pnts=None,method='lambertw'):
         """Wrapper around the :py:func:`singlediode` function.
@@ -647,7 +647,7 @@ class LocalizedCPVSystem(CPVSystem, Location):
 
 
     def __repr__(self):
-        attrs = ['name','AOILIMIT' ,'latitude', 'longitude', 'altitude', 'tz',
+        attrs = ['name','latitude', 'longitude', 'altitude', 'tz',
                  'surface_tilt', 'surface_azimuth', 'module', 'inverter',
                  'albedo', 'racking_model']
         return ('LocalizedCPVSystem: \n  ' + '\n  '.join(
@@ -706,13 +706,13 @@ class Flat_CPVSystem (object):
             self.iam_Flat_parameters = iam_Flat_parameters
         
     def __repr__(self):
-        attrs = ['name', 'AOILIMIT', 'surface_tilt', 'surface_azimuth', 'module',
+        attrs = ['name', 'surface_tilt', 'surface_azimuth', 'module',
                   'inverter', 'albedo' ]
         # ''', 'racking_model''']
         return ('Si_CPVSystem: \n  ' + '\n  '.join(
             ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))
     
-    def calcparams_pvsyst(self, effective_irradiance, temp_cell):
+    def Flat_calcparams(self, effective_irradiance, temp_cell):
         """
         Use the :py:func:`calcparams_pvsyst` function, the input
         parameters and ``self.module_Flat_parameters`` to calculate the
@@ -741,7 +741,7 @@ class Flat_CPVSystem (object):
         return pvsystem.calcparams_pvsyst(effective_irradiance, temp_cell, **kwargs)
    
         
-    def get_iam(self, aoi,iam_model='third degree'):
+    def get_Flat_iam(self, aoi,iam_model='third degree'):
         '''Get the incidence angle modifier from the 
         parameters given and the model type
         
@@ -760,19 +760,19 @@ class Flat_CPVSystem (object):
         '''       
         model = iam_model.lower()
         if (model=='first degree'):
-            if (len(self.iam_Flat_parameters)==3):           
+            if (len(self.iam_Flat_parameters)==2):           
                 return aoi*self.iam_Flat_parameters['a1']+self.iam_Flat_parameters['b']
             else:
                 raise ValueError('the lenth of iam_Flat_parameters does not match with the chosen model')
                 
         elif model=='second degree':
-            if len(self.iam_Flat_parameters)==4:
+            if len(self.iam_Flat_parameters)==3:
        
                 return (aoi**2)*self.iam_Flat_parameters['a2']+aoi*self.iam_Flat_parameters['a1']+self.iam_Flat_parameters['b']
             else:
                 raise ValueError('the lenth of iam_Flat_parameters does not match with the chosen model')
         elif (model=='third degree'):
-            if (len(self.iam_Flat_parameters)==5):
+            if (len(self.iam_Flat_parameters)==4):
                 return (aoi**3)*self.iam_Flat_parameters['a3']+(aoi**2)*self.iam_Flat_parameters['a2']+aoi*self.iam_Flat_parameters['a1']+self.iam_Flat_parameters['b']
             else:
                 raise ValueError('the lenth of iam_Flat_parameters does not match with the chosen model')
@@ -793,8 +793,7 @@ class Flat_CPVSystem (object):
         
 
            
-    def generate_iam_parameters(self, aoi_smaller,aoi_greater,values_smaller, values_greater,grado=3):
-        
+    def generate_iam_parameters(self,aoi_greater, values_greater,grado=3):
         '''Get and write the parameters for iam from the 
         values given
         
@@ -814,25 +813,25 @@ class Flat_CPVSystem (object):
             The incidence angle modifier
     
         '''
-        aoi_smaller=np.array(aoi_smaller)
+        
         aoi_greater=np.array(aoi_greater)
-        y_,RR,a_s,b=Error.regresion_polinomica(aoi_smaller,values_smaller,grado)
-        y__,RR__,a_s__,b_=Error.regresion_polinomica(aoi_greater,values_greater,2)
-
+        y_,RR,a_s,b_=Error.regresion_polinomica(aoi_greater,values_greater,grado=grado)
+        norm=y_.max()
         if grado==3:
-            self.iam_Flat_parameters={'a3':a_s[3]/b_, 'a2':a_s[2]/b_,
-                                  'a1':a_s[1]/b_,'valor_norm':b/b_}
+            self.iam_Flat_parameters={'a3':a_s[3]/norm, 'a2':a_s[2]/norm,
+                                  'a1':a_s[1]/norm,'b':b_/norm}
         elif grado==2:
-            self.iam_Flat_parameters={'a2':a_s[2]/b_,'a1':a_s[1]/b_,'valor_norm':b/b_}            
+            self.iam_Flat_parameters={'a2':a_s[2]/norm,'a1':a_s[1]/norm,'b':b_/norm}            
         elif grado==1:
-            self.iam_Flat_parameters={'a2':a_s[2]/b,
-                                  'a1':a_s[1]/b,'valor_norm':b} 
+            self.iam_Flat_parameters={'a2':a_s[2]/norm,
+                                  'a1':a_s[1]/norm,'b':b_/norm} 
         print('iam_Flat_parameters have been generated with an RR of: '+str(RR))
-        return a_s,b
+        print(norm)
+        return a_s,b_
 
 
         
-    def pvsyst_celltemp(self, poa_global, temp_air, wind_speed=1.0):
+    def Flat_temp(self, poa_global, temp_air, wind_speed=1.0):
         """
         Uses :py:func:`pvsystem.pvsyst_celltemp` to calculate module
         temperatures based on ``self.racking_model`` and the input parameters.
@@ -852,7 +851,7 @@ class Flat_CPVSystem (object):
                                     self.temperature_model_Flat_parameters))
         return temperature.pvsyst_cell(poa_global, temp_air, wind_speed,
                                         **kwargs)
-    def singlediode(self, photocurrent, saturation_current,
+    def Flat_singlediode(self, photocurrent, saturation_current,
                     resistance_series, resistance_shunt, nNsVth,
                     ivcurve_pnts=None,method='lambertw'):
         """Wrapper around the :py:func:`singlediode` function.
@@ -958,7 +957,7 @@ class LocalizedFlat_CPVSystem(Flat_CPVSystem, Location):
 
 
     def __repr__(self):
-        attrs = ['name','AOILIMIT' ,'latitude', 'longitude', 'altitude', 'tz',
+        attrs = ['name','latitude', 'longitude', 'altitude', 'tz',
                  'surface_tilt', 'surface_azimuth', 'module', 'inverter',
                  'albedo']
         return ('LocalizedCPVSystem: \n  ' + '\n  '.join(
@@ -968,10 +967,8 @@ class LocalizedFlat_CPVSystem(Flat_CPVSystem, Location):
 
 
 class HybridSystem(CPVSystem,Flat_CPVSystem):
-    '''It represents 
-    '''
-    
-    
+
+
     
     def __init__(self, cpvsystem=None, second_object=None,AOILIMIT=55.0, **kwargs):
         if (AOILIMIT <=0.0 or AOILIMIT >90.0):
@@ -984,7 +981,7 @@ class HybridSystem(CPVSystem,Flat_CPVSystem):
             second_object=second_object,
             **kwargs,
         )
-        CPVSystem.__init__(self, **new_kwargs)
+        CPVSystem.__init__(self, **new_kwargs) 
         Flat_CPVSystem.__init__(self, **new_kwargs)
 
     def __repr__(self):
@@ -994,48 +991,22 @@ class HybridSystem(CPVSystem,Flat_CPVSystem):
         return ('HybridSystem: \n  ' + '\n  '.join(
             ('{}: {}'.format(attr, getattr(self, attr)) for attr in attrs)))
     
-    def get_iam(self, aoi,iam_model='third degree'):
-        
-        iam=[]
-        for i in range(len(aoi)):
-            if aoi[i]>self.AOILIMIT:
-                iam.append(Flat_CPVSystem.get_iam(aoi[i], iam_model))
-            else:
-                iam.append(CPVSystem.get_iam(aoi[i], iam_model))
-        return iam
-    
-    def get_iam(self, aoi,iam_model='third degree'):
-        iam=[]
-        for i in range(len(aoi)):
-            if aoi[i]>self.AOILIMIT:
-                iam.append(Flat_CPVSystem.get_iam(aoi[i], iam_model))
-            else:
-                iam.append(CPVSystem.get_iam(aoi[i], iam_model))
-        return iam
-    
-    
-    def generate_iam_parameters(self, aoi,values_CPV,values_falt,grado=3):
-        aoi_smaller=[]
-        values_CPV_smaller=[]
-        values_Flat_smaller=[]
-
+    def generate_iam_parameters(self, aoi_CPV,aoi_Flat,values_CPV,values_Flat,grado=3):
         aoi_greater=[]
-        values_Flat_greater=[]
-        for i in range(len(aoi)):
-            if aoi[i]>self.AOILIMIT:
-                aoi_greater.append(aoi[i])
-                values_Flat_greater.append(values_falt[i])
-            else:
-                aoi_smaller.append(aoi[i])
-                values_CPV_smaller.append(values_CPV[i])
-                values_Flat_smaller.append(values_falt[i])
-                
-        Flat_CPVSystem.generate_iam_parameters(self,aoi_smaller,aoi_greater,values_Flat_smaller,values_Flat_greater,grado=grado)
-        CPVSystem.generate_iam_parameters(self, aoi_smaller,values_CPV_smaller,grado=grado)
-                
-        
-        
-    
+        aoi_smaller=[]
+        values_smaller=[]
+        values_greater=[]
+        for i in range(len(aoi_CPV)):
+            if aoi_CPV[i]<=self.AOILIMIT:
+                aoi_smaller.append(aoi_CPV[i])
+                values_smaller.append(values_CPV[i])
+        for i in range(len(aoi_Flat)):
+            if aoi_Flat[i]>self.AOILIMIT:
+                aoi_greater.append(aoi_Flat[i])                
+                values_greater.append(values_Flat[i])
+        Flat_CPVSystem.generate_iam_parameters(self,aoi_greater,values_greater,grado=grado)
+        CPVSystem.generate_iam_parameters(self,aoi_smaller,values_smaller,grado=grado)
+
     
 class LocalizedHybridSystem(HybridSystem, Location):
     
